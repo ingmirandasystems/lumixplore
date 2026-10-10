@@ -49,3 +49,12 @@ export const loginSchema = z.object({
 export const resendVerificationSchema = z.object({
   email: z.string().trim().toLowerCase().max(254).pipe(z.email()),
 });
+
+export const forgotPasswordSchema = z.object({
+  email: z.string().trim().toLowerCase().max(254).pipe(z.email()),
+});
+
+export const resetPasswordSchema = z.object({
+  token: z.string().regex(/^[a-f0-9]{64}$/),
+  password: z.string().min(15).max(128),
+});
