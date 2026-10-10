@@ -6,6 +6,7 @@ import {
   registerSchema,
   verifyEmailSchema,
   loginSchema,
+  resendVerificationSchema,
 } from "./auth.schemas.js";
 
 export const authRouter = Router();
@@ -373,6 +374,90 @@ authRouter.post("/logout", async (req, res, next) => {
     });
 
     res.status(204).send();
+  } catch (error) {
+    next(error);
+  }
+});
+
+authRouter.post("/resend-verification", async (req, res, next) => {
+  const validation = resendVerificationSchema.safeParse(req.body);
+
+  if (!validation.success) {
+    res.status(400).json({
+      message: "Introduce un correo válido.",
+    });
+    return;
+  }
+
+  try {
+    const client = await pool.connect();
+    let verificationToken: string | undefined;
+
+    try {
+      await client.query("BEGIN");
+
+      // Bloquea la cuenta para ordenar los reenvíos simultáneos.
+      const result = await client.query<{
+        id: string;
+        email_verified_at: Date | null;
+      }>(
+        `SELECT u.id, u.email_verified_at
+         FROM public.users AS u
+         JOIN public.auth_identities AS a ON a.user_id = u.id
+         WHERE lower(u.email) = $1
+           AND a.provider = 'local'
+         FOR UPDATE OF u`,
+        [validation.data.email],
+      );
+
+      const user = result.rows[0];
+
+      if (user && !user.email_verified_at) {
+        verificationToken = randomBytes(32).toString("hex");
+
+        const tokenHash = createHash("sha256")
+          .update(verificationToken)
+          .digest("hex");
+
+        await client.query(
+          `UPDATE public.auth_tokens
+           SET revoked_at = now()
+           WHERE user_id = $1
+             AND purpose = 'email_verification'
+             AND used_at IS NULL
+             AND revoked_at IS NULL`,
+          [user.id],
+        );
+
+        await client.query(
+          `INSERT INTO public.auth_tokens
+             (user_id, purpose, token_hash, expires_at)
+           VALUES (
+             $1,
+             'email_verification',
+             $2,
+             now() + interval '24 hours'
+           )`,
+          [user.id, tokenHash],
+        );
+      }
+
+      await client.query("COMMIT");
+    } catch (error) {
+      await client.query("ROLLBACK");
+      throw error;
+    } finally {
+      client.release();
+    }
+
+    if (verificationToken && process.env.NODE_ENV === "development") {
+      console.log("Nuevo token de verificación local:", verificationToken);
+    }
+
+    res.json({
+      message:
+        "Si la cuenta requiere verificación, se procesará un nuevo enlace.",
+    });
   } catch (error) {
     next(error);
   }
