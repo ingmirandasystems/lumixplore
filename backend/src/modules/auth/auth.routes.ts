@@ -10,10 +10,16 @@ import {
   forgotPasswordSchema,
   resetPasswordSchema,
 } from "./auth.schemas.js";
+import {
+  loginLimiter,
+  tokenRequestLimiter,
+  registrationLimiter,
+  tokenValidationLimiter,
+} from "./auth.limits.js";
 
 export const authRouter = Router();
 
-authRouter.post("/register", async (req, res, next) => {
+authRouter.post("/register", registrationLimiter, async (req, res, next) => {
   const validation = registerSchema.safeParse(req.body);
 
   if (!validation.success) {
@@ -131,29 +137,32 @@ authRouter.post("/register", async (req, res, next) => {
   }
 });
 
-authRouter.post("/verify-email", async (req, res, next) => {
-  const validation = verifyEmailSchema.safeParse(req.body);
+authRouter.post(
+  "/verify-email",
+  tokenValidationLimiter,
+  async (req, res, next) => {
+    const validation = verifyEmailSchema.safeParse(req.body);
 
-  if (!validation.success) {
-    res.status(400).json({
-      message: "Token inválido.",
-    });
-    return;
-  }
-
-  try {
-    const tokenHash = createHash("sha256")
-      .update(validation.data.token)
-      .digest("hex");
-
-    const client = await pool.connect();
+    if (!validation.success) {
+      res.status(400).json({
+        message: "Token inválido.",
+      });
+      return;
+    }
 
     try {
-      await client.query("BEGIN");
+      const tokenHash = createHash("sha256")
+        .update(validation.data.token)
+        .digest("hex");
 
-      // Consume el token solo si sigue vigente y no fue usado.
-      const result = await client.query<{ user_id: string }>(
-        `UPDATE public.auth_tokens
+      const client = await pool.connect();
+
+      try {
+        await client.query("BEGIN");
+
+        // Consume el token solo si sigue vigente y no fue usado.
+        const result = await client.query<{ user_id: string }>(
+          `UPDATE public.auth_tokens
          SET used_at = now()
          WHERE token_hash = $1
            AND purpose = 'email_verification'
@@ -161,44 +170,45 @@ authRouter.post("/verify-email", async (req, res, next) => {
            AND revoked_at IS NULL
            AND expires_at > now()
          RETURNING user_id`,
-        [tokenHash],
-      );
+          [tokenHash],
+        );
 
-      const token = result.rows[0];
+        const token = result.rows[0];
 
-      if (!token) {
-        await client.query("ROLLBACK");
+        if (!token) {
+          await client.query("ROLLBACK");
 
-        res.status(400).json({
-          message: "El token es inválido, venció o ya fue utilizado.",
-        });
-        return;
-      }
+          res.status(400).json({
+            message: "El token es inválido, venció o ya fue utilizado.",
+          });
+          return;
+        }
 
-      await client.query(
-        `UPDATE public.users
+        await client.query(
+          `UPDATE public.users
          SET email_verified_at = COALESCE(email_verified_at, now())
          WHERE id = $1`,
-        [token.user_id],
-      );
+          [token.user_id],
+        );
 
-      await client.query("COMMIT");
+        await client.query("COMMIT");
+      } catch (error) {
+        await client.query("ROLLBACK");
+        throw error;
+      } finally {
+        client.release();
+      }
+
+      res.json({
+        message: "Correo verificado. Ya puedes iniciar sesión.",
+      });
     } catch (error) {
-      await client.query("ROLLBACK");
-      throw error;
-    } finally {
-      client.release();
+      next(error);
     }
+  },
+);
 
-    res.json({
-      message: "Correo verificado. Ya puedes iniciar sesión.",
-    });
-  } catch (error) {
-    next(error);
-  }
-});
-
-authRouter.post("/login", async (req, res, next) => {
+authRouter.post("/login", loginLimiter, async (req, res, next) => {
   const validation = loginSchema.safeParse(req.body);
 
   if (!validation.success) {
@@ -381,58 +391,61 @@ authRouter.post("/logout", async (req, res, next) => {
   }
 });
 
-authRouter.post("/resend-verification", async (req, res, next) => {
-  const validation = resendVerificationSchema.safeParse(req.body);
+authRouter.post(
+  "/resend-verification",
+  tokenRequestLimiter,
+  async (req, res, next) => {
+    const validation = resendVerificationSchema.safeParse(req.body);
 
-  if (!validation.success) {
-    res.status(400).json({
-      message: "Introduce un correo válido.",
-    });
-    return;
-  }
-
-  try {
-    const client = await pool.connect();
-    let verificationToken: string | undefined;
+    if (!validation.success) {
+      res.status(400).json({
+        message: "Introduce un correo válido.",
+      });
+      return;
+    }
 
     try {
-      await client.query("BEGIN");
+      const client = await pool.connect();
+      let verificationToken: string | undefined;
 
-      // Bloquea la cuenta para ordenar los reenvíos simultáneos.
-      const result = await client.query<{
-        id: string;
-        email_verified_at: Date | null;
-      }>(
-        `SELECT u.id, u.email_verified_at
+      try {
+        await client.query("BEGIN");
+
+        // Bloquea la cuenta para ordenar los reenvíos simultáneos.
+        const result = await client.query<{
+          id: string;
+          email_verified_at: Date | null;
+        }>(
+          `SELECT u.id, u.email_verified_at
          FROM public.users AS u
          JOIN public.auth_identities AS a ON a.user_id = u.id
          WHERE lower(u.email) = $1
            AND a.provider = 'local'
          FOR UPDATE OF u`,
-        [validation.data.email],
-      );
+          [validation.data.email],
+        );
 
-      const user = result.rows[0];
+        const user = result.rows[0];
 
-      if (user && !user.email_verified_at) {
-        verificationToken = randomBytes(32).toString("hex");
+        if (user && !user.email_verified_at) {
+          verificationToken = randomBytes(32).toString("hex");
 
-        const tokenHash = createHash("sha256")
-          .update(verificationToken)
-          .digest("hex");
+          const tokenHash = createHash("sha256")
+            .update(verificationToken)
+            .digest("hex");
 
-        await client.query(
-          `UPDATE public.auth_tokens
+          await client.query(
+            `UPDATE public.auth_tokens
            SET revoked_at = now()
            WHERE user_id = $1
              AND purpose = 'email_verification'
              AND used_at IS NULL
              AND revoked_at IS NULL`,
-          [user.id],
-        );
+            [user.id],
+          );
 
-        await client.query(
-          `INSERT INTO public.auth_tokens
+          await client.query(
+            `INSERT INTO public.auth_tokens
              (user_id, purpose, token_hash, expires_at)
            VALUES (
              $1,
@@ -440,77 +453,83 @@ authRouter.post("/resend-verification", async (req, res, next) => {
              $2,
              now() + interval '24 hours'
            )`,
-          [user.id, tokenHash],
-        );
+            [user.id, tokenHash],
+          );
+        }
+
+        await client.query("COMMIT");
+      } catch (error) {
+        await client.query("ROLLBACK");
+        throw error;
+      } finally {
+        client.release();
       }
 
-      await client.query("COMMIT");
+      if (verificationToken && process.env.NODE_ENV === "development") {
+        console.log("Nuevo token de verificación local:", verificationToken);
+      }
+
+      res.json({
+        message:
+          "Si la cuenta requiere verificación, se procesará un nuevo enlace.",
+      });
     } catch (error) {
-      await client.query("ROLLBACK");
-      throw error;
-    } finally {
-      client.release();
+      next(error);
     }
+  },
+);
 
-    if (verificationToken && process.env.NODE_ENV === "development") {
-      console.log("Nuevo token de verificación local:", verificationToken);
+authRouter.post(
+  "/forgot-password",
+  tokenRequestLimiter,
+  async (req, res, next) => {
+    const validation = forgotPasswordSchema.safeParse(req.body);
+
+    if (!validation.success) {
+      res.status(400).json({
+        message: "Introduce un correo válido.",
+      });
+      return;
     }
-
-    res.json({
-      message:
-        "Si la cuenta requiere verificación, se procesará un nuevo enlace.",
-    });
-  } catch (error) {
-    next(error);
-  }
-});
-
-authRouter.post("/forgot-password", async (req, res, next) => {
-  const validation = forgotPasswordSchema.safeParse(req.body);
-
-  if (!validation.success) {
-    res.status(400).json({
-      message: "Introduce un correo válido.",
-    });
-    return;
-  }
-
-  try {
-    const client = await pool.connect();
-    let resetToken: string | undefined;
 
     try {
-      await client.query("BEGIN");
+      const client = await pool.connect();
+      let resetToken: string | undefined;
 
-      const result = await client.query<{ id: string }>(
-        `SELECT u.id
+      try {
+        await client.query("BEGIN");
+
+        const result = await client.query<{ id: string }>(
+          `SELECT u.id
          FROM public.users AS u
          JOIN public.auth_identities AS a ON a.user_id = u.id
          WHERE lower(u.email) = $1
            AND a.provider = 'local'
          FOR UPDATE OF u`,
-        [validation.data.email],
-      );
+          [validation.data.email],
+        );
 
-      const user = result.rows[0];
+        const user = result.rows[0];
 
-      if (user) {
-        resetToken = randomBytes(32).toString("hex");
+        if (user) {
+          resetToken = randomBytes(32).toString("hex");
 
-        const tokenHash = createHash("sha256").update(resetToken).digest("hex");
+          const tokenHash = createHash("sha256")
+            .update(resetToken)
+            .digest("hex");
 
-        await client.query(
-          `UPDATE public.auth_tokens
+          await client.query(
+            `UPDATE public.auth_tokens
            SET revoked_at = now()
            WHERE user_id = $1
              AND purpose = 'password_reset'
              AND used_at IS NULL
              AND revoked_at IS NULL`,
-          [user.id],
-        );
+            [user.id],
+          );
 
-        await client.query(
-          `INSERT INTO public.auth_tokens
+          await client.query(
+            `INSERT INTO public.auth_tokens
              (user_id, purpose, token_hash, expires_at)
            VALUES (
              $1,
@@ -518,61 +537,65 @@ authRouter.post("/forgot-password", async (req, res, next) => {
              $2,
              now() + interval '30 minutes'
            )`,
-          [user.id, tokenHash],
-        );
+            [user.id, tokenHash],
+          );
+        }
+
+        await client.query("COMMIT");
+      } catch (error) {
+        await client.query("ROLLBACK");
+        throw error;
+      } finally {
+        client.release();
       }
 
-      await client.query("COMMIT");
+      if (resetToken && process.env.NODE_ENV === "development") {
+        console.log("Token de recuperación local:", resetToken);
+      }
+
+      res.json({
+        message:
+          "Si el correo corresponde a una cuenta local, se procesará un enlace de recuperación.",
+      });
     } catch (error) {
-      await client.query("ROLLBACK");
-      throw error;
-    } finally {
-      client.release();
+      next(error);
     }
+  },
+);
 
-    if (resetToken && process.env.NODE_ENV === "development") {
-      console.log("Token de recuperación local:", resetToken);
+authRouter.post(
+  "/reset-password",
+  tokenValidationLimiter,
+  async (req, res, next) => {
+    const validation = resetPasswordSchema.safeParse(req.body);
+
+    if (!validation.success) {
+      res.status(400).json({
+        message: "Revisa el token y la nueva contraseña.",
+      });
+      return;
     }
-
-    res.json({
-      message:
-        "Si el correo corresponde a una cuenta local, se procesará un enlace de recuperación.",
-    });
-  } catch (error) {
-    next(error);
-  }
-});
-
-authRouter.post("/reset-password", async (req, res, next) => {
-  const validation = resetPasswordSchema.safeParse(req.body);
-
-  if (!validation.success) {
-    res.status(400).json({
-      message: "Revisa el token y la nueva contraseña.",
-    });
-    return;
-  }
-
-  try {
-    const { token, password } = validation.data;
-
-    const tokenHash = createHash("sha256").update(token).digest("hex");
-
-    const passwordHash = await argon2.hash(password, {
-      type: argon2.argon2id,
-      memoryCost: 19456,
-      timeCost: 2,
-      parallelism: 1,
-    });
-
-    const client = await pool.connect();
 
     try {
-      await client.query("BEGIN");
+      const { token, password } = validation.data;
 
-      // Bloquea primero la cuenta, igual que forgot-password.
-      const account = await client.query<{ id: string }>(
-        `SELECT u.id
+      const tokenHash = createHash("sha256").update(token).digest("hex");
+
+      const passwordHash = await argon2.hash(password, {
+        type: argon2.argon2id,
+        memoryCost: 19456,
+        timeCost: 2,
+        parallelism: 1,
+      });
+
+      const client = await pool.connect();
+
+      try {
+        await client.query("BEGIN");
+
+        // Bloquea primero la cuenta, igual que forgot-password.
+        const account = await client.query<{ id: string }>(
+          `SELECT u.id
          FROM public.users AS u
          JOIN public.auth_tokens AS t ON t.user_id = u.id
          JOIN public.auth_identities AS a ON a.user_id = u.id
@@ -580,22 +603,22 @@ authRouter.post("/reset-password", async (req, res, next) => {
            AND t.purpose = 'password_reset'
            AND a.provider = 'local'
          FOR UPDATE OF u`,
-        [tokenHash],
-      );
+          [tokenHash],
+        );
 
-      const user = account.rows[0];
+        const user = account.rows[0];
 
-      if (!user) {
-        await client.query("ROLLBACK");
+        if (!user) {
+          await client.query("ROLLBACK");
 
-        res.status(400).json({
-          message: "El token es inválido, venció o ya fue utilizado.",
-        });
-        return;
-      }
+          res.status(400).json({
+            message: "El token es inválido, venció o ya fue utilizado.",
+          });
+          return;
+        }
 
-      const consumed = await client.query(
-        `UPDATE public.auth_tokens
+        const consumed = await client.query(
+          `UPDATE public.auth_tokens
          SET used_at = now()
          WHERE token_hash = $1
            AND purpose = 'password_reset'
@@ -603,54 +626,55 @@ authRouter.post("/reset-password", async (req, res, next) => {
            AND revoked_at IS NULL
            AND expires_at > clock_timestamp()
          RETURNING id`,
-        [tokenHash],
-      );
+          [tokenHash],
+        );
 
-      if (consumed.rowCount !== 1) {
-        await client.query("ROLLBACK");
+        if (consumed.rowCount !== 1) {
+          await client.query("ROLLBACK");
 
-        res.status(400).json({
-          message: "El token es inválido, venció o ya fue utilizado.",
-        });
-        return;
-      }
+          res.status(400).json({
+            message: "El token es inválido, venció o ya fue utilizado.",
+          });
+          return;
+        }
 
-      await client.query(
-        `UPDATE public.auth_identities
+        await client.query(
+          `UPDATE public.auth_identities
          SET password_hash = $1
          WHERE user_id = $2 AND provider = 'local'`,
-        [passwordHash, user.id],
-      );
+          [passwordHash, user.id],
+        );
 
-      await client.query(
-        `UPDATE public.sessions
+        await client.query(
+          `UPDATE public.sessions
          SET revoked_at = now()
          WHERE user_id = $1 AND revoked_at IS NULL`,
-        [user.id],
-      );
+          [user.id],
+        );
 
-      await client.query(
-        `UPDATE public.auth_tokens
+        await client.query(
+          `UPDATE public.auth_tokens
          SET revoked_at = now()
          WHERE user_id = $1
            AND purpose = 'password_reset'
            AND used_at IS NULL
            AND revoked_at IS NULL`,
-        [user.id],
-      );
+          [user.id],
+        );
 
-      await client.query("COMMIT");
+        await client.query("COMMIT");
+      } catch (error) {
+        await client.query("ROLLBACK");
+        throw error;
+      } finally {
+        client.release();
+      }
+
+      res.json({
+        message: "Contraseña actualizada. Inicia sesión nuevamente.",
+      });
     } catch (error) {
-      await client.query("ROLLBACK");
-      throw error;
-    } finally {
-      client.release();
+      next(error);
     }
-
-    res.json({
-      message: "Contraseña actualizada. Inicia sesión nuevamente.",
-    });
-  } catch (error) {
-    next(error);
-  }
-});
+  },
+);
