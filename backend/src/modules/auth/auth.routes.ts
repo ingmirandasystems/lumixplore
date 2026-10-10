@@ -16,6 +16,7 @@ import {
   registrationLimiter,
   tokenValidationLimiter,
 } from "./auth.limits.js";
+import { requireAuth } from "./auth.middleware.js";
 
 export const authRouter = Router();
 
@@ -288,73 +289,10 @@ authRouter.post("/login", loginLimiter, async (req, res, next) => {
   }
 });
 
-authRouter.get("/me", async (req, res, next) => {
-  res.setHeader("Cache-Control", "no-store");
-
-  const sessionToken: unknown = req.cookies?.lumixplore_session;
-
-  if (
-    typeof sessionToken !== "string" ||
-    !/^[a-f0-9]{64}$/.test(sessionToken)
-  ) {
-    res.status(401).json({
-      message: "No hay una sesión válida.",
-    });
-    return;
-  }
-
-  try {
-    const tokenHash = createHash("sha256").update(sessionToken).digest("hex");
-
-    const result = await pool.query<{
-      id: string;
-      name: string;
-      email: string;
-      language: string;
-      region: string;
-      timezone: string;
-    }>(
-      `WITH active_session AS (
-         UPDATE public.sessions
-         SET last_seen_at = now()
-         WHERE token_hash = $1
-           AND revoked_at IS NULL
-           AND expires_at > now()
-           AND last_seen_at > now() - interval '30 days'
-         RETURNING user_id
-       )
-       SELECT
-         u.id,
-         u.name,
-         u.email,
-         u.language,
-         u.region,
-         u.timezone
-       FROM public.users AS u
-       JOIN active_session AS s ON s.user_id = u.id`,
-      [tokenHash],
-    );
-
-    const user = result.rows[0];
-
-    if (!user) {
-      res.clearCookie("lumixplore_session", {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
-        path: "/",
-      });
-
-      res.status(401).json({
-        message: "La sesión venció o fue cerrada.",
-      });
-      return;
-    }
-
-    res.json({ user });
-  } catch (error) {
-    next(error);
-  }
+authRouter.get("/me", requireAuth, (_req, res) => {
+  res.json({
+    user: res.locals.user,
+  });
 });
 
 authRouter.post("/logout", async (req, res, next) => {
