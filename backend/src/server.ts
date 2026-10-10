@@ -3,6 +3,10 @@ import express from "express";
 import { pool } from "./db.js";
 import { authRouter } from "./modules/auth/auth.routes.js";
 import cookieParser from "cookie-parser";
+import {
+  notFoundHandler,
+  errorHandler,
+} from "./middleware/error.middleware.js";
 
 const app = express();
 const port = Number(process.env.PORT ?? 3000);
@@ -30,6 +34,8 @@ app.get("/api/health", async (_req, res) => {
     });
   }
 });
+app.use(notFoundHandler);
+app.use(errorHandler);
 
 app.listen(port, "127.0.0.1", () => {
   console.log(`Servidor disponible en http://localhost:${port}`);
