@@ -2,7 +2,11 @@ import { Router } from "express";
 import argon2 from "argon2";
 import { createHash, randomBytes } from "node:crypto";
 import { pool } from "../../db.js";
-import { registerSchema, verifyEmailSchema } from "./auth.schemas.js";
+import {
+  registerSchema,
+  verifyEmailSchema,
+  loginSchema,
+} from "./auth.schemas.js";
 
 export const authRouter = Router();
 
@@ -186,6 +190,189 @@ authRouter.post("/verify-email", async (req, res, next) => {
     res.json({
       message: "Correo verificado. Ya puedes iniciar sesión.",
     });
+  } catch (error) {
+    next(error);
+  }
+});
+
+authRouter.post("/login", async (req, res, next) => {
+  const validation = loginSchema.safeParse(req.body);
+
+  if (!validation.success) {
+    res.status(400).json({
+      message: "Revisa el correo y la contraseña.",
+    });
+    return;
+  }
+
+  try {
+    const { email, password } = validation.data;
+
+    const result = await pool.query<{
+      id: string;
+      name: string;
+      email: string;
+      email_verified_at: Date | null;
+      password_hash: string;
+    }>(
+      `SELECT
+         u.id,
+         u.name,
+         u.email,
+         u.email_verified_at,
+         a.password_hash
+       FROM public.users AS u
+       JOIN public.auth_identities AS a ON a.user_id = u.id
+       WHERE lower(u.email) = $1
+         AND a.provider = 'local'`,
+      [email],
+    );
+
+    const user = result.rows[0];
+
+    if (!user || !(await argon2.verify(user.password_hash, password))) {
+      res.status(401).json({
+        message: "Correo o contraseña incorrectos.",
+      });
+      return;
+    }
+
+    if (!user.email_verified_at) {
+      res.status(403).json({
+        message: "Verifica tu correo antes de iniciar sesión.",
+      });
+      return;
+    }
+
+    const sessionToken = randomBytes(32).toString("hex");
+
+    const tokenHash = createHash("sha256").update(sessionToken).digest("hex");
+
+    await pool.query(
+      `INSERT INTO public.sessions (user_id, token_hash, expires_at)
+       VALUES ($1, $2, now() + interval '90 days')`,
+      [user.id, tokenHash],
+    );
+
+    res.cookie("lumixplore_session", sessionToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      maxAge: 90 * 24 * 60 * 60 * 1000,
+    });
+
+    res.json({
+      message: "Sesión iniciada.",
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+authRouter.get("/me", async (req, res, next) => {
+  res.setHeader("Cache-Control", "no-store");
+
+  const sessionToken: unknown = req.cookies?.lumixplore_session;
+
+  if (
+    typeof sessionToken !== "string" ||
+    !/^[a-f0-9]{64}$/.test(sessionToken)
+  ) {
+    res.status(401).json({
+      message: "No hay una sesión válida.",
+    });
+    return;
+  }
+
+  try {
+    const tokenHash = createHash("sha256").update(sessionToken).digest("hex");
+
+    const result = await pool.query<{
+      id: string;
+      name: string;
+      email: string;
+      language: string;
+      region: string;
+      timezone: string;
+    }>(
+      `WITH active_session AS (
+         UPDATE public.sessions
+         SET last_seen_at = now()
+         WHERE token_hash = $1
+           AND revoked_at IS NULL
+           AND expires_at > now()
+           AND last_seen_at > now() - interval '30 days'
+         RETURNING user_id
+       )
+       SELECT
+         u.id,
+         u.name,
+         u.email,
+         u.language,
+         u.region,
+         u.timezone
+       FROM public.users AS u
+       JOIN active_session AS s ON s.user_id = u.id`,
+      [tokenHash],
+    );
+
+    const user = result.rows[0];
+
+    if (!user) {
+      res.clearCookie("lumixplore_session", {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        path: "/",
+      });
+
+      res.status(401).json({
+        message: "La sesión venció o fue cerrada.",
+      });
+      return;
+    }
+
+    res.json({ user });
+  } catch (error) {
+    next(error);
+  }
+});
+
+authRouter.post("/logout", async (req, res, next) => {
+  res.setHeader("Cache-Control", "no-store");
+
+  const sessionToken: unknown = req.cookies?.lumixplore_session;
+
+  try {
+    if (
+      typeof sessionToken === "string" &&
+      /^[a-f0-9]{64}$/.test(sessionToken)
+    ) {
+      const tokenHash = createHash("sha256").update(sessionToken).digest("hex");
+
+      await pool.query(
+        `UPDATE public.sessions
+         SET revoked_at = now()
+         WHERE token_hash = $1
+           AND revoked_at IS NULL`,
+        [tokenHash],
+      );
+    }
+
+    res.clearCookie("lumixplore_session", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+    });
+
+    res.status(204).send();
   } catch (error) {
     next(error);
   }
