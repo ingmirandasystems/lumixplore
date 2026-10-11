@@ -87,8 +87,10 @@
       };
 
       document.getElementById("logout").onclick = () => {
-        request("/api/auth/logout", { method: "POST" }).catch(() => {
-          output.textContent = "No se pudo cerrar la sesión.";
+        request("/api/auth/logout", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({}),
         });
       };
     </script>

@@ -15,7 +15,10 @@ async function main() {
   async function post(path: string, body: object) {
     return fetch(`${baseUrl}${path}`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Origin: "http://localhost:3000",
+      },
       body: JSON.stringify(body),
     });
   }
@@ -77,7 +80,12 @@ async function main() {
   if (newCookie) {
     const logout = await fetch(`${baseUrl}/logout`, {
       method: "POST",
-      headers: { Cookie: newCookie },
+      headers: {
+        Cookie: newCookie,
+        Origin: "http://localhost:3000",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({}),
     });
 
     if (logout.status !== 204) {

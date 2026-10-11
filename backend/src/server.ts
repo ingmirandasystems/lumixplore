@@ -8,9 +8,12 @@ import {
   errorHandler,
 } from "./middleware/error.middleware.js";
 import { fileURLToPath } from "node:url";
+import { protectCsrf } from "./middleware/csrf.middleware.js";
 
 const app = express();
 const port = Number(process.env.PORT ?? 3000);
+
+app.use("/api", protectCsrf);
 
 app.use(express.json());
 app.use(cookieParser());
