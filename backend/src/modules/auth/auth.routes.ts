@@ -222,52 +222,104 @@ authRouter.post("/login", loginLimiter, async (req, res, next) => {
 
   try {
     const { email, password } = validation.data;
+    const client = await pool.connect();
 
-    const result = await pool.query<{
+    let loggedInUser: {
       id: string;
       name: string;
       email: string;
-      email_verified_at: Date | null;
-      password_hash: string;
-    }>(
-      `SELECT
-         u.id,
-         u.name,
-         u.email,
-         u.email_verified_at,
-         a.password_hash
-       FROM public.users AS u
-       JOIN public.auth_identities AS a ON a.user_id = u.id
-       WHERE lower(u.email) = $1
-         AND a.provider = 'local'`,
-      [email],
-    );
+    };
 
-    const user = result.rows[0];
+    let sessionToken: string;
 
-    if (!user || !(await argon2.verify(user.password_hash, password))) {
-      res.status(401).json({
-        message: "Correo o contraseña incorrectos.",
-      });
-      return;
+    try {
+      await client.query("BEGIN");
+
+      // Usa el mismo bloqueo que reset-password.
+      const account = await client.query<{ id: string }>(
+        `SELECT id
+         FROM public.users
+         WHERE lower(email) = $1
+         FOR UPDATE`,
+        [email],
+      );
+
+      const accountUser = account.rows[0];
+
+      if (!accountUser) {
+        await client.query("ROLLBACK");
+
+        res.status(401).json({
+          message: "Correo o contraseña incorrectos.",
+        });
+        return;
+      }
+
+      // Lee las credenciales después de obtener el bloqueo.
+      const result = await client.query<{
+        id: string;
+        name: string;
+        email: string;
+        email_verified_at: Date | null;
+        password_hash: string;
+      }>(
+        `SELECT
+           u.id,
+           u.name,
+           u.email,
+           u.email_verified_at,
+           a.password_hash
+         FROM public.users AS u
+         JOIN public.auth_identities AS a ON a.user_id = u.id
+         WHERE u.id = $1
+           AND a.provider = 'local'`,
+        [accountUser.id],
+      );
+
+      const user = result.rows[0];
+
+      if (!user || !(await argon2.verify(user.password_hash, password))) {
+        await client.query("ROLLBACK");
+
+        res.status(401).json({
+          message: "Correo o contraseña incorrectos.",
+        });
+        return;
+      }
+
+      if (!user.email_verified_at) {
+        await client.query("ROLLBACK");
+
+        res.status(403).json({
+          message: "Verifica tu correo antes de iniciar sesión.",
+        });
+        return;
+      }
+
+      sessionToken = randomBytes(32).toString("hex");
+
+      const tokenHash = createHash("sha256").update(sessionToken).digest("hex");
+
+      await client.query(
+        `INSERT INTO public.sessions
+           (user_id, token_hash, expires_at)
+         VALUES ($1, $2, clock_timestamp() + interval '90 days')`,
+        [user.id, tokenHash],
+      );
+
+      await client.query("COMMIT");
+
+      loggedInUser = {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+      };
+    } catch (error) {
+      await client.query("ROLLBACK");
+      throw error;
+    } finally {
+      client.release();
     }
-
-    if (!user.email_verified_at) {
-      res.status(403).json({
-        message: "Verifica tu correo antes de iniciar sesión.",
-      });
-      return;
-    }
-
-    const sessionToken = randomBytes(32).toString("hex");
-
-    const tokenHash = createHash("sha256").update(sessionToken).digest("hex");
-
-    await pool.query(
-      `INSERT INTO public.sessions (user_id, token_hash, expires_at)
-       VALUES ($1, $2, now() + interval '90 days')`,
-      [user.id, tokenHash],
-    );
 
     res.cookie("lumixplore_session", sessionToken, {
       httpOnly: true,
@@ -279,11 +331,7 @@ authRouter.post("/login", loginLimiter, async (req, res, next) => {
 
     res.json({
       message: "Sesión iniciada.",
-      user: {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-      },
+      user: loggedInUser,
     });
   } catch (error) {
     next(error);
