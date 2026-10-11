@@ -7,6 +7,7 @@ import {
   notFoundHandler,
   errorHandler,
 } from "./middleware/error.middleware.js";
+import { fileURLToPath } from "node:url";
 
 const app = express();
 const port = Number(process.env.PORT ?? 3000);
@@ -34,6 +35,32 @@ app.get("/api/health", async (_req, res) => {
     });
   }
 });
+
+if (process.env.NODE_ENV === "development") {
+  app.get("/dev/google-test", (_req, res) => {
+    res.setHeader("Cache-Control", "no-store");
+
+    res.sendFile(
+      fileURLToPath(new URL("./dev/google-test.html", import.meta.url)),
+    );
+  });
+
+  app.get("/dev/google-config", (_req, res) => {
+    res.setHeader("Cache-Control", "no-store");
+
+    const clientId = process.env.GOOGLE_CLIENT_ID;
+
+    if (!clientId) {
+      res.status(500).json({
+        message: "Falta GOOGLE_CLIENT_ID.",
+      });
+      return;
+    }
+
+    res.json({ clientId });
+  });
+}
+
 app.use(notFoundHandler);
 app.use(errorHandler);
 

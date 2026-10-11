@@ -9,6 +9,7 @@ import {
   resendVerificationSchema,
   forgotPasswordSchema,
   resetPasswordSchema,
+  googleLoginSchema,
 } from "./auth.schemas.js";
 import {
   loginLimiter,
@@ -18,6 +19,7 @@ import {
 } from "./auth.limits.js";
 import { requireAuth } from "./auth.middleware.js";
 import { sendAuthEmail } from "./auth.mail.js";
+import { verifyGoogleCredential } from "./google.service.js";
 
 export const authRouter = Router();
 
@@ -677,3 +679,161 @@ authRouter.post(
     }
   },
 );
+
+authRouter.post("/google", loginLimiter, async (req, res, next) => {
+  res.setHeader("Cache-Control", "no-store");
+
+  const validation = googleLoginSchema.safeParse(req.body);
+
+  if (!validation.success) {
+    res.status(400).json({
+      message: "Revisa los datos del acceso con Google.",
+    });
+    return;
+  }
+
+  const data = validation.data;
+
+  if (!process.env.GOOGLE_CLIENT_ID) {
+    next(new Error("Falta GOOGLE_CLIENT_ID."));
+    return;
+  }
+
+  let googleUser: Awaited<ReturnType<typeof verifyGoogleCredential>>;
+
+  try {
+    googleUser = await verifyGoogleCredential(data.credential);
+  } catch {
+    res.status(401).json({
+      message: "No se pudo validar la credencial de Google.",
+    });
+    return;
+  }
+
+  if (!googleUser.googleConfirmsEmailOwnership) {
+    res.status(403).json({
+      message:
+        "El acceso con este correo externo aún requiere implementar una verificación adicional.",
+    });
+    return;
+  }
+
+  try {
+    const client = await pool.connect();
+
+    let user: {
+      id: string;
+      name: string;
+      email: string;
+    };
+
+    let sessionToken: string;
+
+    try {
+      await client.query("BEGIN");
+
+      const existing = await client.query<{
+        id: string;
+        name: string;
+        email: string;
+      }>(
+        `SELECT u.id, u.name, u.email
+         FROM public.users AS u
+         JOIN public.auth_identities AS a ON a.user_id = u.id
+         WHERE a.provider = 'google'
+           AND a.provider_subject = $1
+         FOR UPDATE OF u`,
+        [googleUser.googleId],
+      );
+
+      const existingUser = existing.rows[0];
+
+      if (existingUser) {
+        user = existingUser;
+      } else {
+        const created = await client.query<{
+          id: string;
+          name: string;
+          email: string;
+        }>(
+          `INSERT INTO public.users
+             (
+               name, last_name, email, language,
+               region, timezone, email_verified_at
+             )
+           VALUES ($1, $2, $3, $4, $5, $6, now())
+           RETURNING id, name, email`,
+          [
+            googleUser.name ?? "Usuario",
+            googleUser.lastName,
+            googleUser.email,
+            data.language,
+            data.region,
+            data.timezone,
+          ],
+        );
+
+        user = created.rows[0]!;
+
+        await client.query(
+          `INSERT INTO public.auth_identities
+             (user_id, provider, provider_subject)
+           VALUES ($1, 'google', $2)`,
+          [user.id, googleUser.googleId],
+        );
+
+        await client.query(
+          `INSERT INTO public.user_preferences (user_id)
+           VALUES ($1)`,
+          [user.id],
+        );
+      }
+
+      sessionToken = randomBytes(32).toString("hex");
+
+      const tokenHash = createHash("sha256").update(sessionToken).digest("hex");
+
+      await client.query(
+        `INSERT INTO public.sessions
+           (user_id, token_hash, expires_at)
+         VALUES ($1, $2, clock_timestamp() + interval '90 days')`,
+        [user.id, tokenHash],
+      );
+
+      await client.query("COMMIT");
+    } catch (error) {
+      await client.query("ROLLBACK");
+      throw error;
+    } finally {
+      client.release();
+    }
+
+    res.cookie("lumixplore_session", sessionToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      maxAge: 90 * 24 * 60 * 60 * 1000,
+    });
+
+    res.json({
+      message: "Sesión iniciada con Google.",
+      user,
+    });
+  } catch (error) {
+    if (
+      typeof error === "object" &&
+      error !== null &&
+      "code" in error &&
+      error.code === "23505"
+    ) {
+      res.status(409).json({
+        message:
+          "No se pudo crear la cuenta. Si ya tienes una, usa su método de acceso; si enviaste dos solicitudes simultáneas, intenta de nuevo.",
+      });
+      return;
+    }
+
+    next(error);
+  }
+});

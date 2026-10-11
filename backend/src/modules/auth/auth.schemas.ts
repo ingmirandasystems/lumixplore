@@ -58,3 +58,10 @@ export const resetPasswordSchema = z.object({
   token: z.string().regex(/^[a-f0-9]{64}$/),
   password: z.string().min(15).max(128),
 });
+
+export const googleLoginSchema = z.object({
+  credential: z.string().min(1).max(10000),
+  language: registerSchema.shape.language,
+  region: registerSchema.shape.region,
+  timezone: registerSchema.shape.timezone,
+});

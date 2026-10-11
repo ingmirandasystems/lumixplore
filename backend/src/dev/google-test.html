@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>LumiXplore — Prueba de Google</title>
+  </head>
+  <body>
+    <h1>Acceso con Google</h1>
+    <div id="google-button"></div>
+
+    <p>
+      <button id="check-session">Consultar sesión</button>
+      <button id="logout">Cerrar sesión</button>
+    </p>
+
+    <pre id="result">Cargando…</pre>
+
+    <script>
+      const output = document.getElementById("result");
+
+      async function request(path, options = {}) {
+        const response = await fetch(path, {
+          credentials: "same-origin",
+          ...options,
+        });
+
+        const text = await response.text();
+
+        output.textContent = `Estado: ${response.status}\n${text}`;
+      }
+
+      async function handleGoogle(response) {
+        try {
+          await request("/api/auth/google", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              credential: response.credential,
+              language: "es",
+              region: "MX",
+              timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+            }),
+          });
+        } catch {
+          output.textContent = "No se pudo conectar con el backend.";
+        }
+      }
+
+      async function initializeGoogle() {
+        try {
+          const response = await fetch("/dev/google-config");
+
+          if (!response.ok) {
+            throw new Error("No se pudo obtener la configuración.");
+          }
+
+          const config = await response.json();
+
+          google.accounts.id.initialize({
+            client_id: config.clientId,
+            callback: handleGoogle,
+            auto_select: false,
+          });
+
+          google.accounts.id.renderButton(
+            document.getElementById("google-button"),
+            {
+              type: "standard",
+              theme: "outline",
+              size: "large",
+              text: "signin_with",
+            },
+          );
+
+          output.textContent = "Pulsa el botón para iniciar sesión.";
+        } catch {
+          output.textContent =
+            "No se pudo configurar Google. Revisa el backend y GOOGLE_CLIENT_ID.";
+        }
+      }
+
+      document.getElementById("check-session").onclick = () => {
+        request("/api/auth/me").catch(() => {
+          output.textContent = "No se pudo consultar la sesión.";
+        });
+      };
+
+      document.getElementById("logout").onclick = () => {
+        request("/api/auth/logout", { method: "POST" }).catch(() => {
+          output.textContent = "No se pudo cerrar la sesión.";
+        });
+      };
+    </script>
+
+    <script
+      src="https://accounts.google.com/gsi/client"
+      async
+      onload="initializeGoogle()"
+      onerror="
+        document.getElementById('result').textContent =
+          'No se pudo cargar Google.'
+      "
+    ></script>
+  </body>
+</html>
