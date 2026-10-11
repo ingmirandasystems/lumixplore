@@ -17,6 +17,7 @@ import {
   tokenValidationLimiter,
 } from "./auth.limits.js";
 import { requireAuth } from "./auth.middleware.js";
+import { sendAuthEmail } from "./auth.mail.js";
 
 export const authRouter = Router();
 
@@ -108,7 +109,7 @@ authRouter.post("/register", registrationLimiter, async (req, res, next) => {
 
     // Solo para probar la verificación durante el desarrollo local.
     if (process.env.NODE_ENV === "development") {
-      console.log("Token de verificación local:", verificationToken);
+      await sendAuthEmail(data.email, verificationToken, "email_verification");
     }
 
     res.status(201).json({
@@ -404,7 +405,13 @@ authRouter.post(
       }
 
       if (verificationToken && process.env.NODE_ENV === "development") {
-        console.log("Nuevo token de verificación local:", verificationToken);
+        if (verificationToken) {
+          await sendAuthEmail(
+            validation.data.email,
+            verificationToken,
+            "email_verification",
+          );
+        }
       }
 
       res.json({
@@ -488,7 +495,13 @@ authRouter.post(
       }
 
       if (resetToken && process.env.NODE_ENV === "development") {
-        console.log("Token de recuperación local:", resetToken);
+        if (resetToken) {
+          await sendAuthEmail(
+            validation.data.email,
+            resetToken,
+            "password_reset",
+          );
+        }
       }
 
       res.json({
