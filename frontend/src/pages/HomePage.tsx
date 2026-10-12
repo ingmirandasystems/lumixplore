@@ -21,6 +21,7 @@ export function HomePage() {
       <p>Descubre películas y series para tu próximo momento de cine.</p>
 
       <Link to="/login">Iniciar sesión</Link>
+      <Link to="/register">Crear cuenta</Link>
     </main>
   );
 }

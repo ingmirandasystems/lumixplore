@@ -1,3 +1,5 @@
+import { readErrorMessage } from "./api";
+
 export interface AuthUser {
   id: string;
   name: string;
@@ -12,6 +14,16 @@ export interface LoginCredentials {
   password: string;
 }
 
+export interface RegisterData {
+  name: string;
+  last_name?: string;
+  email: string;
+  password: string;
+  language?: "es" | "en";
+  region: string;
+  timezone?: string;
+}
+
 export async function getCurrentUser(): Promise<AuthUser | null> {
   const response = await fetch("/api/auth/me", {
     credentials: "same-origin",
@@ -22,7 +34,12 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
   }
 
   if (!response.ok) {
-    throw new Error(`No se pudo comprobar la sesión (${response.status})`);
+    const message = await readErrorMessage(
+      response,
+      "No se pudo comprobar la sesión",
+    );
+
+    throw new Error(message);
   }
 
   const data: { user: AuthUser } = await response.json();
@@ -40,7 +57,12 @@ export async function logout(): Promise<void> {
   });
 
   if (!response.ok) {
-    throw new Error("No se pudo cerrar la sesión");
+    const message = await readErrorMessage(
+      response,
+      "No se pudo cerrar la sesión",
+    );
+
+    throw new Error(message);
   }
 }
 
@@ -55,22 +77,50 @@ export async function login(credentials: LoginCredentials): Promise<void> {
   });
 
   if (!response.ok) {
-    let message = "No se pudo iniciar sesión";
+    const message = await readErrorMessage(
+      response,
+      "No se pudo iniciar sesión",
+    );
 
-    try {
-      const data: unknown = await response.json();
+    throw new Error(message);
+  }
+}
 
-      if (
-        typeof data === "object" &&
-        data !== null &&
-        "message" in data &&
-        typeof data.message === "string"
-      ) {
-        message = data.message;
-      }
-    } catch {
-      // Conservamos el mensaje general si el cuerpo no es JSON válido.
-    }
+export async function register(data: RegisterData): Promise<void> {
+  const response = await fetch("/api/auth/register", {
+    method: "POST",
+    credentials: "same-origin",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    const message = await readErrorMessage(
+      response,
+      "No se pudo crear la cuenta",
+    );
+
+    throw new Error(message);
+  }
+}
+
+export async function verifyEmail(token: string): Promise<void> {
+  const response = await fetch("/api/auth/verify-email", {
+    method: "POST",
+    credentials: "same-origin",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ token }),
+  });
+
+  if (!response.ok) {
+    const message = await readErrorMessage(
+      response,
+      "No se pudo verificar el correo",
+    );
 
     throw new Error(message);
   }

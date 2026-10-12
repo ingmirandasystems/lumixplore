@@ -1,5 +1,5 @@
 import { LoginForm } from "../components/auth/LoginForm";
-import { Navigate } from "react-router";
+import { Link, Navigate } from "react-router";
 import { useAuth } from "../hooks/useAuth";
 
 export function LoginPage() {
@@ -21,6 +21,9 @@ export function LoginPage() {
     <main>
       <h1>Inicia sesión en LumiXplore</h1>
       <LoginForm />
+      <p>
+        ¿No tienes cuenta? <Link to="/register">Crear cuenta</Link>
+      </p>
     </main>
   );
 }
