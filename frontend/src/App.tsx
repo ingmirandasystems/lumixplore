@@ -6,6 +6,7 @@ import { RequireAuth } from "./components/auth/RequireAuth";
 import { NotFoundPage } from "./pages/NotFoundPage";
 import { RegisterPage } from "./pages/RegisterPage";
 import { VerifyEmailPage } from "./pages/VerifyEmailPage";
+import { ResendVerificationPage } from "./pages/ResendVerificationPage";
 
 export default function App() {
   return (
@@ -22,6 +23,7 @@ export default function App() {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/verify-email" element={<VerifyEmailPage />} />
+      <Route path="/resend-verification" element={<ResendVerificationPage />} />
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );

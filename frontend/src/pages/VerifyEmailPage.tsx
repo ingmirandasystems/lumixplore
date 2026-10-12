@@ -57,7 +57,14 @@ export function VerifyEmailPage() {
       <h1>Verifica tu correo</h1>
       <p>Confirma la verificación de tu correo electrónico.</p>
 
-      {verificationError && <p role="alert">{verificationError}</p>}
+      {verificationError && (
+        <div>
+          <p role="alert">{verificationError}</p>
+          <Link to="/resend-verification">
+            Solicitar otro correo de verificación
+          </Link>
+        </div>
+      )}
 
       <button type="button" onClick={handleVerify} disabled={isVerifying}>
         {isVerifying ? "Verificando..." : "Verificar mi correo"}

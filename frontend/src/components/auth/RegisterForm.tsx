@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { register } from "../../services/auth";
 import type { RegisterData } from "../../services/auth";
+import { Link } from "react-router";
 
 export function RegisterForm() {
   const [formData, setFormData] = useState<RegisterData>({
@@ -45,6 +46,9 @@ export function RegisterForm() {
           Creamos tu cuenta. Para iniciar sesión, verifica tu correo electrónico
           siguiendo las instrucciones que recibirás.
         </p>
+        <Link to="/resend-verification" state={{ email: formData.email }}>
+          ¿No recibiste el correo? Solicitar otro
+        </Link>
       </div>
     );
   }

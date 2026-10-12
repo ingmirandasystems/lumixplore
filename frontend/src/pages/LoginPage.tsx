@@ -22,6 +22,9 @@ export function LoginPage() {
       <h1>Inicia sesión en LumiXplore</h1>
       <LoginForm />
       <p>
+        <Link to="/resend-verification">¿Necesitas verificar tu correo?</Link>
+      </p>
+      <p>
         ¿No tienes cuenta? <Link to="/register">Crear cuenta</Link>
       </p>
     </main>

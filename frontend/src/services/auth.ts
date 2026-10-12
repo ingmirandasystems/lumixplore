@@ -125,3 +125,23 @@ export async function verifyEmail(token: string): Promise<void> {
     throw new Error(message);
   }
 }
+
+export async function resendVerification(email: string): Promise<void> {
+  const response = await fetch("/api/auth/resend-verification", {
+    method: "POST",
+    credentials: "same-origin",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ email }),
+  });
+
+  if (!response.ok) {
+    const message = await readErrorMessage(
+      response,
+      "No se pudo solicitar otro correo de verificación",
+    );
+
+    throw new Error(message);
+  }
+}
