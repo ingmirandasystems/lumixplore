@@ -27,6 +27,9 @@ export function LoginPage() {
       <p>
         ¿No tienes cuenta? <Link to="/register">Crear cuenta</Link>
       </p>
+      <p>
+        <Link to="/forgot-password">¿Olvidaste tu contraseña?</Link>
+      </p>
     </main>
   );
 }

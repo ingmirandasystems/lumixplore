@@ -10,6 +10,7 @@ export function RegisterForm() {
     password: "",
     region: "MX",
   });
+  const [confirmPassword, setConfirmPassword] = useState("");
 
   const [isRegistering, setIsRegistering] = useState(false);
   const [registerError, setRegisterError] = useState<string | null>(null);
@@ -21,6 +22,11 @@ export function RegisterForm() {
 
     if (formData.name.trim() === "") {
       setRegisterError("Escribe tu nombre.");
+      return;
+    }
+
+    if (formData.password !== confirmPassword) {
+      setRegisterError("Las contraseñas no coinciden.");
       return;
     }
 
@@ -113,6 +119,22 @@ export function RegisterForm() {
             ...previous,
             password,
           }));
+        }}
+      />
+
+      <label htmlFor="register-confirm-password">Confirmar contraseña</label>
+
+      <input
+        id="register-confirm-password"
+        name="confirmPassword"
+        type="password"
+        autoComplete="new-password"
+        required
+        minLength={15}
+        maxLength={128}
+        value={confirmPassword}
+        onChange={(event) => {
+          setConfirmPassword(event.currentTarget.value);
         }}
       />
 

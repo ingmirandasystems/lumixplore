@@ -13,11 +13,11 @@ export async function sendAuthEmail(
 
   const instruction = isVerification
     ? "Abre el enlace y confirma la verificación de tu correo."
-    : "Usa este token para restablecer tu contraseña.";
+    : "Abre el enlace para elegir una nueva contraseña.";
 
   const expiration = isVerification
     ? "Este enlace vence en 24 horas."
-    : "Este token vence en 30 minutos.";
+    : "Este enlace vence en 30 minutos.";
 
   try {
     const frontendUrl = process.env.FRONTEND_URL;
@@ -26,24 +26,29 @@ export async function sendAuthEmail(
       throw new Error("Falta configurar FRONTEND_URL");
     }
 
-    const verificationUrl = new URL("/verify-email", frontendUrl);
-    verificationUrl.searchParams.set("token", token);
-    const content = isVerification ? verificationUrl.toString() : token;
+    const actionUrl = new URL(
+      isVerification ? "/verify-email" : "/reset-password",
+      frontendUrl,
+    );
+
+    actionUrl.searchParams.set("token", token);
+
+    const content = actionUrl.toString();
     await sendEmail({
       to: email,
       subject,
       text: `${instruction}\n\n${content}\n\n${expiration}\n\nSi no solicitaste esto, ignora el mensaje.`,
       html: `
-      <h1>LumiXplore</h1>
-      <p>${instruction}</p>
-      ${
-        isVerification
-          ? `<p><a href="${content}">Verificar mi correo</a></p>`
-          : `<p><code>${content}</code></p>`
-      }
-      <p>${expiration}</p>
-      <p>Si no solicitaste esto, ignora el mensaje.</p>
-    `,
+        <h1>LumiXplore</h1>
+        <p>${instruction}</p>
+        <p>
+          <a href="${content}">
+            ${isVerification ? "Verificar mi correo" : "Restablecer contraseña"}
+          </a>
+        </p>
+        <p>${expiration}</p>
+        <p>Si no solicitaste esto, ignora el mensaje.</p>
+      `,
     });
 
     return true;

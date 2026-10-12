@@ -24,6 +24,11 @@ export interface RegisterData {
   timezone?: string;
 }
 
+export interface ResetPasswordData {
+  token: string;
+  password: string;
+}
+
 export async function getCurrentUser(): Promise<AuthUser | null> {
   const response = await fetch("/api/auth/me", {
     credentials: "same-origin",
@@ -140,6 +145,46 @@ export async function resendVerification(email: string): Promise<void> {
     const message = await readErrorMessage(
       response,
       "No se pudo solicitar otro correo de verificación",
+    );
+
+    throw new Error(message);
+  }
+}
+
+export async function forgotPassword(email: string): Promise<void> {
+  const response = await fetch("/api/auth/forgot-password", {
+    method: "POST",
+    credentials: "same-origin",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ email }),
+  });
+
+  if (!response.ok) {
+    const message = await readErrorMessage(
+      response,
+      "No se pudo solicitar la recuperación de contraseña",
+    );
+
+    throw new Error(message);
+  }
+}
+
+export async function resetPassword(data: ResetPasswordData): Promise<void> {
+  const response = await fetch("/api/auth/reset-password", {
+    method: "POST",
+    credentials: "same-origin",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    const message = await readErrorMessage(
+      response,
+      "No se pudo restablecer la contraseña",
     );
 
     throw new Error(message);
