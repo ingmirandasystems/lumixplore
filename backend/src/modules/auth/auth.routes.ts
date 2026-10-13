@@ -113,7 +113,12 @@ authRouter.post("/register", registrationLimiter, async (req, res, next) => {
 
     // Solo para probar la verificación durante el desarrollo local.
     if (process.env.NODE_ENV === "development") {
-      await sendAuthEmail(data.email, verificationToken, "email_verification");
+      await sendAuthEmail(
+        data.email,
+        verificationToken,
+        "email_verification",
+        data.language,
+      );
     }
 
     res.status(201).json({
@@ -406,6 +411,7 @@ authRouter.post(
     try {
       const client = await pool.connect();
       let verificationToken: string | undefined;
+      let emailLanguage = "en";
 
       try {
         await client.query("BEGIN");
@@ -414,19 +420,21 @@ authRouter.post(
         const result = await client.query<{
           id: string;
           email_verified_at: Date | null;
+          language: string;
         }>(
-          `SELECT u.id, u.email_verified_at
-         FROM public.users AS u
-         JOIN public.auth_identities AS a ON a.user_id = u.id
-         WHERE lower(u.email) = $1
-           AND a.provider = 'local'
-         FOR UPDATE OF u`,
+          `SELECT u.id, u.email_verified_at, u.language
+            FROM public.users AS u
+            JOIN public.auth_identities AS a ON a.user_id = u.id
+            WHERE lower(u.email) = $1
+              AND a.provider = 'local'
+            FOR UPDATE OF u`,
           [validation.data.email],
         );
 
         const user = result.rows[0];
 
         if (user && !user.email_verified_at) {
+          emailLanguage = user.language;
           verificationToken = randomBytes(32).toString("hex");
 
           const tokenHash = createHash("sha256")
@@ -465,13 +473,12 @@ authRouter.post(
       }
 
       if (verificationToken && process.env.NODE_ENV === "development") {
-        if (verificationToken) {
-          await sendAuthEmail(
-            validation.data.email,
-            verificationToken,
-            "email_verification",
-          );
-        }
+        await sendAuthEmail(
+          validation.data.email,
+          verificationToken,
+          "email_verification",
+          emailLanguage,
+        );
       }
 
       res.json({
@@ -501,23 +508,25 @@ authRouter.post(
     try {
       const client = await pool.connect();
       let resetToken: string | undefined;
+      let emailLanguage = "en";
 
       try {
         await client.query("BEGIN");
 
-        const result = await client.query<{ id: string }>(
-          `SELECT u.id
-         FROM public.users AS u
-         JOIN public.auth_identities AS a ON a.user_id = u.id
-         WHERE lower(u.email) = $1
-           AND a.provider = 'local'
-         FOR UPDATE OF u`,
+        const result = await client.query<{ id: string; language: string }>(
+          `SELECT u.id, u.language
+            FROM public.users AS u
+            JOIN public.auth_identities AS a ON a.user_id = u.id
+            WHERE lower(u.email) = $1
+              AND a.provider = 'local'
+            FOR UPDATE OF u`,
           [validation.data.email],
         );
 
         const user = result.rows[0];
 
         if (user) {
+          emailLanguage = user.language;
           resetToken = randomBytes(32).toString("hex");
 
           const tokenHash = createHash("sha256")
@@ -556,13 +565,12 @@ authRouter.post(
       }
 
       if (resetToken && process.env.NODE_ENV === "development") {
-        if (resetToken) {
-          await sendAuthEmail(
-            validation.data.email,
-            resetToken,
-            "password_reset",
-          );
-        }
+        await sendAuthEmail(
+          validation.data.email,
+          resetToken,
+          "password_reset",
+          emailLanguage,
+        );
       }
 
       res.json({
