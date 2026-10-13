@@ -1,7 +1,10 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../hooks/useAuth";
+import { getCommonErrorKey } from "../services/api";
 
 export function ExplorePage() {
+  const { t } = useTranslation();
   const { user, logout } = useAuth();
 
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -14,26 +17,24 @@ export function ExplorePage() {
     try {
       await logout();
     } catch (error: unknown) {
-      setLogoutError(
-        error instanceof Error ? error.message : "No se pudo cerrar la sesión",
-      );
+      setLogoutError(getCommonErrorKey(error, "session.logoutError"));
     } finally {
       setIsLoggingOut(false);
     }
   }
 
   if (!user) {
-    return <p>No has iniciado sesión.</p>;
+    return <p>{t("session.noSession")}</p>;
   }
 
   return (
     <main>
-      <p>Usuario: {user.name}</p>
+      <p>{t("session.currentUser", { name: user.name })}</p>
 
-      {logoutError && <p role="alert">{logoutError}</p>}
+      {logoutError && <p role="alert">{t(logoutError)}</p>}
 
-      <button onClick={handleLogout} disabled={isLoggingOut}>
-        {isLoggingOut ? "Cerrando sesión..." : "Cerrar sesión"}
+      <button type="button" onClick={handleLogout} disabled={isLoggingOut}>
+        {isLoggingOut ? t("session.loggingOut") : t("session.logout")}
       </button>
     </main>
   );

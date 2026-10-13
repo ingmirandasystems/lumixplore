@@ -1,17 +1,22 @@
-import { LoginForm } from "../components/auth/LoginForm";
 import { Link, Navigate } from "react-router";
-import { useAuth } from "../hooks/useAuth";
+import { useTranslation } from "react-i18next";
+import { LoginForm } from "../components/auth/LoginForm";
 import { GoogleLoginButton } from "../components/auth/GoogleLoginButton";
+import { useAuth } from "../hooks/useAuth";
+import { getCommonErrorKey } from "../services/api";
 
 export function LoginPage() {
+  const { t } = useTranslation();
   const { user, loading, error } = useAuth();
 
   if (loading) {
-    return <p>Comprobando sesión...</p>;
+    return <p>{t("session.checking")}</p>;
   }
 
   if (error) {
-    return <p>No se pudo comprobar la sesión: {error.message}</p>;
+    return (
+      <p role="alert">{t(getCommonErrorKey(error, "session.checkError"))}</p>
+    );
   }
 
   if (user) {
@@ -20,18 +25,23 @@ export function LoginPage() {
 
   return (
     <main>
-      <h1>Inicia sesión en LumiXplore</h1>
+      <h1>{t("login.title")}</h1>
       <LoginForm />
+
       <p>
-        <Link to="/resend-verification">¿Necesitas verificar tu correo?</Link>
+        <Link to="/resend-verification">{t("login.needsVerification")}</Link>
       </p>
+
       <p>
-        ¿No tienes cuenta? <Link to="/register">Crear cuenta</Link>
+        {t("login.noAccount")}{" "}
+        <Link to="/register">{t("common.register")}</Link>
       </p>
+
       <p>
-        <Link to="/forgot-password">¿Olvidaste tu contraseña?</Link>
+        <Link to="/forgot-password">{t("login.forgotPassword")}</Link>
       </p>
-      <p>O continúa con Google</p>
+
+      <p>{t("login.googleAlternative")}</p>
       <GoogleLoginButton />
     </main>
   );

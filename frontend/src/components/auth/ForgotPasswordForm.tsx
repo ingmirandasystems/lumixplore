@@ -1,7 +1,11 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { forgotPassword } from "../../services/auth";
+import { ApiError, getCommonErrorKey } from "../../services/api";
 
 export function ForgotPasswordForm() {
+  const { t } = useTranslation();
+
   const [email, setEmail] = useState("");
   const [isSending, setIsSending] = useState(false);
   const [requestError, setRequestError] = useState<string | null>(null);
@@ -18,9 +22,9 @@ export function ForgotPasswordForm() {
       setIsSuccess(true);
     } catch (error: unknown) {
       setRequestError(
-        error instanceof Error
-          ? error.message
-          : "No se pudo solicitar la recuperación de contraseña",
+        error instanceof ApiError && error.code === "INVALID_EMAIL"
+          ? "common.invalidEmail"
+          : getCommonErrorKey(error, "forgotPassword.error"),
       );
     } finally {
       setIsSending(false);
@@ -29,7 +33,7 @@ export function ForgotPasswordForm() {
 
   return (
     <form onSubmit={handleSubmit}>
-      <label htmlFor="forgot-email">Correo electrónico</label>
+      <label htmlFor="forgot-email">{t("common.email")}</label>
 
       <input
         id="forgot-email"
@@ -44,17 +48,14 @@ export function ForgotPasswordForm() {
         }}
       />
 
-      {requestError && <p role="alert">{requestError}</p>}
+      {requestError && <p role="alert">{t(requestError)}</p>}
 
-      {isSuccess && (
-        <p role="status">
-          Si existe una cuenta con ese correo que permita recuperar la
-          contraseña, recibirás las instrucciones.
-        </p>
-      )}
+      {isSuccess && <p role="status">{t("forgotPassword.success")}</p>}
 
       <button type="submit" disabled={isSending}>
-        {isSending ? "Solicitando..." : "Recuperar contraseña"}
+        {isSending
+          ? t("forgotPassword.submitting")
+          : t("forgotPassword.submit")}
       </button>
     </form>
   );

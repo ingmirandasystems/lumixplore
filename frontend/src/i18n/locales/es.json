@@ -1,0 +1,119 @@
+{
+  "common": {
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "confirmPassword": "Confirmar contraseña",
+    "name": "Nombre",
+    "login": "Iniciar sesión",
+    "register": "Crear cuenta",
+    "backToLogin": "Volver al inicio de sesión",
+    "backToHome": "Volver al inicio",
+    "invalidEmail": "Introduce un correo válido."
+  },
+  "session": {
+    "checking": "Comprobando sesión...",
+    "checkError": "No se pudo comprobar la sesión.",
+    "noSession": "No has iniciado sesión.",
+    "currentUser": "Usuario: {{name}}",
+    "logout": "Cerrar sesión",
+    "loggingOut": "Cerrando sesión...",
+    "logoutError": "No se pudo cerrar la sesión."
+  },
+  "home": {
+    "title": "Bienvenido a LumiXplore",
+    "description": "Descubre películas y series para tu próximo momento de cine."
+  },
+  "login": {
+    "title": "Inicia sesión en LumiXplore",
+    "submitting": "Iniciando sesión...",
+    "error": "No se pudo iniciar sesión.",
+    "invalidCredentials": "Correo o contraseña incorrectos.",
+    "noAccount": "¿No tienes cuenta?",
+    "forgotPassword": "¿Olvidaste tu contraseña?",
+    "needsVerification": "¿Necesitas verificar tu correo?",
+    "googleAlternative": "O continúa con Google",
+    "googleSubmitting": "Iniciando sesión con Google...",
+    "googleError": "No se pudo iniciar sesión con Google.",
+    "googleLoadError": "No se pudo cargar el acceso con Google.",
+    "invalidData": "Revisa el correo y la contraseña.",
+    "emailNotVerified": "Verifica tu correo antes de iniciar sesión.",
+    "googleInvalidData": "Los datos del acceso con Google no son válidos. Intenta de nuevo.",
+    "googleInvalidCredential": "No se pudo validar el acceso con Google. Intenta de nuevo.",
+    "googleEmailVerificationRequired": "Por ahora, el acceso con Google solo admite cuentas de Gmail o Google Workspace.",
+    "googleAccountConflict": "No se pudo crear la cuenta. Si ya tienes una, usa su método de acceso. Si enviaste varias solicitudes a la vez, intenta de nuevo."
+  },
+  "errors": {
+    "rateLimit": "Demasiadas solicitudes. Intenta de nuevo más tarde.",
+    "server": "Ocurrió un error en el servidor. Intenta de nuevo más tarde.",
+    "invalidJson": "No se pudo enviar la solicitud correctamente.",
+    "payloadTooLarge": "Los datos enviados son demasiado grandes.",
+    "routeNotFound": "El servicio solicitado no está disponible."
+  },
+  "register": {
+    "title": "Crea tu cuenta en LumiXplore",
+    "submitting": "Creando cuenta...",
+    "error": "No se pudo crear la cuenta.",
+    "emailUnavailable": "No se puede registrar una cuenta con ese correo.",
+    "nameRequired": "Escribe tu nombre.",
+    "passwordMismatch": "Las contraseñas no coinciden.",
+    "hasAccount": "¿Ya tienes cuenta?",
+    "successTitle": "Revisa tu correo",
+    "successDescription": "Creamos tu cuenta. Para iniciar sesión, verifica tu correo electrónico siguiendo las instrucciones que recibirás.",
+    "resendLink": "¿No recibiste el correo? Solicitar otro",
+    "invalidData": "Revisa los datos del registro."
+  },
+  "verification": {
+    "title": "Verifica tu correo",
+    "description": "Confirma la verificación de tu correo electrónico.",
+    "submit": "Verificar mi correo",
+    "submitting": "Verificando...",
+    "error": "No se pudo verificar el correo.",
+    "incompleteTitle": "Enlace incompleto",
+    "missingToken": "Falta el token necesario para verificar tu correo.",
+    "successTitle": "Correo verificado",
+    "successDescription": "Ya puedes iniciar sesión en tu cuenta.",
+    "requestAnother": "Solicitar otro correo de verificación",
+    "invalidToken": "El enlace de verificación no es válido.",
+    "tokenUnavailable": "El enlace no es válido, venció o ya fue utilizado. Si aún no verificaste tu correo, solicita otro."
+  },
+  "resend": {
+    "title": "Reenviar verificación",
+    "description": "Escribe el correo con el que creaste tu cuenta.",
+    "submit": "Reenviar verificación",
+    "submitting": "Solicitando...",
+    "error": "No se pudo solicitar otro correo de verificación.",
+    "success": "Si existe una cuenta pendiente de verificación con ese correo, recibirás las instrucciones para verificarla."
+  },
+  "forgotPassword": {
+    "title": "Recupera tu contraseña",
+    "description": "Escribe el correo con el que creaste tu cuenta.",
+    "submit": "Recuperar contraseña",
+    "submitting": "Solicitando...",
+    "error": "No se pudo solicitar la recuperación de contraseña.",
+    "success": "Si existe una cuenta con ese correo que permita recuperar la contraseña, recibirás las instrucciones."
+  },
+  "resetPassword": {
+    "title": "Restablece tu contraseña",
+    "newPassword": "Nueva contraseña",
+    "submit": "Guardar nueva contraseña",
+    "submitting": "Actualizando...",
+    "error": "No se pudo restablecer la contraseña.",
+    "passwordMismatch": "Las contraseñas no coinciden.",
+    "incompleteTitle": "Enlace incompleto",
+    "missingToken": "Falta el token necesario para restablecer tu contraseña.",
+    "requestAnother": "Solicitar otro enlace",
+    "successTitle": "Contraseña actualizada",
+    "successDescription": "Ya puedes iniciar sesión con tu nueva contraseña.",
+    "invalidData": "El enlace o la nueva contraseña no cumplen los requisitos. Usa una contraseña de entre 15 y 128 caracteres.",
+    "tokenUnavailable": "El enlace no es válido, venció o ya fue utilizado. Solicita otro enlace de recuperación."
+  },
+  "notFound": {
+    "title": "404 — Página no encontrada",
+    "description": "La página que buscas no existe."
+  },
+  "language": {
+    "label": "Idioma",
+    "es": "Español",
+    "en": "Inglés"
+  }
+}

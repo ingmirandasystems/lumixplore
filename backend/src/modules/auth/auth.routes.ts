@@ -28,6 +28,7 @@ authRouter.post("/register", registrationLimiter, async (req, res, next) => {
 
   if (!validation.success) {
     res.status(400).json({
+      code: "INVALID_REGISTRATION_DATA",
       message: "Revisa los datos del registro.",
       errors: validation.error.issues.map((issue) => ({
         field: issue.path.join("."),
@@ -132,6 +133,7 @@ authRouter.post("/register", registrationLimiter, async (req, res, next) => {
       error.constraint === "users_email_unique"
     ) {
       res.status(409).json({
+        code: "EMAIL_UNAVAILABLE",
         message: "No se puede registrar una cuenta con ese correo.",
       });
       return;
@@ -149,6 +151,7 @@ authRouter.post(
 
     if (!validation.success) {
       res.status(400).json({
+        code: "INVALID_VERIFICATION_TOKEN",
         message: "Token inválido.",
       });
       return;
@@ -183,7 +186,8 @@ authRouter.post(
           await client.query("ROLLBACK");
 
           res.status(400).json({
-            message: "El token es inválido, venció o ya fue utilizado.",
+            code: "INVALID_VERIFICATION_TOKEN",
+            message: "Token inválido.",
           });
           return;
         }
@@ -217,6 +221,7 @@ authRouter.post("/login", loginLimiter, async (req, res, next) => {
 
   if (!validation.success) {
     res.status(400).json({
+      code: "INVALID_LOGIN_DATA",
       message: "Revisa el correo y la contraseña.",
     });
     return;
@@ -252,6 +257,7 @@ authRouter.post("/login", loginLimiter, async (req, res, next) => {
         await client.query("ROLLBACK");
 
         res.status(401).json({
+          code: "INVALID_CREDENTIALS",
           message: "Correo o contraseña incorrectos.",
         });
         return;
@@ -284,6 +290,7 @@ authRouter.post("/login", loginLimiter, async (req, res, next) => {
         await client.query("ROLLBACK");
 
         res.status(401).json({
+          code: "INVALID_CREDENTIALS",
           message: "Correo o contraseña incorrectos.",
         });
         return;
@@ -293,6 +300,7 @@ authRouter.post("/login", loginLimiter, async (req, res, next) => {
         await client.query("ROLLBACK");
 
         res.status(403).json({
+          code: "EMAIL_NOT_VERIFIED",
           message: "Verifica tu correo antes de iniciar sesión.",
         });
         return;
@@ -388,6 +396,7 @@ authRouter.post(
 
     if (!validation.success) {
       res.status(400).json({
+        code: "INVALID_EMAIL",
         message: "Introduce un correo válido.",
       });
       return;
@@ -482,6 +491,7 @@ authRouter.post(
 
     if (!validation.success) {
       res.status(400).json({
+        code: "INVALID_EMAIL",
         message: "Introduce un correo válido.",
       });
       return;
@@ -572,6 +582,7 @@ authRouter.post(
 
     if (!validation.success) {
       res.status(400).json({
+        code: "INVALID_PASSWORD_RESET_DATA",
         message: "Revisa el token y la nueva contraseña.",
       });
       return;
@@ -613,6 +624,7 @@ authRouter.post(
           await client.query("ROLLBACK");
 
           res.status(400).json({
+            code: "PASSWORD_RESET_TOKEN_UNAVAILABLE",
             message: "El token es inválido, venció o ya fue utilizado.",
           });
           return;
@@ -634,6 +646,7 @@ authRouter.post(
           await client.query("ROLLBACK");
 
           res.status(400).json({
+            code: "PASSWORD_RESET_TOKEN_UNAVAILABLE",
             message: "El token es inválido, venció o ya fue utilizado.",
           });
           return;
@@ -687,6 +700,7 @@ authRouter.post("/google", loginLimiter, async (req, res, next) => {
 
   if (!validation.success) {
     res.status(400).json({
+      code: "INVALID_GOOGLE_LOGIN_DATA",
       message: "Revisa los datos del acceso con Google.",
     });
     return;
@@ -705,6 +719,7 @@ authRouter.post("/google", loginLimiter, async (req, res, next) => {
     googleUser = await verifyGoogleCredential(data.credential);
   } catch {
     res.status(401).json({
+      code: "INVALID_GOOGLE_CREDENTIAL",
       message: "No se pudo validar la credencial de Google.",
     });
     return;
@@ -712,6 +727,7 @@ authRouter.post("/google", loginLimiter, async (req, res, next) => {
 
   if (!googleUser.googleConfirmsEmailOwnership) {
     res.status(403).json({
+      code: "GOOGLE_EMAIL_VERIFICATION_REQUIRED",
       message:
         "El acceso con este correo externo aún requiere implementar una verificación adicional.",
     });
@@ -828,6 +844,7 @@ authRouter.post("/google", loginLimiter, async (req, res, next) => {
       error.code === "23505"
     ) {
       res.status(409).json({
+        code: "GOOGLE_ACCOUNT_CONFLICT",
         message:
           "No se pudo crear la cuenta. Si ya tienes una, usa su método de acceso; si enviaste dos solicitudes simultáneas, intenta de nuevo.",
       });

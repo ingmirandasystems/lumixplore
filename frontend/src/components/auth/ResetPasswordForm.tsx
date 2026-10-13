@@ -1,12 +1,16 @@
 import { useState } from "react";
 import { Link } from "react-router";
+import { useTranslation } from "react-i18next";
 import { resetPassword } from "../../services/auth";
+import { ApiError, getCommonErrorKey } from "../../services/api";
 
 interface ResetPasswordFormProps {
   token: string;
 }
 
 export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
+  const { t } = useTranslation();
+
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isResetting, setIsResetting] = useState(false);
@@ -18,7 +22,7 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
     setResetError(null);
 
     if (password !== confirmPassword) {
-      setResetError("Las contraseñas no coinciden.");
+      setResetError("resetPassword.passwordMismatch");
       return;
     }
 
@@ -28,11 +32,20 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
       await resetPassword({ token, password });
       setIsSuccess(true);
     } catch (error: unknown) {
-      setResetError(
-        error instanceof Error
-          ? error.message
-          : "No se pudo restablecer la contraseña",
-      );
+      let errorKey = getCommonErrorKey(error, "resetPassword.error");
+
+      if (error instanceof ApiError) {
+        switch (error.code) {
+          case "INVALID_PASSWORD_RESET_DATA":
+            errorKey = "resetPassword.invalidData";
+            break;
+          case "PASSWORD_RESET_TOKEN_UNAVAILABLE":
+            errorKey = "resetPassword.tokenUnavailable";
+            break;
+        }
+      }
+
+      setResetError(errorKey);
     } finally {
       setIsResetting(false);
     }
@@ -41,16 +54,16 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
   if (isSuccess) {
     return (
       <div role="status">
-        <h2>Contraseña actualizada</h2>
-        <p>Ya puedes iniciar sesión con tu nueva contraseña.</p>
-        <Link to="/login">Iniciar sesión</Link>
+        <h2>{t("resetPassword.successTitle")}</h2>
+        <p>{t("resetPassword.successDescription")}</p>
+        <Link to="/login">{t("common.login")}</Link>
       </div>
     );
   }
 
   return (
     <form onSubmit={handleSubmit}>
-      <label htmlFor="reset-password">Nueva contraseña</label>
+      <label htmlFor="reset-password">{t("resetPassword.newPassword")}</label>
 
       <input
         id="reset-password"
@@ -66,7 +79,9 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
         }}
       />
 
-      <label htmlFor="reset-confirm-password">Confirmar contraseña</label>
+      <label htmlFor="reset-confirm-password">
+        {t("common.confirmPassword")}
+      </label>
 
       <input
         id="reset-confirm-password"
@@ -82,10 +97,12 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
         }}
       />
 
-      {resetError && <p role="alert">{resetError}</p>}
+      {resetError && <p role="alert">{t(resetError)}</p>}
 
       <button type="submit" disabled={isResetting}>
-        {isResetting ? "Actualizando..." : "Guardar nueva contraseña"}
+        {isResetting
+          ? t("resetPassword.submitting")
+          : t("resetPassword.submit")}
       </button>
     </form>
   );

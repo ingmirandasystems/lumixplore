@@ -1,0 +1,119 @@
+{
+  "common": {
+    "email": "Email address",
+    "password": "Password",
+    "confirmPassword": "Confirm password",
+    "name": "Name",
+    "login": "Sign in",
+    "register": "Create account",
+    "backToLogin": "Back to sign in",
+    "backToHome": "Back to home",
+    "invalidEmail": "Enter a valid email address."
+  },
+  "session": {
+    "checking": "Checking your session...",
+    "checkError": "Could not check your session.",
+    "noSession": "You are not signed in.",
+    "currentUser": "User: {{name}}",
+    "logout": "Sign out",
+    "loggingOut": "Signing out...",
+    "logoutError": "Could not sign out."
+  },
+  "home": {
+    "title": "Welcome to LumiXplore",
+    "description": "Discover movies and series for your next movie night."
+  },
+  "login": {
+    "title": "Sign in to LumiXplore",
+    "submitting": "Signing in...",
+    "error": "Could not sign in.",
+    "invalidCredentials": "Incorrect email or password.",
+    "noAccount": "Don't have an account?",
+    "forgotPassword": "Forgot your password?",
+    "needsVerification": "Need to verify your email?",
+    "googleAlternative": "Or continue with Google",
+    "googleSubmitting": "Signing in with Google...",
+    "googleError": "Could not sign in with Google.",
+    "googleLoadError": "Could not load Google sign-in.",
+    "invalidData": "Check your email address and password.",
+    "emailNotVerified": "Verify your email before signing in.",
+    "googleInvalidData": "The Google sign-in details are invalid. Try again.",
+    "googleInvalidCredential": "Could not validate Google sign-in. Try again.",
+    "googleEmailVerificationRequired": "Google sign-in currently supports only Gmail or Google Workspace accounts.",
+    "googleAccountConflict": "Could not create the account. If you already have one, use its sign-in method. If you submitted multiple requests at once, try again."
+  },
+  "errors": {
+    "rateLimit": "Too many requests. Try again later.",
+    "server": "A server error occurred. Try again later.",
+    "invalidJson": "The request could not be sent correctly.",
+    "payloadTooLarge": "The submitted data is too large.",
+    "routeNotFound": "The requested service is unavailable."
+  },
+  "register": {
+    "title": "Create your LumiXplore account",
+    "submitting": "Creating account...",
+    "error": "Could not create the account.",
+    "emailUnavailable": "An account cannot be registered with that email address.",
+    "nameRequired": "Enter your name.",
+    "passwordMismatch": "Passwords do not match.",
+    "hasAccount": "Already have an account?",
+    "successTitle": "Check your email",
+    "successDescription": "Your account has been created. To sign in, verify your email address by following the instructions you receive.",
+    "resendLink": "Didn't receive the email? Request another",
+    "invalidData": "Check your registration details."
+  },
+  "verification": {
+    "title": "Verify your email",
+    "description": "Confirm the verification of your email address.",
+    "submit": "Verify my email",
+    "submitting": "Verifying...",
+    "error": "Could not verify your email.",
+    "incompleteTitle": "Incomplete link",
+    "missingToken": "The token required to verify your email is missing.",
+    "successTitle": "Email verified",
+    "successDescription": "You can now sign in to your account.",
+    "requestAnother": "Request another verification email",
+    "invalidToken": "The verification link is invalid.",
+    "tokenUnavailable": "The link is invalid, has expired, or has already been used. If you haven't verified your email yet, request another."
+  },
+  "resend": {
+    "title": "Resend verification",
+    "description": "Enter the email address you used to create your account.",
+    "submit": "Resend verification",
+    "submitting": "Requesting...",
+    "error": "Could not request another verification email.",
+    "success": "If an account with that email address is awaiting verification, you will receive instructions to verify it."
+  },
+  "forgotPassword": {
+    "title": "Recover your password",
+    "description": "Enter the email address you used to create your account.",
+    "submit": "Recover password",
+    "submitting": "Requesting...",
+    "error": "Could not request password recovery.",
+    "success": "If an account with that email address supports password recovery, you will receive instructions."
+  },
+  "resetPassword": {
+    "title": "Reset your password",
+    "newPassword": "New password",
+    "submit": "Save new password",
+    "submitting": "Updating...",
+    "error": "Could not reset your password.",
+    "passwordMismatch": "Passwords do not match.",
+    "incompleteTitle": "Incomplete link",
+    "missingToken": "The token required to reset your password is missing.",
+    "requestAnother": "Request another link",
+    "successTitle": "Password updated",
+    "successDescription": "You can now sign in with your new password.",
+    "invalidData": "The link or new password does not meet the requirements. Use a password between 15 and 128 characters.",
+    "tokenUnavailable": "The link is invalid, has expired, or has already been used. Request another password recovery link."
+  },
+  "notFound": {
+    "title": "404 — Page not found",
+    "description": "The page you are looking for does not exist."
+  },
+  "language": {
+    "label": "Language",
+    "es": "Spanish",
+    "en": "English"
+  }
+}

@@ -9,26 +9,33 @@ import { VerifyEmailPage } from "./pages/VerifyEmailPage";
 import { ResendVerificationPage } from "./pages/ResendVerificationPage";
 import { ForgotPasswordPage } from "./pages/ForgotPasswordPage";
 import { ResetPasswordPage } from "./pages/ResetPasswordPage";
+import { LanguageSwitcher } from "./components/LanguageSwitcher";
 
 export default function App() {
   return (
-    <Routes>
-      <Route path="/" element={<HomePage />} />
-      <Route
-        path="/explore"
-        element={
-          <RequireAuth>
-            <ExplorePage />
-          </RequireAuth>
-        }
-      />
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/register" element={<RegisterPage />} />
-      <Route path="/verify-email" element={<VerifyEmailPage />} />
-      <Route path="/resend-verification" element={<ResendVerificationPage />} />
-      <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-      <Route path="/reset-password" element={<ResetPasswordPage />} />
-      <Route path="*" element={<NotFoundPage />} />
-    </Routes>
+    <>
+      <LanguageSwitcher />
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route
+          path="/explore"
+          element={
+            <RequireAuth>
+              <ExplorePage />
+            </RequireAuth>
+          }
+        />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/verify-email" element={<VerifyEmailPage />} />
+        <Route
+          path="/resend-verification"
+          element={<ResendVerificationPage />}
+        />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
+        <Route path="*" element={<NotFoundPage />} />
+      </Routes>
+    </>
   );
 }

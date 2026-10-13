@@ -1,8 +1,11 @@
 import { useState } from "react";
 import { Link, useSearchParams } from "react-router";
+import { useTranslation } from "react-i18next";
 import { verifyEmail } from "../services/auth";
+import { ApiError, getCommonErrorKey } from "../services/api";
 
 export function VerifyEmailPage() {
+  const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const token = searchParams.get("token");
 
@@ -22,11 +25,20 @@ export function VerifyEmailPage() {
       await verifyEmail(token);
       setIsSuccess(true);
     } catch (error: unknown) {
-      setVerificationError(
-        error instanceof Error
-          ? error.message
-          : "No se pudo verificar el correo",
-      );
+      let errorKey = getCommonErrorKey(error, "verification.error");
+
+      if (error instanceof ApiError) {
+        switch (error.code) {
+          case "INVALID_VERIFICATION_TOKEN":
+            errorKey = "verification.invalidToken";
+            break;
+          case "VERIFICATION_TOKEN_UNAVAILABLE":
+            errorKey = "verification.tokenUnavailable";
+            break;
+        }
+      }
+
+      setVerificationError(errorKey);
     } finally {
       setIsVerifying(false);
     }
@@ -35,9 +47,9 @@ export function VerifyEmailPage() {
   if (!token) {
     return (
       <main>
-        <h1>Enlace incompleto</h1>
-        <p>Falta el token necesario para verificar tu correo.</p>
-        <Link to="/login">Ir al inicio de sesión</Link>
+        <h1>{t("verification.incompleteTitle")}</h1>
+        <p>{t("verification.missingToken")}</p>
+        <Link to="/login">{t("common.backToLogin")}</Link>
       </main>
     );
   }
@@ -45,29 +57,29 @@ export function VerifyEmailPage() {
   if (isSuccess) {
     return (
       <main>
-        <h1>Correo verificado</h1>
-        <p>Ya puedes iniciar sesión en tu cuenta.</p>
-        <Link to="/login">Iniciar sesión</Link>
+        <h1>{t("verification.successTitle")}</h1>
+        <p>{t("verification.successDescription")}</p>
+        <Link to="/login">{t("common.login")}</Link>
       </main>
     );
   }
 
   return (
     <main>
-      <h1>Verifica tu correo</h1>
-      <p>Confirma la verificación de tu correo electrónico.</p>
+      <h1>{t("verification.title")}</h1>
+      <p>{t("verification.description")}</p>
 
       {verificationError && (
         <div>
-          <p role="alert">{verificationError}</p>
+          <p role="alert">{t(verificationError)}</p>
           <Link to="/resend-verification">
-            Solicitar otro correo de verificación
+            {t("verification.requestAnother")}
           </Link>
         </div>
       )}
 
       <button type="button" onClick={handleVerify} disabled={isVerifying}>
-        {isVerifying ? "Verificando..." : "Verificar mi correo"}
+        {isVerifying ? t("verification.submitting") : t("verification.submit")}
       </button>
     </main>
   );

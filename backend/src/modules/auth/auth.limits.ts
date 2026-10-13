@@ -6,6 +6,7 @@ export const loginLimiter = rateLimit({
   standardHeaders: "draft-8",
   legacyHeaders: false,
   message: {
+    code: "RATE_LIMIT_EXCEEDED",
     message: "Demasiados intentos. Intenta de nuevo más tarde.",
   },
 });
@@ -16,6 +17,7 @@ export const tokenRequestLimiter = rateLimit({
   standardHeaders: "draft-8",
   legacyHeaders: false,
   message: {
+    code: "RATE_LIMIT_EXCEEDED",
     message: "Demasiadas solicitudes. Intenta de nuevo más tarde.",
   },
 });
@@ -26,6 +28,7 @@ export const registrationLimiter = rateLimit({
   standardHeaders: "draft-8",
   legacyHeaders: false,
   message: {
+    code: "RATE_LIMIT_EXCEEDED",
     message: "Demasiados registros. Intenta de nuevo más tarde.",
   },
 });
@@ -36,6 +39,7 @@ export const tokenValidationLimiter = rateLimit({
   standardHeaders: "draft-8",
   legacyHeaders: false,
   message: {
+    code: "RATE_LIMIT_EXCEEDED",
     message: "Demasiados intentos. Intenta de nuevo más tarde.",
   },
 });

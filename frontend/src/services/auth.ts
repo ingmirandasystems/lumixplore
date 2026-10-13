@@ -1,4 +1,4 @@
-import { readErrorMessage } from "./api";
+import { readApiError } from "./api";
 
 export interface AuthUser {
   id: string;
@@ -46,12 +46,7 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
   }
 
   if (!response.ok) {
-    const message = await readErrorMessage(
-      response,
-      "No se pudo comprobar la sesión",
-    );
-
-    throw new Error(message);
+    throw await readApiError(response, "No se pudo comprobar la sesión");
   }
 
   const data: { user: AuthUser } = await response.json();
@@ -69,12 +64,7 @@ export async function logout(): Promise<void> {
   });
 
   if (!response.ok) {
-    const message = await readErrorMessage(
-      response,
-      "No se pudo cerrar la sesión",
-    );
-
-    throw new Error(message);
+    throw await readApiError(response, "No se pudo cerrar la sesión");
   }
 }
 
@@ -89,12 +79,7 @@ export async function login(credentials: LoginCredentials): Promise<void> {
   });
 
   if (!response.ok) {
-    const message = await readErrorMessage(
-      response,
-      "No se pudo iniciar sesión",
-    );
-
-    throw new Error(message);
+    throw await readApiError(response, "No se pudo iniciar sesión");
   }
 }
 
@@ -109,12 +94,7 @@ export async function register(data: RegisterData): Promise<void> {
   });
 
   if (!response.ok) {
-    const message = await readErrorMessage(
-      response,
-      "No se pudo crear la cuenta",
-    );
-
-    throw new Error(message);
+    throw await readApiError(response, "No se pudo crear la cuenta");
   }
 }
 
@@ -129,12 +109,7 @@ export async function verifyEmail(token: string): Promise<void> {
   });
 
   if (!response.ok) {
-    const message = await readErrorMessage(
-      response,
-      "No se pudo verificar el correo",
-    );
-
-    throw new Error(message);
+    throw await readApiError(response, "No se pudo verificar el correo");
   }
 }
 
@@ -149,12 +124,10 @@ export async function resendVerification(email: string): Promise<void> {
   });
 
   if (!response.ok) {
-    const message = await readErrorMessage(
+    throw await readApiError(
       response,
       "No se pudo solicitar otro correo de verificación",
     );
-
-    throw new Error(message);
   }
 }
 
@@ -169,12 +142,10 @@ export async function forgotPassword(email: string): Promise<void> {
   });
 
   if (!response.ok) {
-    const message = await readErrorMessage(
+    throw await readApiError(
       response,
       "No se pudo solicitar la recuperación de contraseña",
     );
-
-    throw new Error(message);
   }
 }
 
@@ -189,12 +160,7 @@ export async function resetPassword(data: ResetPasswordData): Promise<void> {
   });
 
   if (!response.ok) {
-    const message = await readErrorMessage(
-      response,
-      "No se pudo restablecer la contraseña",
-    );
-
-    throw new Error(message);
+    throw await readApiError(response, "No se pudo restablecer la contraseña");
   }
 }
 
@@ -209,11 +175,6 @@ export async function googleLogin(data: GoogleLoginData): Promise<void> {
   });
 
   if (!response.ok) {
-    const message = await readErrorMessage(
-      response,
-      "No se pudo iniciar sesión con Google",
-    );
-
-    throw new Error(message);
+    throw await readApiError(response, "No se pudo iniciar sesión con Google");
   }
 }

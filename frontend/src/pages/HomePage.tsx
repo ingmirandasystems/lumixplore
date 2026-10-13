@@ -1,14 +1,20 @@
 import { Link, Navigate } from "react-router";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../hooks/useAuth";
+import { getCommonErrorKey } from "../services/api";
 
 export function HomePage() {
+  const { t } = useTranslation();
   const { user, loading, error } = useAuth();
+
   if (loading) {
-    return <p>Comprobando sesión...</p>;
+    return <p>{t("session.checking")}</p>;
   }
 
   if (error) {
-    return <p>No se pudo comprobar la sesión: {error.message}</p>;
+    return (
+      <p role="alert">{t(getCommonErrorKey(error, "session.checkError"))}</p>
+    );
   }
 
   if (user) {
@@ -17,11 +23,11 @@ export function HomePage() {
 
   return (
     <main>
-      <h1>Bienvenido a LumiXplore</h1>
-      <p>Descubre películas y series para tu próximo momento de cine.</p>
+      <h1>{t("home.title")}</h1>
+      <p>{t("home.description")}</p>
 
-      <Link to="/login">Iniciar sesión</Link>
-      <Link to="/register">Crear cuenta</Link>
+      <Link to="/login">{t("common.login")}</Link>
+      <Link to="/register">{t("common.register")}</Link>
     </main>
   );
 }

@@ -2,6 +2,7 @@ import type { ErrorRequestHandler, RequestHandler } from "express";
 
 export const notFoundHandler: RequestHandler = (_req, res) => {
   res.status(404).json({
+    code: "ROUTE_NOT_FOUND",
     message: "Ruta no encontrada.",
   });
 };
@@ -26,6 +27,7 @@ export const errorHandler: ErrorRequestHandler = (
 
   if (errorType === "entity.parse.failed") {
     res.status(400).json({
+      code: "INVALID_JSON",
       message: "El cuerpo de la solicitud contiene JSON inválido.",
     });
     return;
@@ -33,6 +35,7 @@ export const errorHandler: ErrorRequestHandler = (
 
   if (errorType === "entity.too.large") {
     res.status(413).json({
+      code: "PAYLOAD_TOO_LARGE",
       message: "El cuerpo de la solicitud es demasiado grande.",
     });
     return;
@@ -44,6 +47,7 @@ export const errorHandler: ErrorRequestHandler = (
   );
 
   res.status(500).json({
+    code: "INTERNAL_SERVER_ERROR",
     message: "Ocurrió un error interno. Intenta de nuevo más tarde.",
   });
 };

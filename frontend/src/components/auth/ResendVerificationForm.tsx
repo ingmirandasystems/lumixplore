@@ -1,5 +1,7 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { resendVerification } from "../../services/auth";
+import { ApiError, getCommonErrorKey } from "../../services/api";
 
 interface ResendVerificationFormProps {
   initialEmail?: string;
@@ -8,6 +10,8 @@ interface ResendVerificationFormProps {
 export function ResendVerificationForm({
   initialEmail = "",
 }: ResendVerificationFormProps) {
+  const { t } = useTranslation();
+
   const [email, setEmail] = useState(initialEmail);
   const [isSending, setIsSending] = useState(false);
   const [sendError, setSendError] = useState<string | null>(null);
@@ -24,9 +28,9 @@ export function ResendVerificationForm({
       setIsSuccess(true);
     } catch (error: unknown) {
       setSendError(
-        error instanceof Error
-          ? error.message
-          : "No se pudo solicitar el correo de verificación",
+        error instanceof ApiError && error.code === "INVALID_EMAIL"
+          ? "common.invalidEmail"
+          : getCommonErrorKey(error, "resend.error"),
       );
     } finally {
       setIsSending(false);
@@ -35,7 +39,7 @@ export function ResendVerificationForm({
 
   return (
     <form onSubmit={handleSubmit}>
-      <label htmlFor="resend-email">Correo electrónico</label>
+      <label htmlFor="resend-email">{t("common.email")}</label>
 
       <input
         id="resend-email"
@@ -50,17 +54,12 @@ export function ResendVerificationForm({
         }}
       />
 
-      {sendError && <p role="alert">{sendError}</p>}
+      {sendError && <p role="alert">{t(sendError)}</p>}
 
-      {isSuccess && (
-        <p role="status">
-          Si existe una cuenta pendiente de verificación con ese correo,
-          recibirás las instrucciones para verificarla.
-        </p>
-      )}
+      {isSuccess && <p role="status">{t("resend.success")}</p>}
 
       <button type="submit" disabled={isSending}>
-        {isSending ? "Solicitando..." : "Reenviar verificación"}
+        {isSending ? t("resend.submitting") : t("resend.submit")}
       </button>
     </form>
   );

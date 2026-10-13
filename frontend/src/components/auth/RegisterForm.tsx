@@ -1,17 +1,21 @@
 import { useState } from "react";
+import { Link } from "react-router";
+import { useTranslation } from "react-i18next";
 import { register } from "../../services/auth";
 import type { RegisterData } from "../../services/auth";
-import { Link } from "react-router";
+import { ApiError, getCommonErrorKey } from "../../services/api";
 
 export function RegisterForm() {
+  const { t, i18n } = useTranslation();
+
   const [formData, setFormData] = useState<RegisterData>({
     name: "",
     email: "",
     password: "",
     region: "MX",
   });
-  const [confirmPassword, setConfirmPassword] = useState("");
 
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [isRegistering, setIsRegistering] = useState(false);
   const [registerError, setRegisterError] = useState<string | null>(null);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -21,24 +25,40 @@ export function RegisterForm() {
     setRegisterError(null);
 
     if (formData.name.trim() === "") {
-      setRegisterError("Escribe tu nombre.");
+      setRegisterError("register.nameRequired");
       return;
     }
 
     if (formData.password !== confirmPassword) {
-      setRegisterError("Las contraseñas no coinciden.");
+      setRegisterError("register.passwordMismatch");
       return;
     }
 
     setIsRegistering(true);
 
     try {
-      await register(formData);
+      await register({
+        ...formData,
+        language: i18n.resolvedLanguage === "es" ? "es" : "en",
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      });
+
       setIsSuccess(true);
     } catch (error: unknown) {
-      setRegisterError(
-        error instanceof Error ? error.message : "No se pudo crear la cuenta",
-      );
+      let errorKey = getCommonErrorKey(error, "register.error");
+
+      if (error instanceof ApiError) {
+        switch (error.code) {
+          case "INVALID_REGISTRATION_DATA":
+            errorKey = "register.invalidData";
+            break;
+          case "EMAIL_UNAVAILABLE":
+            errorKey = "register.emailUnavailable";
+            break;
+        }
+      }
+
+      setRegisterError(errorKey);
     } finally {
       setIsRegistering(false);
     }
@@ -47,13 +67,11 @@ export function RegisterForm() {
   if (isSuccess) {
     return (
       <div role="status">
-        <h2>Revisa tu correo</h2>
-        <p>
-          Creamos tu cuenta. Para iniciar sesión, verifica tu correo electrónico
-          siguiendo las instrucciones que recibirás.
-        </p>
+        <h2>{t("register.successTitle")}</h2>
+        <p>{t("register.successDescription")}</p>
+
         <Link to="/resend-verification" state={{ email: formData.email }}>
-          ¿No recibiste el correo? Solicitar otro
+          {t("register.resendLink")}
         </Link>
       </div>
     );
@@ -61,7 +79,7 @@ export function RegisterForm() {
 
   return (
     <form onSubmit={handleRegister}>
-      <label htmlFor="register-name">Nombre</label>
+      <label htmlFor="register-name">{t("common.name")}</label>
 
       <input
         id="register-name"
@@ -81,7 +99,7 @@ export function RegisterForm() {
         }}
       />
 
-      <label htmlFor="register-email">Correo electrónico</label>
+      <label htmlFor="register-email">{t("common.email")}</label>
 
       <input
         id="register-email"
@@ -101,7 +119,7 @@ export function RegisterForm() {
         }}
       />
 
-      <label htmlFor="register-password">Contraseña</label>
+      <label htmlFor="register-password">{t("common.password")}</label>
 
       <input
         id="register-password"
@@ -122,7 +140,9 @@ export function RegisterForm() {
         }}
       />
 
-      <label htmlFor="register-confirm-password">Confirmar contraseña</label>
+      <label htmlFor="register-confirm-password">
+        {t("common.confirmPassword")}
+      </label>
 
       <input
         id="register-confirm-password"
@@ -138,10 +158,10 @@ export function RegisterForm() {
         }}
       />
 
-      {registerError && <p role="alert">{registerError}</p>}
+      {registerError && <p role="alert">{t(registerError)}</p>}
 
       <button type="submit" disabled={isRegistering}>
-        {isRegistering ? "Creando cuenta..." : "Crear cuenta"}
+        {isRegistering ? t("register.submitting") : t("common.register")}
       </button>
     </form>
   );

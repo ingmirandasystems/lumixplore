@@ -1,7 +1,9 @@
 import { Link, useLocation } from "react-router";
+import { useTranslation } from "react-i18next";
 import { ResendVerificationForm } from "../components/auth/ResendVerificationForm";
 
 export function ResendVerificationPage() {
+  const { t } = useTranslation();
   const location = useLocation();
   const state: unknown = location.state;
 
@@ -15,12 +17,12 @@ export function ResendVerificationPage() {
 
   return (
     <main>
-      <h1>Reenviar verificación</h1>
-      <p>Escribe el correo con el que creaste tu cuenta.</p>
+      <h1>{t("resend.title")}</h1>
+      <p>{t("resend.description")}</p>
 
       <ResendVerificationForm initialEmail={initialEmail} />
 
-      <Link to="/login">Volver al inicio de sesión</Link>
+      <Link to="/login">{t("common.backToLogin")}</Link>
     </main>
   );
 }

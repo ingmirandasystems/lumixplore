@@ -1,8 +1,11 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../../hooks/useAuth";
 import type { LoginCredentials } from "../../services/auth";
+import { ApiError, getCommonErrorKey } from "../../services/api";
 
 export function LoginForm() {
+  const { t } = useTranslation();
   const { login } = useAuth();
 
   const [credentials, setCredentials] = useState<LoginCredentials>({
@@ -21,9 +24,23 @@ export function LoginForm() {
     try {
       await login(credentials);
     } catch (error: unknown) {
-      setLoginError(
-        error instanceof Error ? error.message : "No se pudo iniciar sesión",
-      );
+      let errorKey = getCommonErrorKey(error, "login.error");
+
+      if (error instanceof ApiError) {
+        switch (error.code) {
+          case "INVALID_LOGIN_DATA":
+            errorKey = "login.invalidData";
+            break;
+          case "INVALID_CREDENTIALS":
+            errorKey = "login.invalidCredentials";
+            break;
+          case "EMAIL_NOT_VERIFIED":
+            errorKey = "login.emailNotVerified";
+            break;
+        }
+      }
+
+      setLoginError(errorKey);
     } finally {
       setIsLoggingIn(false);
     }
@@ -31,7 +48,7 @@ export function LoginForm() {
 
   return (
     <form onSubmit={handleSubmit}>
-      <label htmlFor="login-email">Correo electrónico</label>
+      <label htmlFor="login-email">{t("common.email")}</label>
 
       <input
         id="login-email"
@@ -50,7 +67,7 @@ export function LoginForm() {
         }}
       />
 
-      <label htmlFor="login-password">Contraseña</label>
+      <label htmlFor="login-password">{t("common.password")}</label>
 
       <input
         id="login-password"
@@ -69,10 +86,10 @@ export function LoginForm() {
         }}
       />
 
-      {loginError && <p role="alert">{loginError}</p>}
+      {loginError && <p role="alert">{t(loginError)}</p>}
 
       <button type="submit" disabled={isLoggingIn}>
-        {isLoggingIn ? "Iniciando sesión..." : "Iniciar sesión"}
+        {isLoggingIn ? t("login.submitting") : t("common.login")}
       </button>
     </form>
   );

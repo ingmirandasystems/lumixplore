@@ -1,27 +1,34 @@
-import { RegisterForm } from "../components/auth/RegisterForm";
 import { Link, Navigate } from "react-router";
+import { useTranslation } from "react-i18next";
+import { RegisterForm } from "../components/auth/RegisterForm";
 import { useAuth } from "../hooks/useAuth";
+import { getCommonErrorKey } from "../services/api";
 
 export function RegisterPage() {
+  const { t } = useTranslation();
   const { user, loading, error } = useAuth();
 
   if (loading) {
-    return <p>Comprobando sesión...</p>;
+    return <p>{t("session.checking")}</p>;
   }
 
   if (error) {
-    return <p>No se pudo comprobar la sesión: {error.message}</p>;
+    return (
+      <p role="alert">{t(getCommonErrorKey(error, "session.checkError"))}</p>
+    );
   }
 
   if (user) {
     return <Navigate to="/explore" replace />;
   }
+
   return (
     <main>
-      <h1>Crea tu cuenta en LumiXplore</h1>
+      <h1>{t("register.title")}</h1>
       <RegisterForm />
+
       <p>
-        ¿Ya tienes cuenta? <Link to="/login">Iniciar sesión</Link>
+        {t("register.hasAccount")} <Link to="/login">{t("common.login")}</Link>
       </p>
     </main>
   );
