@@ -29,6 +29,13 @@ export interface ResetPasswordData {
   password: string;
 }
 
+export interface GoogleLoginData {
+  credential: string;
+  language?: "es" | "en";
+  region: string;
+  timezone?: string;
+}
+
 export async function getCurrentUser(): Promise<AuthUser | null> {
   const response = await fetch("/api/auth/me", {
     credentials: "same-origin",
@@ -185,6 +192,26 @@ export async function resetPassword(data: ResetPasswordData): Promise<void> {
     const message = await readErrorMessage(
       response,
       "No se pudo restablecer la contraseña",
+    );
+
+    throw new Error(message);
+  }
+}
+
+export async function googleLogin(data: GoogleLoginData): Promise<void> {
+  const response = await fetch("/api/auth/google", {
+    method: "POST",
+    credentials: "same-origin",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    const message = await readErrorMessage(
+      response,
+      "No se pudo iniciar sesión con Google",
     );
 
     throw new Error(message);

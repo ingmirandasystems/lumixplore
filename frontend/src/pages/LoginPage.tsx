@@ -1,6 +1,7 @@
 import { LoginForm } from "../components/auth/LoginForm";
 import { Link, Navigate } from "react-router";
 import { useAuth } from "../hooks/useAuth";
+import { GoogleLoginButton } from "../components/auth/GoogleLoginButton";
 
 export function LoginPage() {
   const { user, loading, error } = useAuth();
@@ -30,6 +31,8 @@ export function LoginPage() {
       <p>
         <Link to="/forgot-password">¿Olvidaste tu contraseña?</Link>
       </p>
+      <p>O continúa con Google</p>
+      <GoogleLoginButton />
     </main>
   );
 }
