@@ -5,6 +5,7 @@ import {
   logout as logoutRequest,
   login as loginRequest,
   googleLogin as googleLoginRequest,
+  updateLanguage as updateLanguageRequest,
 } from "../services/auth";
 import type {
   AuthUser,
@@ -12,6 +13,7 @@ import type {
   GoogleLoginData,
 } from "../services/auth";
 import { AuthContext } from "../contexts/AuthContext";
+import i18n from "../i18n";
 
 interface AuthProviderProps {
   children: ReactNode;
@@ -21,6 +23,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
+
+  const accountLanguage = user?.language;
+
+  useEffect(() => {
+    if (!accountLanguage) return;
+
+    localStorage.setItem("lumixplore.language", accountLanguage);
+    void i18n.changeLanguage(accountLanguage);
+  }, [accountLanguage]);
 
   useEffect(() => {
     getCurrentUser()
@@ -73,9 +84,22 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setError(null);
   }
 
+  async function updateLanguage(language: "es" | "en"): Promise<void> {
+    const updatedUser = await updateLanguageRequest(language);
+    setUser(updatedUser);
+  }
+
   return (
     <AuthContext.Provider
-      value={{ user, loading, error, logout, login, googleLogin }}
+      value={{
+        user,
+        loading,
+        error,
+        logout,
+        login,
+        googleLogin,
+        updateLanguage,
+      }}
     >
       {children}
     </AuthContext.Provider>

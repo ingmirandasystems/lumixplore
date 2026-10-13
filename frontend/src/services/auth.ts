@@ -178,3 +178,21 @@ export async function googleLogin(data: GoogleLoginData): Promise<void> {
     throw await readApiError(response, "No se pudo iniciar sesión con Google");
   }
 }
+
+export async function updateLanguage(language: "es" | "en"): Promise<AuthUser> {
+  const response = await fetch("/api/auth/language", {
+    method: "PATCH",
+    credentials: "same-origin",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ language }),
+  });
+
+  if (!response.ok) {
+    throw await readApiError(response, "No se pudo guardar el idioma");
+  }
+
+  const data: { user: AuthUser } = await response.json();
+  return data.user;
+}

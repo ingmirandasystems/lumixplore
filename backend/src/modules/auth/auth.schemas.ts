@@ -65,3 +65,7 @@ export const googleLoginSchema = z.object({
   region: registerSchema.shape.region,
   timezone: registerSchema.shape.timezone,
 });
+
+export const updateLanguageSchema = z.object({
+  language: z.enum(["es", "en"]),
+});

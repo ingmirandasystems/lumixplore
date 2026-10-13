@@ -10,6 +10,7 @@ import {
   forgotPasswordSchema,
   resetPasswordSchema,
   googleLoginSchema,
+  updateLanguageSchema,
 } from "./auth.schemas.js";
 import {
   loginLimiter,
@@ -17,7 +18,7 @@ import {
   registrationLimiter,
   tokenValidationLimiter,
 } from "./auth.limits.js";
-import { requireAuth } from "./auth.middleware.js";
+import { requireAuth, type AuthUser } from "./auth.middleware.js";
 import { sendAuthEmail } from "./auth.mail.js";
 import { verifyGoogleCredential } from "./google.service.js";
 
@@ -851,6 +852,42 @@ authRouter.post("/google", loginLimiter, async (req, res, next) => {
       return;
     }
 
+    next(error);
+  }
+});
+
+authRouter.patch("/language", requireAuth, async (_req, res, next) => {
+  const validation = updateLanguageSchema.safeParse(_req.body);
+
+  if (!validation.success) {
+    res.status(400).json({
+      code: "INVALID_LANGUAGE",
+      message: "Selecciona un idioma válido.",
+    });
+    return;
+  }
+
+  try {
+    const result = await pool.query<AuthUser>(
+      `UPDATE public.users
+         SET language = $1
+         WHERE id = $2
+         RETURNING id, name, email, language, region, timezone`,
+      [validation.data.language, res.locals.user.id],
+    );
+
+    const user = result.rows[0];
+
+    if (!user) {
+      res.status(401).json({
+        code: "SESSION_INVALID",
+        message: "No hay una sesión válida.",
+      });
+      return;
+    }
+
+    res.json({ user });
+  } catch (error) {
     next(error);
   }
 });

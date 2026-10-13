@@ -114,6 +114,8 @@
   "language": {
     "label": "Idioma",
     "es": "Español",
-    "en": "Inglés"
+    "en": "Inglés",
+    "saving": "Guardando idioma...",
+    "saveError": "No se pudo guardar el idioma. Intenta de nuevo."
   }
 }

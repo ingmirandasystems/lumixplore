@@ -12,6 +12,7 @@ export interface AuthContextValue {
   logout: () => Promise<void>;
   login: (credentials: LoginCredentials) => Promise<void>;
   googleLogin: (data: GoogleLoginData) => Promise<void>;
+  updateLanguage: (language: "es" | "en") => Promise<void>;
 }
 
 export const AuthContext = createContext<AuthContextValue | undefined>(
