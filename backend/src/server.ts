@@ -9,6 +9,7 @@ import {
 } from "./middleware/error.middleware.js";
 import { fileURLToPath } from "node:url";
 import { protectCsrf } from "./middleware/csrf.middleware.js";
+import { catalogRouter } from "./modules/catalog/catalog.routes.js";
 
 const app = express();
 const port = Number(process.env.PORT ?? 3000);
@@ -19,6 +20,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.use("/api/auth", authRouter);
+app.use("/api/catalog", catalogRouter);
 
 app.get("/api/health", async (_req, res) => {
   try {

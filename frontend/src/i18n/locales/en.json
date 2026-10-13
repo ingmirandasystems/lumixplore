@@ -117,5 +117,12 @@
     "en": "English",
     "saving": "Saving language...",
     "saveError": "Could not save the language. Try again."
+  },
+  "region": {
+    "label": "Region",
+    "loading": "Loading regions...",
+    "placeholder": "Select your region",
+    "loadError": "Could not load the regions. Try again later.",
+    "unsupported": "Select an available region."
   }
 }

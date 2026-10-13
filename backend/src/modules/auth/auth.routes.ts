@@ -21,6 +21,7 @@ import {
 import { requireAuth, type AuthUser } from "./auth.middleware.js";
 import { sendAuthEmail } from "./auth.mail.js";
 import { verifyGoogleCredential } from "./google.service.js";
+import { getWatchRegions } from "../../services/tmdb.service.js";
 
 export const authRouter = Router();
 
@@ -41,6 +42,16 @@ authRouter.post("/register", registrationLimiter, async (req, res, next) => {
 
   try {
     const data = validation.data;
+
+    const regions = await getWatchRegions();
+
+    if (!regions.some((region) => region.iso_3166_1 === data.region)) {
+      res.status(400).json({
+        code: "UNSUPPORTED_REGION",
+        message: "Selecciona una región disponible.",
+      });
+      return;
+    }
 
     const passwordHash = await argon2.hash(data.password, {
       type: argon2.argon2id,
@@ -776,6 +787,18 @@ authRouter.post("/google", loginLimiter, async (req, res, next) => {
       if (existingUser) {
         user = existingUser;
       } else {
+        const regions = await getWatchRegions();
+
+        if (!regions.some((region) => region.iso_3166_1 === data.region)) {
+          await client.query("ROLLBACK");
+
+          res.status(400).json({
+            code: "UNSUPPORTED_REGION",
+            message: "Selecciona una región disponible.",
+          });
+          return;
+        }
+
         const created = await client.query<{
           id: string;
           name: string;

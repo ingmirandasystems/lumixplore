@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useAuth } from "../../hooks/useAuth";
 import { loadGoogleIdentity } from "../../services/google";
 import { ApiError, getCommonErrorKey } from "../../services/api";
+import { RegionSelect } from "../RegionSelect";
 
 interface GoogleCredentialResponse {
   credential: string;
@@ -42,8 +43,15 @@ export function GoogleLoginButton() {
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
 
+  const [region, setRegion] = useState("");
+
   const handleCredential = useCallback(
     async (response: GoogleCredentialResponse) => {
+      if (!region) {
+        setLoginError("region.unsupported");
+        return;
+      }
+
       setIsLoggingIn(true);
       setLoginError(null);
 
@@ -51,7 +59,7 @@ export function GoogleLoginButton() {
         await googleLogin({
           credential: response.credential,
           language,
-          region: "MX",
+          region,
           timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
         });
       } catch (error: unknown) {
@@ -71,6 +79,9 @@ export function GoogleLoginButton() {
             case "GOOGLE_ACCOUNT_CONFLICT":
               errorKey = "login.googleAccountConflict";
               break;
+            case "UNSUPPORTED_REGION":
+              errorKey = "region.unsupported";
+              break;
           }
         }
 
@@ -79,7 +90,7 @@ export function GoogleLoginButton() {
         setIsLoggingIn(false);
       }
     },
-    [googleLogin, language],
+    [googleLogin, language, region],
   );
 
   useEffect(() => {
@@ -132,7 +143,12 @@ export function GoogleLoginButton() {
 
   return (
     <div>
-      <div ref={buttonRef} hidden={isLoggingIn} />
+      <RegionSelect
+        value={region}
+        onChange={setRegion}
+        disabled={isLoggingIn}
+      />
+      <div ref={buttonRef} hidden={isLoggingIn || !region} />
 
       {isLoggingIn && <p role="status">{t("login.googleSubmitting")}</p>}
 

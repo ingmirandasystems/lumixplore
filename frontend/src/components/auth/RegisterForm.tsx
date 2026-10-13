@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { register } from "../../services/auth";
 import type { RegisterData } from "../../services/auth";
 import { ApiError, getCommonErrorKey } from "../../services/api";
+import { RegionSelect } from "../RegionSelect";
 
 export function RegisterForm() {
   const { t, i18n } = useTranslation();
@@ -12,7 +13,7 @@ export function RegisterForm() {
     name: "",
     email: "",
     password: "",
-    region: "MX",
+    region: "",
   });
 
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -31,6 +32,11 @@ export function RegisterForm() {
 
     if (formData.password !== confirmPassword) {
       setRegisterError("register.passwordMismatch");
+      return;
+    }
+
+    if (!formData.region) {
+      setRegisterError("region.unsupported");
       return;
     }
 
@@ -54,6 +60,9 @@ export function RegisterForm() {
             break;
           case "EMAIL_UNAVAILABLE":
             errorKey = "register.emailUnavailable";
+            break;
+          case "UNSUPPORTED_REGION":
+            errorKey = "region.unsupported";
             break;
         }
       }
@@ -115,6 +124,17 @@ export function RegisterForm() {
           setFormData((previous) => ({
             ...previous,
             email,
+          }));
+        }}
+      />
+
+      <RegionSelect
+        value={formData.region}
+        disabled={isRegistering}
+        onChange={(region) => {
+          setFormData((previous) => ({
+            ...previous,
+            region,
           }));
         }}
       />
