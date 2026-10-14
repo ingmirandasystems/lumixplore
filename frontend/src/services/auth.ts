@@ -7,6 +7,7 @@ export interface AuthUser {
   language: "es" | "en";
   region: string;
   timezone: string;
+  hasLocalPassword: boolean;
 }
 
 export interface LoginCredentials {
@@ -34,6 +35,11 @@ export interface GoogleLoginData {
   language?: "es" | "en";
   region: string;
   timezone?: string;
+}
+
+export interface ChangePasswordData {
+  currentPassword: string;
+  newPassword: string;
 }
 
 export async function getCurrentUser(): Promise<AuthUser | null> {
@@ -195,4 +201,55 @@ export async function updateLanguage(language: "es" | "en"): Promise<AuthUser> {
 
   const data: { user: AuthUser } = await response.json();
   return data.user;
+}
+
+export async function updateName(name: string): Promise<AuthUser> {
+  const response = await fetch("/api/auth/name", {
+    method: "PATCH",
+    credentials: "same-origin",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ name }),
+  });
+
+  if (!response.ok) {
+    throw await readApiError(response, "No se pudo guardar el nombre");
+  }
+
+  const data: { user: AuthUser } = await response.json();
+  return data.user;
+}
+
+export async function updateRegion(region: string): Promise<AuthUser> {
+  const response = await fetch("/api/auth/region", {
+    method: "PATCH",
+    credentials: "same-origin",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ region }),
+  });
+
+  if (!response.ok) {
+    throw await readApiError(response, "No se pudo guardar la región");
+  }
+
+  const data: { user: AuthUser } = await response.json();
+  return data.user;
+}
+
+export async function changePassword(data: ChangePasswordData): Promise<void> {
+  const response = await fetch("/api/auth/change-password", {
+    method: "POST",
+    credentials: "same-origin",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    throw await readApiError(response, "No se pudo cambiar la contraseña");
+  }
 }

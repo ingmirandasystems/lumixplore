@@ -124,5 +124,31 @@
     "placeholder": "Selecciona tu región",
     "loadError": "No se pudieron cargar las regiones. Intenta de nuevo más tarde.",
     "unsupported": "Selecciona una región disponible."
+  },
+  "settings": {
+    "title": "Configuración de la cuenta",
+    "profile": "Perfil",
+    "languageAndRegion": "Idioma y región",
+    "saving": "Guardando...",
+    "saveName": "Guardar nombre",
+    "nameSaved": "Nombre actualizado.",
+    "nameError": "No se pudo guardar el nombre.",
+    "invalidName": "Introduce un nombre de entre 1 y 100 caracteres.",
+    "nameNotAllowed": "Esta cuenta no permite editar el nombre.",
+    "saveRegion": "Guardar región",
+    "regionSaved": "Región actualizada.",
+    "regionError": "No se pudo guardar la región.",
+    "security": "Seguridad",
+    "currentPassword": "Contraseña actual",
+    "newPassword": "Nueva contraseña",
+    "changePassword": "Cambiar contraseña",
+    "changingPassword": "Cambiando contraseña...",
+    "passwordChangeDescription": "Al cambiar tu contraseña, se cerrarán todas tus sesiones y tendrás que iniciar sesión nuevamente.",
+    "passwordChangeError": "No se pudo cambiar la contraseña.",
+    "invalidPasswordChangeData": "Revisa la contraseña actual. La nueva debe tener entre 15 y 128 caracteres.",
+    "currentPasswordIncorrect": "La contraseña actual es incorrecta.",
+    "passwordChangeNotAllowed": "Esta cuenta no tiene una contraseña local.",
+    "sessionInvalid": "Tu sesión ya no es válida. Vuelve a iniciar sesión.",
+    "passwordMismatch": "Las contraseñas no coinciden."
   }
 }

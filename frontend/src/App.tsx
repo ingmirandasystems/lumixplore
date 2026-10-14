@@ -10,6 +10,7 @@ import { ResendVerificationPage } from "./pages/ResendVerificationPage";
 import { ForgotPasswordPage } from "./pages/ForgotPasswordPage";
 import { ResetPasswordPage } from "./pages/ResetPasswordPage";
 import { LanguageSwitcher } from "./components/LanguageSwitcher";
+import { SettingsPage } from "./pages/SettingsPage";
 
 export default function App() {
   return (
@@ -34,6 +35,14 @@ export default function App() {
         />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
+        <Route
+          path="/settings"
+          element={
+            <RequireAuth>
+              <SettingsPage />
+            </RequireAuth>
+          }
+        />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </>

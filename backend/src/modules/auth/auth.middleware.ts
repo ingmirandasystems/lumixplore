@@ -9,6 +9,7 @@ export type AuthUser = {
   language: string;
   region: string;
   timezone: string;
+  hasLocalPassword: boolean;
 };
 
 export const requireAuth: RequestHandler<
@@ -51,7 +52,14 @@ export const requireAuth: RequestHandler<
          u.email,
          u.language,
          u.region,
-         u.timezone
+         u.timezone,
+          EXISTS (
+            SELECT 1
+            FROM public.auth_identities AS a
+            WHERE a.user_id = u.id
+              AND a.provider = 'local'
+              AND a.password_hash IS NOT NULL
+          ) AS "hasLocalPassword"
        FROM public.users AS u
        JOIN active_session AS s ON s.user_id = u.id`,
       [tokenHash],

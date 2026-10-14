@@ -69,3 +69,16 @@ export const googleLoginSchema = z.object({
 export const updateLanguageSchema = z.object({
   language: z.enum(["es", "en"]),
 });
+
+export const updateNameSchema = z.object({
+  name: registerSchema.shape.name,
+});
+
+export const updateRegionSchema = z.object({
+  region: registerSchema.shape.region,
+});
+
+export const changePasswordSchema = z.object({
+  currentPassword: z.string().min(1).max(128),
+  newPassword: registerSchema.shape.password,
+});

@@ -11,12 +11,16 @@ import {
   resetPasswordSchema,
   googleLoginSchema,
   updateLanguageSchema,
+  updateNameSchema,
+  updateRegionSchema,
+  changePasswordSchema,
 } from "./auth.schemas.js";
 import {
   loginLimiter,
   tokenRequestLimiter,
   registrationLimiter,
   tokenValidationLimiter,
+  passwordChangeLimiter,
 } from "./auth.limits.js";
 import { requireAuth, type AuthUser } from "./auth.middleware.js";
 import { sendAuthEmail } from "./auth.mail.js";
@@ -917,8 +921,244 @@ authRouter.patch("/language", requireAuth, async (_req, res, next) => {
       return;
     }
 
-    res.json({ user });
+    res.json({
+      user: {
+        ...user,
+        hasLocalPassword: res.locals.user.hasLocalPassword,
+      },
+    });
   } catch (error) {
     next(error);
   }
 });
+
+authRouter.patch("/name", requireAuth, async (req, res, next) => {
+  if (!res.locals.user.hasLocalPassword) {
+    res.status(403).json({
+      code: "NAME_EDIT_NOT_ALLOWED",
+      message: "Esta cuenta no permite editar el nombre.",
+    });
+    return;
+  }
+
+  const validation = updateNameSchema.safeParse(req.body);
+
+  if (!validation.success) {
+    res.status(400).json({
+      code: "INVALID_NAME",
+      message: "Introduce un nombre de entre 1 y 100 caracteres.",
+    });
+    return;
+  }
+
+  try {
+    const result = await pool.query<AuthUser>(
+      `UPDATE public.users
+       SET name = $1
+       WHERE id = $2
+       RETURNING id, name, email, language, region, timezone`,
+      [validation.data.name, res.locals.user.id],
+    );
+
+    const user = result.rows[0];
+
+    if (!user) {
+      res.status(401).json({
+        code: "SESSION_INVALID",
+        message: "No hay una sesión válida.",
+      });
+      return;
+    }
+
+    res.json({
+      user: {
+        ...user,
+        hasLocalPassword: res.locals.user.hasLocalPassword,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+authRouter.patch("/region", requireAuth, async (req, res, next) => {
+  const validation = updateRegionSchema.safeParse(req.body);
+
+  if (!validation.success) {
+    res.status(400).json({
+      code: "UNSUPPORTED_REGION",
+      message: "Selecciona una región disponible.",
+    });
+    return;
+  }
+
+  try {
+    const regions = await getWatchRegions();
+
+    if (
+      !regions.some((region) => region.iso_3166_1 === validation.data.region)
+    ) {
+      res.status(400).json({
+        code: "UNSUPPORTED_REGION",
+        message: "Selecciona una región disponible.",
+      });
+      return;
+    }
+
+    const result = await pool.query<AuthUser>(
+      `UPDATE public.users
+       SET region = $1
+       WHERE id = $2
+       RETURNING id, name, email, language, region, timezone`,
+      [validation.data.region, res.locals.user.id],
+    );
+
+    const user = result.rows[0];
+
+    if (!user) {
+      res.status(401).json({
+        code: "SESSION_INVALID",
+        message: "No hay una sesión válida.",
+      });
+      return;
+    }
+
+    res.json({
+      user: {
+        ...user,
+        hasLocalPassword: res.locals.user.hasLocalPassword,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+authRouter.post(
+  "/change-password",
+  passwordChangeLimiter,
+  requireAuth,
+  async (req, res, next) => {
+    const validation = changePasswordSchema.safeParse(req.body);
+
+    if (!validation.success) {
+      res.status(400).json({
+        code: "INVALID_PASSWORD_CHANGE_DATA",
+        message: "Revisa la contraseña actual y la nueva contraseña.",
+      });
+      return;
+    }
+
+    try {
+      const client = await pool.connect();
+
+      try {
+        await client.query("BEGIN");
+
+        // Coordina el cambio con login y recuperación de contraseña.
+        await client.query(
+          `SELECT id FROM public.users WHERE id = $1 FOR UPDATE`,
+          [res.locals.user.id],
+        );
+
+        const tokenHash = createHash("sha256")
+          .update(req.cookies.lumixplore_session)
+          .digest("hex");
+
+        // Comprueba que la sesión siga activa después de obtener el bloqueo.
+        const session = await client.query(
+          `SELECT id FROM public.sessions
+           WHERE user_id = $1
+             AND token_hash = $2
+             AND revoked_at IS NULL
+             AND expires_at > clock_timestamp()
+             AND last_seen_at > clock_timestamp() - interval '30 days'`,
+          [res.locals.user.id, tokenHash],
+        );
+
+        if (session.rowCount !== 1) {
+          await client.query("ROLLBACK");
+          res.status(401).json({
+            code: "SESSION_INVALID",
+            message: "La sesión venció o fue cerrada.",
+          });
+          return;
+        }
+
+        const result = await client.query<{ password_hash: string }>(
+          `SELECT password_hash FROM public.auth_identities
+           WHERE user_id = $1 AND provider = 'local'`,
+          [res.locals.user.id],
+        );
+
+        const identity = result.rows[0];
+
+        if (!identity) {
+          await client.query("ROLLBACK");
+          res.status(403).json({
+            code: "PASSWORD_CHANGE_NOT_ALLOWED",
+            message: "Esta cuenta no tiene una contraseña local.",
+          });
+          return;
+        }
+
+        const { currentPassword, newPassword } = validation.data;
+
+        if (!(await argon2.verify(identity.password_hash, currentPassword))) {
+          await client.query("ROLLBACK");
+          res.status(403).json({
+            code: "CURRENT_PASSWORD_INCORRECT",
+            message: "La contraseña actual es incorrecta.",
+          });
+          return;
+        }
+
+        const passwordHash = await argon2.hash(newPassword, {
+          type: argon2.argon2id,
+          memoryCost: 19456,
+          timeCost: 2,
+          parallelism: 1,
+        });
+
+        await client.query(
+          `UPDATE public.auth_identities SET password_hash = $1
+           WHERE user_id = $2 AND provider = 'local'`,
+          [passwordHash, res.locals.user.id],
+        );
+
+        await client.query(
+          `UPDATE public.sessions SET revoked_at = now()
+           WHERE user_id = $1 AND revoked_at IS NULL`,
+          [res.locals.user.id],
+        );
+
+        await client.query(
+          `UPDATE public.auth_tokens SET revoked_at = now()
+           WHERE user_id = $1
+             AND purpose = 'password_reset'
+             AND used_at IS NULL
+             AND revoked_at IS NULL`,
+          [res.locals.user.id],
+        );
+
+        await client.query("COMMIT");
+      } catch (error) {
+        await client.query("ROLLBACK");
+        throw error;
+      } finally {
+        client.release();
+      }
+
+      res.clearCookie("lumixplore_session", {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        path: "/",
+      });
+
+      res.status(204).end();
+    } catch (error) {
+      next(error);
+    }
+  },
+);

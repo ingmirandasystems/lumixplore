@@ -124,5 +124,31 @@
     "placeholder": "Select your region",
     "loadError": "Could not load the regions. Try again later.",
     "unsupported": "Select an available region."
+  },
+  "settings": {
+    "title": "Account settings",
+    "profile": "Profile",
+    "languageAndRegion": "Language and region",
+    "saving": "Saving...",
+    "saveName": "Save name",
+    "nameSaved": "Name updated.",
+    "nameError": "Could not save the name.",
+    "invalidName": "Enter a name between 1 and 100 characters.",
+    "nameNotAllowed": "This account does not allow name changes.",
+    "saveRegion": "Save region",
+    "regionSaved": "Region updated.",
+    "regionError": "Could not save the region.",
+    "security": "Security",
+    "currentPassword": "Current password",
+    "newPassword": "New password",
+    "changePassword": "Change password",
+    "changingPassword": "Changing password...",
+    "passwordChangeDescription": "Changing your password will sign you out of all sessions. You will need to sign in again.",
+    "passwordChangeError": "Could not change the password.",
+    "invalidPasswordChangeData": "Check your current password. The new password must contain between 15 and 128 characters.",
+    "currentPasswordIncorrect": "The current password is incorrect.",
+    "passwordChangeNotAllowed": "This account does not have a local password.",
+    "sessionInvalid": "Your session is no longer valid. Sign in again.",
+    "passwordMismatch": "Passwords do not match."
   }
 }

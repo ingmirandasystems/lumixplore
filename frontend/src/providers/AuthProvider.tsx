@@ -6,11 +6,15 @@ import {
   login as loginRequest,
   googleLogin as googleLoginRequest,
   updateLanguage as updateLanguageRequest,
+  updateName as updateNameRequest,
+  updateRegion as updateRegionRequest,
+  changePassword as changePasswordRequest,
 } from "../services/auth";
 import type {
   AuthUser,
   LoginCredentials,
   GoogleLoginData,
+  ChangePasswordData,
 } from "../services/auth";
 import { AuthContext } from "../contexts/AuthContext";
 import i18n from "../i18n";
@@ -89,6 +93,22 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setUser(updatedUser);
   }
 
+  async function updateName(name: string): Promise<void> {
+    const updatedUser = await updateNameRequest(name);
+    setUser(updatedUser);
+  }
+
+  async function updateRegion(region: string): Promise<void> {
+    const updatedUser = await updateRegionRequest(region);
+    setUser(updatedUser);
+  }
+
+  async function changePassword(data: ChangePasswordData): Promise<void> {
+    await changePasswordRequest(data);
+    setUser(null);
+    setError(null);
+  }
+
   return (
     <AuthContext.Provider
       value={{
@@ -99,6 +119,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
         login,
         googleLogin,
         updateLanguage,
+        updateName,
+        updateRegion,
+        changePassword,
       }}
     >
       {children}
