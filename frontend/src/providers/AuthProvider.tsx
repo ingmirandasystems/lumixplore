@@ -9,12 +9,14 @@ import {
   updateName as updateNameRequest,
   updateRegion as updateRegionRequest,
   changePassword as changePasswordRequest,
+  deleteAccount as deleteAccountRequest,
 } from "../services/auth";
 import type {
   AuthUser,
   LoginCredentials,
   GoogleLoginData,
   ChangePasswordData,
+  DeleteAccountData,
 } from "../services/auth";
 import { AuthContext } from "../contexts/AuthContext";
 import i18n from "../i18n";
@@ -109,6 +111,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setError(null);
   }
 
+  async function deleteAccount(data: DeleteAccountData): Promise<void> {
+    await deleteAccountRequest(data);
+    setUser(null);
+    setError(null);
+  }
+
   return (
     <AuthContext.Provider
       value={{
@@ -122,6 +130,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         updateName,
         updateRegion,
         changePassword,
+        deleteAccount,
       }}
     >
       {children}

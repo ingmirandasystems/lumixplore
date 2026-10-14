@@ -4,6 +4,7 @@ import { NameSettingsForm } from "../components/settings/NameSettingsForm";
 import { RegionSettingsForm } from "../components/settings/RegionSettingsForm";
 import { LanguageSwitcher } from "../components/LanguageSwitcher";
 import { ChangePasswordForm } from "../components/settings/ChangePasswordForm";
+import { DeleteAccountForm } from "../components/settings/DeleteAccountForm";
 
 export function SettingsPage() {
   const { t } = useTranslation();
@@ -43,6 +44,11 @@ export function SettingsPage() {
 
         <RegionSettingsForm initialRegion={user.region} />
         <LanguageSwitcher />
+      </section>
+
+      <section>
+        <h2>{t("settings.deleteAccount")}</h2>
+        <DeleteAccountForm hasLocalPassword={user.hasLocalPassword} />
       </section>
     </main>
   );

@@ -82,3 +82,16 @@ export const changePasswordSchema = z.object({
   currentPassword: z.string().min(1).max(128),
   newPassword: registerSchema.shape.password,
 });
+
+export const deleteAccountSchema = z.discriminatedUnion("method", [
+  z.object({
+    method: z.literal("password"),
+    currentPassword: z.string().min(1).max(128),
+    confirmation: z.literal(true),
+  }),
+  z.object({
+    method: z.literal("google"),
+    credential: z.string().min(1).max(10000),
+    confirmation: z.literal(true),
+  }),
+]);

@@ -149,6 +149,19 @@
     "currentPasswordIncorrect": "The current password is incorrect.",
     "passwordChangeNotAllowed": "This account does not have a local password.",
     "sessionInvalid": "Your session is no longer valid. Sign in again.",
-    "passwordMismatch": "Passwords do not match."
+    "passwordMismatch": "Passwords do not match.",
+    "deleteAccount": "Delete account",
+    "deletingAccount": "Deleting account...",
+    "deleteDescription": "This action is permanent. Your LumiXplore account, preferences, watchlist, and history will be deleted.",
+    "deleteGoogleDescription": "Your Google account will not be deleted.",
+    "deleteConfirmation": "I understand this action is permanent and want to delete my account.",
+    "deleteConfirmationRequired": "Confirm that you want to delete your account.",
+    "deletePasswordRequired": "Enter your current password.",
+    "deleteError": "Could not delete the account.",
+    "deleteInvalidData": "Check your credentials and confirm the deletion.",
+    "deleteIdentityError": "Could not confirm your identity. Check your password or select the linked Google account.",
+    "deleteGoogleConfirm": "Confirm your Google account again.",
+    "deleteGoogleButton": "Confirm identity with Google",
+    "deleteGoogleReady": "Google identity received. Press Delete account to confirm deletion."
   }
 }

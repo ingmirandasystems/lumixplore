@@ -54,3 +54,14 @@ export const passwordChangeLimiter = rateLimit({
     message: "Demasiados intentos. Intenta de nuevo más tarde.",
   },
 });
+
+export const accountDeletionLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 5,
+  standardHeaders: "draft-8",
+  legacyHeaders: false,
+  message: {
+    code: "RATE_LIMIT_EXCEEDED",
+    message: "Demasiados intentos. Intenta de nuevo más tarde.",
+  },
+});

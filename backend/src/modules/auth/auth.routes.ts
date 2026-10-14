@@ -14,6 +14,7 @@ import {
   updateNameSchema,
   updateRegionSchema,
   changePasswordSchema,
+  deleteAccountSchema,
 } from "./auth.schemas.js";
 import {
   loginLimiter,
@@ -21,6 +22,7 @@ import {
   registrationLimiter,
   tokenValidationLimiter,
   passwordChangeLimiter,
+  accountDeletionLimiter,
 } from "./auth.limits.js";
 import { requireAuth, type AuthUser } from "./auth.middleware.js";
 import { sendAuthEmail } from "./auth.mail.js";
@@ -1140,6 +1142,161 @@ authRouter.post(
              AND revoked_at IS NULL`,
           [res.locals.user.id],
         );
+
+        await client.query("COMMIT");
+      } catch (error) {
+        await client.query("ROLLBACK");
+        throw error;
+      } finally {
+        client.release();
+      }
+
+      res.clearCookie("lumixplore_session", {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        path: "/",
+      });
+
+      res.status(204).end();
+    } catch (error) {
+      next(error);
+    }
+  },
+);
+
+authRouter.delete(
+  "/account",
+  accountDeletionLimiter,
+  requireAuth,
+  async (req, res, next) => {
+    const validation = deleteAccountSchema.safeParse(req.body);
+
+    if (!validation.success) {
+      res.status(400).json({
+        code: "INVALID_ACCOUNT_DELETION_DATA",
+        message: "Confirma la eliminación y revisa tus credenciales.",
+      });
+      return;
+    }
+
+    const data = validation.data;
+    let googleId: string | null = null;
+
+    if (data.method === "google") {
+      if (!process.env.GOOGLE_CLIENT_ID) {
+        next(new Error("Falta GOOGLE_CLIENT_ID."));
+        return;
+      }
+
+      try {
+        const googleUser = await verifyGoogleCredential(data.credential);
+        const now = Math.floor(Date.now() / 1000);
+
+        if (
+          googleUser.issuedAt === null ||
+          googleUser.issuedAt > now + 60 ||
+          now - googleUser.issuedAt > 5 * 60
+        ) {
+          res.status(403).json({
+            code: "GOOGLE_CONFIRMATION_REQUIRED",
+            message: "Confirma nuevamente tu cuenta con Google.",
+          });
+          return;
+        }
+
+        googleId = googleUser.googleId;
+      } catch {
+        res.status(403).json({
+          code: "INVALID_GOOGLE_CREDENTIAL",
+          message: "No se pudo validar la credencial de Google.",
+        });
+        return;
+      }
+    }
+
+    try {
+      const client = await pool.connect();
+
+      try {
+        await client.query("BEGIN");
+
+        await client.query(
+          `SELECT id FROM public.users WHERE id = $1 FOR UPDATE`,
+          [res.locals.user.id],
+        );
+
+        const tokenHash = createHash("sha256")
+          .update(req.cookies.lumixplore_session)
+          .digest("hex");
+
+        const session = await client.query(
+          `SELECT id FROM public.sessions
+           WHERE user_id = $1
+             AND token_hash = $2
+             AND revoked_at IS NULL
+             AND expires_at > clock_timestamp()
+             AND last_seen_at > clock_timestamp() - interval '30 days'`,
+          [res.locals.user.id, tokenHash],
+        );
+
+        if (session.rowCount !== 1) {
+          await client.query("ROLLBACK");
+          res.status(401).json({
+            code: "SESSION_INVALID",
+            message: "La sesión venció o fue cerrada.",
+          });
+          return;
+        }
+
+        const result = await client.query<{
+          provider: string;
+          password_hash: string | null;
+          provider_subject: string | null;
+        }>(
+          `SELECT provider, password_hash, provider_subject
+           FROM public.auth_identities
+           WHERE user_id = $1`,
+          [res.locals.user.id],
+        );
+
+        const identity = result.rows[0];
+        let confirmed = false;
+
+        if (
+          data.method === "password" &&
+          identity?.provider === "local" &&
+          identity.password_hash
+        ) {
+          confirmed = await argon2.verify(
+            identity.password_hash,
+            data.currentPassword,
+          );
+        } else if (
+          data.method === "google" &&
+          identity?.provider === "google" &&
+          googleId !== null
+        ) {
+          confirmed = identity.provider_subject === googleId;
+        }
+
+        if (!confirmed) {
+          await client.query("ROLLBACK");
+          res.status(403).json({
+            code: "ACCOUNT_CONFIRMATION_FAILED",
+            message: "No se pudo confirmar la identidad de esta cuenta.",
+          });
+          return;
+        }
+
+        const deleted = await client.query(
+          `DELETE FROM public.users WHERE id = $1 RETURNING id`,
+          [res.locals.user.id],
+        );
+
+        if (deleted.rowCount !== 1) {
+          throw new Error("No se pudo eliminar el usuario autenticado.");
+        }
 
         await client.query("COMMIT");
       } catch (error) {

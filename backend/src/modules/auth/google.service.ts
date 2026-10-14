@@ -39,5 +39,6 @@ export async function verifyGoogleCredential(credential: string) {
     name: payload.given_name?.trim() || null,
     lastName: payload.family_name?.trim() || null,
     googleConfirmsEmailOwnership,
+    issuedAt: payload.iat ?? null,
   };
 }

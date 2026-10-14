@@ -4,6 +4,7 @@ import type {
   LoginCredentials,
   GoogleLoginData,
   ChangePasswordData,
+  DeleteAccountData,
 } from "../services/auth";
 
 export interface AuthContextValue {
@@ -17,6 +18,7 @@ export interface AuthContextValue {
   updateName: (name: string) => Promise<void>;
   updateRegion: (region: string) => Promise<void>;
   changePassword: (data: ChangePasswordData) => Promise<void>;
+  deleteAccount: (data: DeleteAccountData) => Promise<void>;
 }
 
 export const AuthContext = createContext<AuthContextValue | undefined>(

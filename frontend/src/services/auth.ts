@@ -42,6 +42,18 @@ export interface ChangePasswordData {
   newPassword: string;
 }
 
+export type DeleteAccountData =
+  | {
+      method: "password";
+      currentPassword: string;
+      confirmation: true;
+    }
+  | {
+      method: "google";
+      credential: string;
+      confirmation: true;
+    };
+
 export async function getCurrentUser(): Promise<AuthUser | null> {
   const response = await fetch("/api/auth/me", {
     credentials: "same-origin",
@@ -251,5 +263,20 @@ export async function changePassword(data: ChangePasswordData): Promise<void> {
 
   if (!response.ok) {
     throw await readApiError(response, "No se pudo cambiar la contraseña");
+  }
+}
+
+export async function deleteAccount(data: DeleteAccountData): Promise<void> {
+  const response = await fetch("/api/auth/account", {
+    method: "DELETE",
+    credentials: "same-origin",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    throw await readApiError(response, "No se pudo eliminar la cuenta");
   }
 }

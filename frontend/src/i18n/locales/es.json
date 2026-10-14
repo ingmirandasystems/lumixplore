@@ -149,6 +149,19 @@
     "currentPasswordIncorrect": "La contraseña actual es incorrecta.",
     "passwordChangeNotAllowed": "Esta cuenta no tiene una contraseña local.",
     "sessionInvalid": "Tu sesión ya no es válida. Vuelve a iniciar sesión.",
-    "passwordMismatch": "Las contraseñas no coinciden."
+    "passwordMismatch": "Las contraseñas no coinciden.",
+    "deleteAccount": "Eliminar cuenta",
+    "deletingAccount": "Eliminando cuenta...",
+    "deleteDescription": "Esta acción es permanente. Se eliminarán tu cuenta de LumiXplore, preferencias, lista e historial.",
+    "deleteGoogleDescription": "Tu cuenta de Google no se eliminará.",
+    "deleteConfirmation": "Entiendo que esta acción es permanente y quiero eliminar mi cuenta.",
+    "deleteConfirmationRequired": "Confirma que deseas eliminar tu cuenta.",
+    "deletePasswordRequired": "Introduce tu contraseña actual.",
+    "deleteError": "No se pudo eliminar la cuenta.",
+    "deleteInvalidData": "Revisa tus credenciales y confirma la eliminación.",
+    "deleteIdentityError": "No se pudo confirmar tu identidad. Revisa la contraseña o selecciona la cuenta de Google vinculada.",
+    "deleteGoogleConfirm": "Confirma nuevamente tu cuenta con Google.",
+    "deleteGoogleButton": "Confirmar identidad con Google",
+    "deleteGoogleReady": "Identidad de Google recibida. Pulsa Eliminar cuenta para confirmar la eliminación."
   }
 }
