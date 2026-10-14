@@ -11,6 +11,7 @@ import { ForgotPasswordPage } from "./pages/ForgotPasswordPage";
 import { ResetPasswordPage } from "./pages/ResetPasswordPage";
 import { LanguageSwitcher } from "./components/LanguageSwitcher";
 import { SettingsPage } from "./pages/SettingsPage";
+import { PreferencesPage } from "./pages/PreferencesPage";
 
 export default function App() {
   return (
@@ -40,6 +41,14 @@ export default function App() {
           element={
             <RequireAuth>
               <SettingsPage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/preferences"
+          element={
+            <RequireAuth>
+              <PreferencesPage />
             </RequireAuth>
           }
         />

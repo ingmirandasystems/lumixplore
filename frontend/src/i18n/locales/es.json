@@ -163,5 +163,30 @@
     "deleteGoogleConfirm": "Confirma nuevamente tu cuenta con Google.",
     "deleteGoogleButton": "Confirmar identidad con Google",
     "deleteGoogleReady": "Identidad de Google recibida. Pulsa Eliminar cuenta para confirmar la eliminación."
+  },
+  "preferences": {
+    "title": "Mis preferencias",
+    "description": "Personaliza el contenido que LumiXplore te recomienda.",
+    "loading": "Cargando preferencias...",
+    "loadError": "No se pudieron cargar tus preferencias. Intenta de nuevo.",
+    "loadingOptions": "Cargando opciones...",
+    "optionsError": "No se pudieron cargar los géneros y las plataformas. Intenta de nuevo.",
+    "contentType": "¿Qué prefieres ver?",
+    "movies": "Películas",
+    "series": "Series",
+    "both": "Ambas",
+    "genres": "Géneros que te gustan",
+    "allGenres": "Todos los géneros",
+    "platforms": "Tus plataformas",
+    "platformsDescription": "Mostraremos contenido incluido en la suscripción de alguna de tus plataformas, según tu región.",
+    "allPlatforms": "Todas las plataformas",
+    "save": "Guardar preferencias",
+    "saving": "Guardando preferencias...",
+    "saved": "Preferencias guardadas.",
+    "saveError": "No se pudieron guardar las preferencias.",
+    "invalidData": "Revisa tus preferencias antes de guardar.",
+    "invalidGenres": "Alguno de los géneros seleccionados ya no está disponible. Recarga las opciones.",
+    "invalidProviders": "Alguna plataforma seleccionada ya no está disponible en tu región. Recarga las opciones.",
+    "regionChanged": "La región de tu cuenta cambió. Recarga la página antes de guardar."
   }
 }
