@@ -47,6 +47,8 @@ interface DiscoverTitlesOptions {
   region: string;
   genreIds: number[];
   providerIds: number[];
+  sortBy?: "popularity.desc" | "vote_average.desc";
+  minimumVotes?: number;
 }
 
 interface CacheEntry {
@@ -175,13 +177,19 @@ export async function discoverTitles({
   region,
   genreIds,
   providerIds,
+  sortBy = "popularity.desc",
+  minimumVotes = 0,
 }: DiscoverTitlesOptions): Promise<TmdbDiscoverResponse> {
   const parameters: Record<string, string> = {
     language: language === "es" ? "es-MX" : "en-US",
     page: String(page),
-    sort_by: "popularity.desc",
+    sort_by: sortBy,
     include_adult: "false",
   };
+
+  if (minimumVotes > 0) {
+    parameters["vote_count.gte"] = String(minimumVotes);
+  }
 
   if (genreIds.length > 0) {
     parameters.with_genres = genreIds.join("|");
@@ -390,5 +398,16 @@ export async function searchTitles(
     language: language === "es" ? "es-MX" : "en-US",
     page: String(page),
     include_adult: "false",
+  });
+}
+
+export async function getTrendingTitles(
+  mediaType: MediaType,
+  language: CatalogLanguage = "en",
+  page = 1,
+): Promise<TmdbDiscoverResponse> {
+  return getCachedTmdb<TmdbDiscoverResponse>(`trending/${mediaType}/week`, {
+    language: language === "es" ? "es-MX" : "en-US",
+    page: String(page),
   });
 }

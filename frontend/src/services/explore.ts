@@ -12,6 +12,8 @@ export interface ExploreTitle {
 }
 
 export interface ExploreSection {
+  id: string;
+  kind: "popular" | "topRated" | "trending";
   mediaType: "movie" | "tv";
   page: number;
   totalPages: number;

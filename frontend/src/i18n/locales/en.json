@@ -201,7 +201,11 @@
     "dailyRuntime": "{{minutes}} min",
     "dailyEpisodeRuntime": "{{minutes}} min per episode",
     "dailyNoOverview": "No overview is available.",
-    "viewDetails": "View details"
+    "viewDetails": "View details",
+    "topRatedMovies": "Top-rated movies",
+    "topRatedSeries": "Top-rated TV shows",
+    "trendingMovies": "Trending movies this week",
+    "trendingSeries": "Trending TV shows this week"
   },
   "title": {
     "loading": "Loading title information...",

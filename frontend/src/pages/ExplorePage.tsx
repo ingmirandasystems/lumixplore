@@ -93,71 +93,84 @@ export function ExplorePage() {
       ) : loadError ? (
         <p role="alert">{t(loadError)}</p>
       ) : (
-        data?.sections.map((section) => (
-          <section key={section.mediaType}>
-            <h2>
-              {t(
-                section.mediaType === "movie"
-                  ? "explore.popularMovies"
-                  : "explore.popularSeries",
-              )}
-            </h2>
+        data?.sections.map((section) => {
+          const headingKeys = {
+            trending: {
+              movie: "explore.trendingMovies",
+              tv: "explore.trendingSeries",
+            },
+            popular: {
+              movie: "explore.popularMovies",
+              tv: "explore.popularSeries",
+            },
+            topRated: {
+              movie: "explore.topRatedMovies",
+              tv: "explore.topRatedSeries",
+            },
+          };
 
-            {section.items.length === 0 ? (
-              <p>{t("explore.empty")}</p>
-            ) : (
-              <ul
-                style={{
-                  display: "flex",
-                  gap: 16,
-                  overflowX: "auto",
-                  listStyle: "none",
-                  padding: 0,
-                }}
-              >
-                {section.items.map((item) => (
-                  <Link
-                    to={`/title/${item.mediaType}/${item.id}`}
-                    aria-label={item.title}
-                  >
+          const headingKey = headingKeys[section.kind][section.mediaType];
+
+          return (
+            <section key={section.id}>
+              <h2>{t(headingKey)}</h2>
+
+              {section.items.length === 0 ? (
+                <p>{t("explore.empty")}</p>
+              ) : (
+                <ul
+                  className="explore-row"
+                  style={{
+                    display: "flex",
+                    gap: 16,
+                    overflowX: "auto",
+                    listStyle: "none",
+                    padding: 0,
+                  }}
+                >
+                  {section.items.map((item) => (
                     <li
                       key={`${item.mediaType}-${item.id}`}
                       style={{ flex: "0 0 160px" }}
                     >
-                      {item.posterPath ? (
-                        <img
-                          src={`https://image.tmdb.org/t/p/w500${item.posterPath}`}
-                          alt={item.title}
-                          width={160}
-                          height={240}
-                          loading="lazy"
-                          style={{
-                            objectFit: "cover",
-                            borderRadius: 8,
-                          }}
-                        />
-                      ) : (
-                        <div
-                          style={{
-                            width: 160,
-                            height: 240,
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            border: "1px solid currentColor",
-                            borderRadius: 8,
-                          }}
-                        >
-                          {item.title}
-                        </div>
-                      )}
+                      <Link
+                        to={`/title/${item.mediaType}/${item.id}`}
+                        aria-label={item.title}
+                      >
+                        {item.posterPath ? (
+                          <img
+                            src={`https://image.tmdb.org/t/p/w500${item.posterPath}`}
+                            alt=""
+                            width={160}
+                            height={240}
+                            loading="lazy"
+                            style={{
+                              objectFit: "cover",
+                              borderRadius: 8,
+                            }}
+                          />
+                        ) : (
+                          <div
+                            style={{
+                              width: 160,
+                              height: 240,
+                              display: "grid",
+                              placeItems: "center",
+                              border: "1px solid currentColor",
+                              borderRadius: 8,
+                            }}
+                          >
+                            {item.title}
+                          </div>
+                        )}
+                      </Link>
                     </li>
-                  </Link>
-                ))}
-              </ul>
-            )}
-          </section>
-        ))
+                  ))}
+                </ul>
+              )}
+            </section>
+          );
+        })
       )}
     </main>
   );

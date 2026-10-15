@@ -1,6 +1,11 @@
 import { pool } from "../../db.js";
 import type { UpdatePreferencesData } from "../preferences/preferences.schemas.js";
-import { discoverTitles, getGenres } from "../../services/tmdb.service.js";
+import {
+  discoverTitles,
+  getGenres,
+  getTrendingTitles,
+  getTitleWatchAvailability,
+} from "../../services/tmdb.service.js";
 import type {
   MediaType,
   TmdbTitleSummary,
@@ -81,6 +86,8 @@ function normalizeTitle(
 }
 
 export interface ExploreSection {
+  id: string;
+  kind: "popular" | "topRated" | "trending";
   mediaType: MediaType;
   page: number;
   totalPages: number;
@@ -97,8 +104,25 @@ export async function getExploreSections(
       ? ["movie", "tv"]
       : [preferences.contentType];
 
-  return Promise.all(
-    mediaTypes.map(async (mediaType) => {
+  const sectionDefinitions = mediaTypes.flatMap((mediaType) => [
+    {
+      mediaType,
+      kind: "popular" as const,
+      sortBy: "popularity.desc" as const,
+      minimumVotes: 0,
+    },
+    {
+      mediaType,
+      kind: "topRated" as const,
+      sortBy: "vote_average.desc" as const,
+      minimumVotes: 300,
+    },
+  ]);
+
+  const regularSectionsPromise = Promise.all(
+    sectionDefinitions.map(async (definition) => {
+      const { mediaType, kind, sortBy, minimumVotes } = definition;
+
       const genreIds =
         mediaType === "movie"
           ? preferences.movieGenreIds
@@ -112,6 +136,8 @@ export async function getExploreSections(
           region: preferences.region,
           genreIds,
           providerIds: preferences.providerIds,
+          sortBy,
+          minimumVotes,
         }),
         getGenres(mediaType, query.language),
       ]);
@@ -119,6 +145,8 @@ export async function getExploreSections(
       const genreNames = new Map(genres.map((genre) => [genre.id, genre.name]));
 
       return {
+        id: `${kind}-${mediaType}`,
+        kind,
         mediaType,
         page: titles.page,
         totalPages: Math.min(titles.total_pages, 100),
@@ -129,4 +157,84 @@ export async function getExploreSections(
       };
     }),
   );
+
+  const trendingSectionsPromise = Promise.all(
+    mediaTypes.map((mediaType) =>
+      getTrendingSection(mediaType, preferences, query.language),
+    ),
+  );
+
+  const [trendingSections, regularSections] = await Promise.all([
+    trendingSectionsPromise,
+    regularSectionsPromise,
+  ]);
+
+  return [...trendingSections, ...regularSections];
+}
+
+async function getTrendingSection(
+  mediaType: MediaType,
+  preferences: UpdatePreferencesData,
+  language: ExploreQuery["language"],
+): Promise<ExploreSection> {
+  const [trending, genres] = await Promise.all([
+    getTrendingTitles(mediaType, language),
+    getGenres(mediaType, language),
+  ]);
+
+  const selectedGenres =
+    mediaType === "movie" ? preferences.movieGenreIds : preferences.tvGenreIds;
+
+  const candidates = trending.results.filter(
+    (item) =>
+      selectedGenres.length === 0 ||
+      item.genre_ids.some((id) => selectedGenres.includes(id)),
+  );
+
+  const matchingTitles: TmdbTitleSummary[] = [];
+
+  // Consultamos como máximo cinco disponibilidades a la vez.
+  for (let index = 0; index < candidates.length; index += 5) {
+    const batch = candidates.slice(index, index + 5);
+
+    const matches = await Promise.all(
+      batch.map(async (item) => {
+        if (preferences.providerIds.length === 0) {
+          return item;
+        }
+
+        const availability = await getTitleWatchAvailability(
+          mediaType,
+          item.id,
+          preferences.region,
+        );
+
+        const matchesProvider = availability?.flatrate?.some((provider) =>
+          preferences.providerIds.includes(provider.provider_id),
+        );
+
+        return matchesProvider ? item : null;
+      }),
+    );
+
+    for (const item of matches) {
+      if (item) matchingTitles.push(item);
+    }
+  }
+
+  const genreNames = new Map(genres.map((genre) => [genre.id, genre.name]));
+
+  const items = matchingTitles
+    .slice(0, 20)
+    .map((item) => normalizeTitle(item, mediaType, genreNames));
+
+  return {
+    id: `trending-${mediaType}`,
+    kind: "trending",
+    mediaType,
+    page: 1,
+    totalPages: items.length > 0 ? 1 : 0,
+    totalResults: items.length,
+    items,
+  };
 }
