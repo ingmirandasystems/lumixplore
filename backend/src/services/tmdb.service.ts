@@ -19,6 +19,36 @@ export interface WatchProvider {
   display_priority: number;
 }
 
+export interface TmdbTitleSummary {
+  id: number;
+  title?: string;
+  name?: string;
+  original_title?: string;
+  original_name?: string;
+  poster_path: string | null;
+  backdrop_path: string | null;
+  overview: string;
+  genre_ids: number[];
+  release_date?: string;
+  first_air_date?: string;
+}
+
+export interface TmdbDiscoverResponse {
+  page: number;
+  total_pages: number;
+  total_results: number;
+  results: TmdbTitleSummary[];
+}
+
+interface DiscoverTitlesOptions {
+  mediaType: MediaType;
+  language: CatalogLanguage;
+  page: number;
+  region: string;
+  genreIds: number[];
+  providerIds: number[];
+}
+
 interface CacheEntry {
   data: unknown;
   expiresAt: number;
@@ -126,4 +156,35 @@ export async function getWatchProviders(
   );
 
   return data.results;
+}
+
+export async function discoverTitles({
+  mediaType,
+  language,
+  page,
+  region,
+  genreIds,
+  providerIds,
+}: DiscoverTitlesOptions): Promise<TmdbDiscoverResponse> {
+  const parameters: Record<string, string> = {
+    language: language === "es" ? "es-MX" : "en-US",
+    page: String(page),
+    sort_by: "popularity.desc",
+    include_adult: "false",
+  };
+
+  if (genreIds.length > 0) {
+    parameters.with_genres = genreIds.join("|");
+  }
+
+  if (providerIds.length > 0) {
+    parameters.watch_region = region;
+    parameters.with_watch_providers = providerIds.join("|");
+    parameters.with_watch_monetization_types = "flatrate";
+  }
+
+  return getCachedTmdb<TmdbDiscoverResponse>(
+    `discover/${mediaType}`,
+    parameters,
+  );
 }

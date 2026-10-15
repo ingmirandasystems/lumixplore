@@ -188,5 +188,12 @@
     "invalidGenres": "A selected genre is no longer available. Reload the options.",
     "invalidProviders": "A selected service is no longer available in your region. Reload the options.",
     "regionChanged": "Your account region has changed. Reload the page before saving."
+  },
+  "explore": {
+    "loading": "Loading titles...",
+    "loadError": "Could not load titles. Try again.",
+    "popularMovies": "Popular movies",
+    "popularSeries": "Popular TV series",
+    "empty": "No titles matched your current preferences."
   }
 }

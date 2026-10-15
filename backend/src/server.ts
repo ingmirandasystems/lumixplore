@@ -11,6 +11,7 @@ import { fileURLToPath } from "node:url";
 import { protectCsrf } from "./middleware/csrf.middleware.js";
 import { catalogRouter } from "./modules/catalog/catalog.routes.js";
 import { preferencesRouter } from "./modules/preferences/preferences.routes.js";
+import { exploreRouter } from "./modules/explore/explore.routes.js";
 
 const app = express();
 const port = Number(process.env.PORT ?? 3000);
@@ -67,6 +68,7 @@ if (process.env.NODE_ENV === "development") {
   });
 }
 app.use("/api/preferences", preferencesRouter);
+app.use("/api/explore", exploreRouter);
 
 app.use(notFoundHandler);
 app.use(errorHandler);

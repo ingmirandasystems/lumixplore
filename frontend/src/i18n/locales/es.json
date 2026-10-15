@@ -188,5 +188,12 @@
     "invalidGenres": "Alguno de los géneros seleccionados ya no está disponible. Recarga las opciones.",
     "invalidProviders": "Alguna plataforma seleccionada ya no está disponible en tu región. Recarga las opciones.",
     "regionChanged": "La región de tu cuenta cambió. Recarga la página antes de guardar."
+  },
+  "explore": {
+    "loading": "Cargando títulos...",
+    "loadError": "No se pudieron cargar los títulos. Intenta de nuevo.",
+    "popularMovies": "Películas populares",
+    "popularSeries": "Series populares",
+    "empty": "No encontramos títulos con tus preferencias actuales."
   }
 }
