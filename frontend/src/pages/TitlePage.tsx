@@ -9,6 +9,7 @@ import { TitleExtraInfo } from "../components/titles/TitleExtraInfo";
 import { TitleTrailer } from "../components/titles/TitleTrailer";
 import { SimilarTitles } from "../components/titles/SimilarTitles";
 import { TitleWatchAvailability } from "../components/titles/TitleWatchAvailability";
+import { WatchlistButton } from "../components/titles/WatchlistButton";
 
 export function TitlePage() {
   const { mediaType, tmdbId } = useParams();
@@ -113,6 +114,12 @@ export function TitlePage() {
       <p>{title.genres.map((genre) => genre.name).join(" · ")}</p>
 
       <p>{title.overview || t("title.noOverview")}</p>
+
+      <WatchlistButton
+        key={`${title.mediaType}-${title.id}`}
+        mediaType={title.mediaType}
+        tmdbId={title.id}
+      />
 
       <TitleWatchAvailability
         key={`${title.mediaType}-${title.id}-${title.watchAvailability.region}`}

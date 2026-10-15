@@ -246,5 +246,21 @@
     "watchEmpty": "No availability information is available for this region.",
     "watchMore": "View options on TMDB",
     "watchAttribution": "Availability data provided by JustWatch."
+  },
+  "watchlist": {
+    "checking": "Checking watchlist...",
+    "saving": "Updating...",
+    "add": "Add to my list",
+    "remove": "Remove from my list",
+    "statusError": "Could not check your watchlist.",
+    "updateError": "Could not update your watchlist.",
+    "heading": "My list",
+    "loading": "Loading your list...",
+    "loadError": "Could not load your list.",
+    "retry": "Try again",
+    "empty": "You haven't saved any movies or TV shows yet.",
+    "unavailable": "Title unavailable",
+    "removeNamed": "Remove {{name}} from my list",
+    "pagination": "My list pages"
   }
 }

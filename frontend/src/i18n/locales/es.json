@@ -246,5 +246,21 @@
     "watchEmpty": "No hay información de disponibilidad para esta región.",
     "watchMore": "Consultar opciones en TMDB",
     "watchAttribution": "Datos de disponibilidad proporcionados por JustWatch."
+  },
+  "watchlist": {
+    "checking": "Comprobando lista...",
+    "saving": "Actualizando...",
+    "add": "Añadir a mi lista",
+    "remove": "Quitar de mi lista",
+    "statusError": "No se pudo comprobar tu lista.",
+    "updateError": "No se pudo actualizar tu lista.",
+    "heading": "Mi lista",
+    "loading": "Cargando tu lista...",
+    "loadError": "No se pudo cargar tu lista.",
+    "retry": "Reintentar",
+    "empty": "Todavía no has guardado películas ni series.",
+    "unavailable": "Título no disponible",
+    "removeNamed": "Quitar {{name}} de mi lista",
+    "pagination": "Páginas de mi lista"
   }
 }
