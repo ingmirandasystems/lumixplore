@@ -5,8 +5,11 @@ import {
   getWatchRegions,
   getGenres,
   getWatchProviders,
+  TmdbError,
+  getSimilarTitles,
 } from "../../services/tmdb.service.js";
 import type { MediaType, WatchProvider } from "../../services/tmdb.service.js";
+import { getCatalogTitle } from "./title.service.js";
 
 export const catalogRouter = Router();
 
@@ -22,6 +25,24 @@ catalogRouter.get("/regions", async (_req, res, next) => {
 
 const preferencesOptionsQuerySchema = z.object({
   language: z.enum(["es", "en"]).default("en"),
+});
+
+const titleParamsSchema = z.object({
+  mediaType: z.enum(["movie", "tv"]),
+  tmdbId: z
+    .string()
+    .regex(/^[1-9]\d*$/)
+    .transform(Number)
+    .refine(Number.isSafeInteger),
+});
+
+const titleQuerySchema = z.object({
+  language: z.enum(["es", "en"]).default("en"),
+});
+
+const similarTitlesQuerySchema = z.object({
+  language: z.enum(["es", "en"]).default("en"),
+  page: z.coerce.number().int().min(1).max(100).default(1),
 });
 
 catalogRouter.get(
@@ -86,6 +107,115 @@ catalogRouter.get(
         ),
       });
     } catch (error) {
+      next(error);
+    }
+  },
+);
+
+catalogRouter.get(
+  "/titles/:mediaType/:tmdbId",
+  requireAuth,
+  async (req, res, next) => {
+    const params = titleParamsSchema.safeParse(req.params);
+    const query = titleQuerySchema.safeParse(req.query);
+
+    if (!params.success || !query.success) {
+      res.status(400).json({
+        code: "INVALID_TITLE_QUERY",
+        message: "Revisa el tipo de contenido, el identificador y el idioma.",
+      });
+      return;
+    }
+
+    try {
+      const { mediaType, tmdbId } = params.data;
+      const { language } = query.data;
+
+      const title = await getCatalogTitle(
+        mediaType,
+        tmdbId,
+        language,
+        res.locals.user.region,
+      );
+
+      res.json({ title });
+    } catch (error) {
+      if (error instanceof TmdbError) {
+        if (error.status === 404) {
+          res.status(404).json({
+            code: "TITLE_NOT_FOUND",
+            message: "El título solicitado no existe.",
+          });
+          return;
+        }
+
+        res.status(502).json({
+          code: "CATALOG_UNAVAILABLE",
+          message:
+            "No se pudo consultar el catálogo. Intenta de nuevo más tarde.",
+        });
+        return;
+      }
+
+      next(error);
+    }
+  },
+);
+
+catalogRouter.get(
+  "/titles/:mediaType/:tmdbId/similar",
+  requireAuth,
+  async (req, res, next) => {
+    const params = titleParamsSchema.safeParse(req.params);
+    const query = similarTitlesQuerySchema.safeParse(req.query);
+
+    if (!params.success || !query.success) {
+      res.status(400).json({
+        code: "INVALID_SIMILAR_TITLES_QUERY",
+        message: "Revisa el título, el idioma y la página solicitada.",
+      });
+      return;
+    }
+
+    try {
+      const { mediaType, tmdbId } = params.data;
+      const { language, page } = query.data;
+
+      const result = await getSimilarTitles(mediaType, tmdbId, language, page);
+
+      res.json({
+        page: result.page,
+        totalPages: Math.min(result.total_pages, 100),
+        totalResults: result.total_results,
+        items: result.results.map((item) => ({
+          id: item.id,
+          mediaType,
+          title:
+            item.title ||
+            item.name ||
+            item.original_title ||
+            item.original_name ||
+            String(item.id),
+          posterPath: item.poster_path,
+        })),
+      });
+    } catch (error) {
+      if (error instanceof TmdbError) {
+        if (error.status === 404) {
+          res.status(404).json({
+            code: "TITLE_NOT_FOUND",
+            message: "El título solicitado no existe.",
+          });
+          return;
+        }
+
+        res.status(502).json({
+          code: "CATALOG_UNAVAILABLE",
+          message: "No se pudieron consultar los títulos similares.",
+        });
+        return;
+      }
+
       next(error);
     }
   },

@@ -5,6 +5,7 @@ import { getCommonErrorKey } from "../services/api";
 import { getExplore } from "../services/explore";
 import type { ExploreResponse } from "../services/explore";
 import { DailyRecommendationHero } from "../components/explore/DailyRecommendationHero";
+import { Link } from "react-router";
 
 export function ExplorePage() {
   const { t, i18n } = useTranslation();
@@ -115,38 +116,43 @@ export function ExplorePage() {
                 }}
               >
                 {section.items.map((item) => (
-                  <li
-                    key={`${item.mediaType}-${item.id}`}
-                    style={{ flex: "0 0 160px" }}
+                  <Link
+                    to={`/title/${item.mediaType}/${item.id}`}
+                    aria-label={item.title}
                   >
-                    {item.posterPath ? (
-                      <img
-                        src={`https://image.tmdb.org/t/p/w500${item.posterPath}`}
-                        alt={item.title}
-                        width={160}
-                        height={240}
-                        loading="lazy"
-                        style={{
-                          objectFit: "cover",
-                          borderRadius: 8,
-                        }}
-                      />
-                    ) : (
-                      <div
-                        style={{
-                          width: 160,
-                          height: 240,
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          border: "1px solid currentColor",
-                          borderRadius: 8,
-                        }}
-                      >
-                        {item.title}
-                      </div>
-                    )}
-                  </li>
+                    <li
+                      key={`${item.mediaType}-${item.id}`}
+                      style={{ flex: "0 0 160px" }}
+                    >
+                      {item.posterPath ? (
+                        <img
+                          src={`https://image.tmdb.org/t/p/w500${item.posterPath}`}
+                          alt={item.title}
+                          width={160}
+                          height={240}
+                          loading="lazy"
+                          style={{
+                            objectFit: "cover",
+                            borderRadius: 8,
+                          }}
+                        />
+                      ) : (
+                        <div
+                          style={{
+                            width: 160,
+                            height: 240,
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            border: "1px solid currentColor",
+                            borderRadius: 8,
+                          }}
+                        >
+                          {item.title}
+                        </div>
+                      )}
+                    </li>
+                  </Link>
                 ))}
               </ul>
             )}

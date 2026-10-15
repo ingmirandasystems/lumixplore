@@ -12,6 +12,7 @@ import { ResetPasswordPage } from "./pages/ResetPasswordPage";
 import { LanguageSwitcher } from "./components/LanguageSwitcher";
 import { SettingsPage } from "./pages/SettingsPage";
 import { PreferencesPage } from "./pages/PreferencesPage";
+import { TitlePage } from "./pages/TitlePage";
 
 export default function App() {
   return (
@@ -49,6 +50,14 @@ export default function App() {
           element={
             <RequireAuth>
               <PreferencesPage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/title/:mediaType/:tmdbId"
+          element={
+            <RequireAuth>
+              <TitlePage />
             </RequireAuth>
           }
         />

@@ -5,6 +5,7 @@ import {
   type DailyRecommendation,
 } from "../../services/explore";
 import { getCommonErrorKey } from "../../services/api";
+import { Link } from "react-router";
 
 export function DailyRecommendationHero() {
   const { t, i18n } = useTranslation();
@@ -98,6 +99,9 @@ export function DailyRecommendationHero() {
       )}
 
       <p>{title.overview || t("explore.dailyNoOverview")}</p>
+      <Link to={`/title/${title.mediaType}/${title.id}`}>
+        {t("explore.viewDetails")}
+      </Link>
     </section>
   );
 }

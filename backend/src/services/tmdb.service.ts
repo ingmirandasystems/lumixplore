@@ -58,6 +58,16 @@ const cache = new Map<string, CacheEntry>();
 const pendingRequests = new Map<string, Promise<unknown>>();
 const CACHE_DURATION = 24 * 60 * 60 * 1000;
 
+export class TmdbError extends Error {
+  readonly status: number;
+
+  constructor(status: number) {
+    super(`TMDB respondió con estado ${status}`);
+    this.name = "TmdbError";
+    this.status = status;
+  }
+}
+
 async function getCachedTmdb<T>(
   path: string,
   parameters: Record<string, string>,
@@ -99,7 +109,7 @@ async function getCachedTmdb<T>(
     });
 
     if (!response.ok) {
-      throw new Error(`TMDB respondió con estado ${response.status}`);
+      throw new TmdbError(response.status);
     }
 
     const data: T = await response.json();
@@ -189,6 +199,32 @@ export async function discoverTitles({
   );
 }
 
+export interface TmdbCastMember {
+  id: number;
+  name: string;
+  character: string;
+  profile_path: string | null;
+  order: number;
+}
+
+export interface TmdbCrewMember {
+  id: number;
+  name: string;
+  job: string;
+  department: string;
+  profile_path: string | null;
+}
+
+export interface TmdbVideo {
+  id: string;
+  key: string;
+  name: string;
+  site: string;
+  type: string;
+  official: boolean;
+  iso_639_1: string;
+}
+
 export interface TmdbTitleDetails {
   id: number;
   title?: string;
@@ -196,13 +232,87 @@ export interface TmdbTitleDetails {
   original_title?: string;
   original_name?: string;
   overview: string;
+  tagline: string;
   poster_path: string | null;
   backdrop_path: string | null;
   release_date?: string;
   first_air_date?: string;
+  last_air_date?: string;
   genres: Genre[];
   runtime?: number | null;
   episode_run_time?: number[];
+
+  status: string;
+  original_language: string;
+  vote_average: number;
+  vote_count: number;
+
+  budget?: number;
+  revenue?: number;
+
+  number_of_seasons?: number;
+  number_of_episodes?: number;
+  in_production?: boolean;
+
+  production_companies: {
+    id: number;
+    name: string;
+    logo_path: string | null;
+    origin_country: string;
+  }[];
+
+  production_countries: {
+    iso_3166_1: string;
+    name: string;
+  }[];
+
+  spoken_languages: {
+    iso_639_1: string;
+    english_name: string;
+    name: string;
+  }[];
+
+  created_by?: {
+    id: number;
+    name: string;
+    profile_path: string | null;
+  }[];
+
+  networks?: {
+    id: number;
+    name: string;
+    logo_path: string | null;
+    origin_country: string;
+  }[];
+}
+
+export interface TmdbFullTitleDetails extends TmdbTitleDetails {
+  credits: {
+    cast: TmdbCastMember[];
+    crew: TmdbCrewMember[];
+  };
+
+  videos: {
+    results: TmdbVideo[];
+  };
+
+  release_dates?: {
+    results: {
+      iso_3166_1: string;
+      release_dates: {
+        certification: string;
+        type: number;
+        release_date: string;
+      }[];
+    }[];
+  };
+
+  content_ratings?: {
+    results: {
+      iso_3166_1: string;
+      rating: string;
+    }[];
+  };
 }
 
 export async function getTitleDetails(
@@ -212,5 +322,59 @@ export async function getTitleDetails(
 ): Promise<TmdbTitleDetails> {
   return getCachedTmdb<TmdbTitleDetails>(`${mediaType}/${tmdbId}`, {
     language: language === "es" ? "es-MX" : "en-US",
+  });
+}
+
+export async function getFullTitleDetails(
+  mediaType: MediaType,
+  tmdbId: number,
+  language: CatalogLanguage = "en",
+): Promise<TmdbFullTitleDetails> {
+  return getCachedTmdb<TmdbFullTitleDetails>(`${mediaType}/${tmdbId}`, {
+    language: language === "es" ? "es-MX" : "en-US",
+    append_to_response:
+      mediaType === "movie"
+        ? "credits,videos,release_dates"
+        : "credits,videos,content_ratings",
+    include_video_language: `${language},en,null`,
+  });
+}
+
+export interface TmdbWatchAvailability {
+  link?: string;
+  flatrate?: WatchProvider[];
+  rent?: WatchProvider[];
+  buy?: WatchProvider[];
+  free?: WatchProvider[];
+  ads?: WatchProvider[];
+}
+
+interface TmdbTitleProvidersResponse {
+  id: number;
+  results: Record<string, TmdbWatchAvailability>;
+}
+
+export async function getTitleWatchAvailability(
+  mediaType: MediaType,
+  tmdbId: number,
+  region: string,
+): Promise<TmdbWatchAvailability | null> {
+  const data = await getCachedTmdb<TmdbTitleProvidersResponse>(
+    `${mediaType}/${tmdbId}/watch/providers`,
+    {},
+  );
+
+  return data.results[region] ?? null;
+}
+
+export async function getSimilarTitles(
+  mediaType: MediaType,
+  tmdbId: number,
+  language: CatalogLanguage = "en",
+  page = 1,
+): Promise<TmdbDiscoverResponse> {
+  return getCachedTmdb<TmdbDiscoverResponse>(`${mediaType}/${tmdbId}/similar`, {
+    language: language === "es" ? "es-MX" : "en-US",
+    page: String(page),
   });
 }
