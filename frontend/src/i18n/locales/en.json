@@ -194,6 +194,12 @@
     "loadError": "Could not load titles. Try again.",
     "popularMovies": "Popular movies",
     "popularSeries": "Popular TV series",
-    "empty": "No titles matched your current preferences."
+    "empty": "No titles matched your current preferences.",
+    "dailyTitle": "Daily recommendation",
+    "dailyLoading": "Loading today's recommendation...",
+    "dailyError": "Could not load today's recommendation.",
+    "dailyRuntime": "{{minutes}} min",
+    "dailyEpisodeRuntime": "{{minutes}} min per episode",
+    "dailyNoOverview": "No overview is available."
   }
 }

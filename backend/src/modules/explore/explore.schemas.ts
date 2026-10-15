@@ -6,3 +6,7 @@ export const exploreQuerySchema = z.object({
 });
 
 export type ExploreQuery = z.infer<typeof exploreQuerySchema>;
+
+export const dailyRecommendationQuerySchema = z.object({
+  language: z.enum(["es", "en"]).default("en"),
+});

@@ -4,6 +4,7 @@ import { useAuth } from "../hooks/useAuth";
 import { getCommonErrorKey } from "../services/api";
 import { getExplore } from "../services/explore";
 import type { ExploreResponse } from "../services/explore";
+import { DailyRecommendationHero } from "../components/explore/DailyRecommendationHero";
 
 export function ExplorePage() {
   const { t, i18n } = useTranslation();
@@ -83,6 +84,8 @@ export function ExplorePage() {
       <button type="button" onClick={handleLogout} disabled={isLoggingOut}>
         {isLoggingOut ? t("session.loggingOut") : t("session.logout")}
       </button>
+
+      <DailyRecommendationHero />
 
       {isLoading ? (
         <p role="status">{t("explore.loading")}</p>

@@ -194,6 +194,12 @@
     "loadError": "No se pudieron cargar los títulos. Intenta de nuevo.",
     "popularMovies": "Películas populares",
     "popularSeries": "Series populares",
-    "empty": "No encontramos títulos con tus preferencias actuales."
+    "empty": "No encontramos títulos con tus preferencias actuales.",
+    "dailyTitle": "Recomendación del día",
+    "dailyLoading": "Cargando la recomendación del día...",
+    "dailyError": "No se pudo cargar la recomendación del día.",
+    "dailyRuntime": "{{minutes}} min",
+    "dailyEpisodeRuntime": "{{minutes}} min por episodio",
+    "dailyNoOverview": "No hay una sinopsis disponible."
   }
 }

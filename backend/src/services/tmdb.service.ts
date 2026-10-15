@@ -188,3 +188,29 @@ export async function discoverTitles({
     parameters,
   );
 }
+
+export interface TmdbTitleDetails {
+  id: number;
+  title?: string;
+  name?: string;
+  original_title?: string;
+  original_name?: string;
+  overview: string;
+  poster_path: string | null;
+  backdrop_path: string | null;
+  release_date?: string;
+  first_air_date?: string;
+  genres: Genre[];
+  runtime?: number | null;
+  episode_run_time?: number[];
+}
+
+export async function getTitleDetails(
+  mediaType: MediaType,
+  tmdbId: number,
+  language: CatalogLanguage = "en",
+): Promise<TmdbTitleDetails> {
+  return getCachedTmdb<TmdbTitleDetails>(`${mediaType}/${tmdbId}`, {
+    language: language === "es" ? "es-MX" : "en-US",
+  });
+}
