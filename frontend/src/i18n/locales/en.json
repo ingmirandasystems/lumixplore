@@ -262,5 +262,26 @@
     "unavailable": "Title unavailable",
     "removeNamed": "Remove {{name}} from my list",
     "pagination": "My list pages"
+  },
+  "search": {
+    "label": "Search movies and TV shows",
+    "placeholder": "Enter a title...",
+    "submit": "Search",
+    "heading": "Search",
+    "resultsFor": "Results for “{{query}}”",
+    "invalidQuery": "Enter a valid search and a page between 1 and 100.",
+    "loading": "Searching movies and TV shows...",
+    "loadError": "Could not complete the search.",
+    "retry": "Try again",
+    "empty": "No movies or TV shows matched your search.",
+    "emptyPage": "There are no results on this page.",
+    "movies": "Movies",
+    "series": "TV shows",
+    "pagination": "Search results pages"
+  },
+  "navigation": {
+    "main": "Main navigation",
+    "preferences": "Preferences",
+    "settings": "Settings"
   }
 }

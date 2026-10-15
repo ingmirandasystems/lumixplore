@@ -262,5 +262,26 @@
     "unavailable": "Título no disponible",
     "removeNamed": "Quitar {{name}} de mi lista",
     "pagination": "Páginas de mi lista"
+  },
+  "search": {
+    "label": "Buscar películas y series",
+    "placeholder": "Escribe un título...",
+    "submit": "Buscar",
+    "heading": "Buscar",
+    "resultsFor": "Resultados para «{{query}}»",
+    "invalidQuery": "Introduce una búsqueda válida y una página entre 1 y 100.",
+    "loading": "Buscando películas y series...",
+    "loadError": "No se pudo realizar la búsqueda.",
+    "retry": "Reintentar",
+    "empty": "No encontramos películas ni series con esa búsqueda.",
+    "emptyPage": "No hay resultados en esta página.",
+    "movies": "Películas",
+    "series": "Series",
+    "pagination": "Páginas de resultados de búsqueda"
+  },
+  "navigation": {
+    "main": "Navegación principal",
+    "preferences": "Preferencias",
+    "settings": "Configuración"
   }
 }

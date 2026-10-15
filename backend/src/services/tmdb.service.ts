@@ -378,3 +378,17 @@ export async function getSimilarTitles(
     page: String(page),
   });
 }
+
+export async function searchTitles(
+  mediaType: MediaType,
+  query: string,
+  language: CatalogLanguage = "en",
+  page = 1,
+): Promise<TmdbDiscoverResponse> {
+  return getCachedTmdb<TmdbDiscoverResponse>(`search/${mediaType}`, {
+    query,
+    language: language === "es" ? "es-MX" : "en-US",
+    page: String(page),
+    include_adult: "false",
+  });
+}

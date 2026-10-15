@@ -13,6 +13,7 @@ import { catalogRouter } from "./modules/catalog/catalog.routes.js";
 import { preferencesRouter } from "./modules/preferences/preferences.routes.js";
 import { exploreRouter } from "./modules/explore/explore.routes.js";
 import { watchlistRouter } from "./modules/watchlist/watchlist.routes.js";
+import { searchRouter } from "./modules/search/search.routes.js";
 
 const app = express();
 const port = Number(process.env.PORT ?? 3000);
@@ -71,6 +72,7 @@ if (process.env.NODE_ENV === "development") {
 app.use("/api/preferences", preferencesRouter);
 app.use("/api/explore", exploreRouter);
 app.use("/api/watchlist", watchlistRouter);
+app.use("/api/search", searchRouter);
 
 app.use(notFoundHandler);
 app.use(errorHandler);
