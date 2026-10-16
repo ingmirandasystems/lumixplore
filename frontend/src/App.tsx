@@ -16,6 +16,7 @@ import { PreferencesPage } from "./pages/PreferencesPage";
 import { TitlePage } from "./pages/TitlePage";
 import { WatchlistPage } from "./pages/WatchlistPage";
 import { SearchPage } from "./pages/SearchPage";
+import { MoodPage } from "./pages/MoodPage";
 
 export default function App() {
   return (
@@ -47,6 +48,7 @@ export default function App() {
           <Route path="/title/:mediaType/:tmdbId" element={<TitlePage />} />
           <Route path="/watchlist" element={<WatchlistPage />} />
           <Route path="/search" element={<SearchPage />} />
+          <Route path="/moods/:mood" element={<MoodPage />} />
         </Route>
 
         <Route path="*" element={<NotFoundPage />} />

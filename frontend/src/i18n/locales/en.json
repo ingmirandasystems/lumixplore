@@ -287,5 +287,53 @@
     "main": "Main navigation",
     "preferences": "Preferences",
     "settings": "Settings"
+  },
+  "moods": {
+    "selector": "What are you in the mood for?",
+    "loading": "Loading your experience...",
+    "loadError": "Could not load this experience.",
+    "notImplemented": "This experience is not available yet.",
+    "invalidMood": "The selected experience does not exist.",
+    "backToExplore": "Back to explore",
+    "retry": "Try again",
+    "empty": "No titles match your filters for this section.",
+    "options": {
+      "laugh": "I want to laugh",
+      "feel": "I want to feel",
+      "tension": "I want tension",
+      "adrenaline": "I want adrenaline",
+      "escape": "I want to escape",
+      "intense": "I want something intense"
+    },
+    "rows": {
+      "popularComedy": "Popular comedies",
+      "familyComedy": "Comedy and family",
+      "animatedComedy": "Animated comedy",
+      "romanticComedy": "Romantic comedies",
+      "horrorComedy": "Comedy horror",
+      "popularDrama": "Dramas to connect with",
+      "familyDrama": "Family stories",
+      "romanticDrama": "Love and heartbreak",
+      "demonicPossession": "Demonic possession",
+      "bloodyHorror": "Bloody horror",
+      "psychologicalThriller": "Psychological thrillers",
+      "supernaturalHorror": "Supernatural horror",
+      "serialKillers": "Serial killers",
+      "mysteries": "Mysteries to solve",
+      "heists": "Heists and master plans",
+      "chases": "Chases and danger",
+      "survival": "Survival at all costs",
+      "actionAdventure": "Action and adventure",
+      "magic": "Magic and fantasy",
+      "spaceTravel": "Space travel",
+      "timeTravel": "Time travel",
+      "dystopias": "Dystopian worlds",
+      "otherWorlds": "Other worlds",
+      "moralDilemmas": "Moral dilemmas",
+      "obsession": "Extreme obsessions",
+      "ambition": "The price of ambition",
+      "psychologicalDrama": "Psychological dramas",
+      "crimeConsequences": "Crime and consequences"
+    }
   }
 }

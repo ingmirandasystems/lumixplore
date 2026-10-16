@@ -49,6 +49,9 @@ interface DiscoverTitlesOptions {
   providerIds: number[];
   sortBy?: "popularity.desc" | "vote_average.desc";
   minimumVotes?: number;
+  genreMode?: "all" | "any";
+  keywordIds?: number[];
+  keywordMode?: "all" | "any";
 }
 
 interface CacheEntry {
@@ -179,6 +182,9 @@ export async function discoverTitles({
   providerIds,
   sortBy = "popularity.desc",
   minimumVotes = 0,
+  genreMode = "any",
+  keywordIds = [],
+  keywordMode = "any",
 }: DiscoverTitlesOptions): Promise<TmdbDiscoverResponse> {
   const parameters: Record<string, string> = {
     language: language === "es" ? "es-MX" : "en-US",
@@ -192,13 +198,19 @@ export async function discoverTitles({
   }
 
   if (genreIds.length > 0) {
-    parameters.with_genres = genreIds.join("|");
+    parameters.with_genres = genreIds.join(genreMode === "all" ? "," : "|");
   }
 
   if (providerIds.length > 0) {
     parameters.watch_region = region;
     parameters.with_watch_providers = providerIds.join("|");
     parameters.with_watch_monetization_types = "flatrate";
+  }
+
+  if (keywordIds.length > 0) {
+    parameters.with_keywords = keywordIds.join(
+      keywordMode === "all" ? "," : "|",
+    );
   }
 
   return getCachedTmdb<TmdbDiscoverResponse>(
@@ -408,6 +420,28 @@ export async function getTrendingTitles(
 ): Promise<TmdbDiscoverResponse> {
   return getCachedTmdb<TmdbDiscoverResponse>(`trending/${mediaType}/week`, {
     language: language === "es" ? "es-MX" : "en-US",
+    page: String(page),
+  });
+}
+
+export interface TmdbKeyword {
+  id: number;
+  name: string;
+}
+
+export interface TmdbKeywordSearchResponse {
+  page: number;
+  total_pages: number;
+  total_results: number;
+  results: TmdbKeyword[];
+}
+
+export async function searchKeywords(
+  query: string,
+  page = 1,
+): Promise<TmdbKeywordSearchResponse> {
+  return getCachedTmdb<TmdbKeywordSearchResponse>("search/keyword", {
+    query,
     page: String(page),
   });
 }

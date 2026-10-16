@@ -1,6 +1,7 @@
 import { NavLink } from "react-router";
 import { useTranslation } from "react-i18next";
 import { SearchForm } from "../search/SearchForm";
+import { MoodSelector } from "../moods/MoodSelector";
 
 export function AppHeader() {
   const { t } = useTranslation();
@@ -12,6 +13,7 @@ export function AppHeader() {
       </NavLink>
 
       <SearchForm />
+      <MoodSelector />
 
       <nav aria-label={t("navigation.main")}>
         <NavLink to="/watchlist">{t("watchlist.heading")}</NavLink>

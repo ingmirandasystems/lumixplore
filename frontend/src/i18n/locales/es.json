@@ -287,5 +287,53 @@
     "main": "Navegación principal",
     "preferences": "Preferencias",
     "settings": "Configuración"
+  },
+  "moods": {
+    "selector": "¿Cómo te sientes?",
+    "loading": "Cargando tu experiencia...",
+    "loadError": "No se pudo cargar esta experiencia.",
+    "notImplemented": "Esta experiencia todavía no está disponible.",
+    "invalidMood": "La experiencia seleccionada no existe.",
+    "backToExplore": "Volver a explorar",
+    "retry": "Reintentar",
+    "empty": "No hay títulos disponibles con tus filtros para esta sección.",
+    "options": {
+      "laugh": "Quiero reír",
+      "feel": "Quiero sentir",
+      "tension": "Quiero tensión",
+      "adrenaline": "Quiero adrenalina",
+      "escape": "Quiero escapar",
+      "intense": "Quiero algo intenso"
+    },
+    "rows": {
+      "popularComedy": "Comedias populares",
+      "familyComedy": "Comedia y familia",
+      "animatedComedy": "Animación con humor",
+      "romanticComedy": "Comedias románticas",
+      "horrorComedy": "Terror con humor",
+      "popularDrama": "Dramas para conectar",
+      "familyDrama": "Historias de familia",
+      "romanticDrama": "Amor y desamor",
+      "demonicPossession": "Posesiones demoníacas",
+      "bloodyHorror": "Terror sangriento",
+      "psychologicalThriller": "Suspenso psicológico",
+      "supernaturalHorror": "Terror sobrenatural",
+      "serialKillers": "Asesinos en serie",
+      "mysteries": "Misterios por resolver",
+      "heists": "Atracos y golpes maestros",
+      "chases": "Persecuciones y peligro",
+      "survival": "Sobrevivir a toda costa",
+      "actionAdventure": "Acción y aventura",
+      "magic": "Magia y fantasía",
+      "spaceTravel": "Viajes espaciales",
+      "timeTravel": "Viajes en el tiempo",
+      "dystopias": "Mundos distópicos",
+      "otherWorlds": "Otros mundos",
+      "moralDilemmas": "Dilemas morales",
+      "obsession": "Obsesiones al límite",
+      "ambition": "El precio de la ambición",
+      "psychologicalDrama": "Dramas psicológicos",
+      "crimeConsequences": "Crimen y consecuencias"
+    }
   }
 }

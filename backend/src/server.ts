@@ -14,6 +14,7 @@ import { preferencesRouter } from "./modules/preferences/preferences.routes.js";
 import { exploreRouter } from "./modules/explore/explore.routes.js";
 import { watchlistRouter } from "./modules/watchlist/watchlist.routes.js";
 import { searchRouter } from "./modules/search/search.routes.js";
+import { moodsRouter } from "./modules/moods/moods.routes.js";
 
 const app = express();
 const port = Number(process.env.PORT ?? 3000);
@@ -73,6 +74,7 @@ app.use("/api/preferences", preferencesRouter);
 app.use("/api/explore", exploreRouter);
 app.use("/api/watchlist", watchlistRouter);
 app.use("/api/search", searchRouter);
+app.use("/api/moods", moodsRouter);
 
 app.use(notFoundHandler);
 app.use(errorHandler);
