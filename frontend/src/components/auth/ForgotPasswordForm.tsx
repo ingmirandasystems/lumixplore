@@ -2,6 +2,10 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { forgotPassword } from "../../services/auth";
 import { ApiError, getCommonErrorKey } from "../../services/api";
+import { FloatingInput } from "../ui/FloatingInput";
+import errorIcon from "../../assets/icons/error-icon.svg";
+import successIcon from "../../assets/icons/success-icon.svg";
+import "./ForgotPasswordForm.css";
 
 export function ForgotPasswordForm() {
   const { t } = useTranslation();
@@ -32,11 +36,10 @@ export function ForgotPasswordForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <label htmlFor="forgot-email">{t("common.email")}</label>
-
-      <input
+    <form className="forgotPassword-form" onSubmit={handleSubmit}>
+      <FloatingInput
         id="forgot-email"
+        label={t("common.email")}
         name="email"
         type="email"
         autoComplete="email"
@@ -48,9 +51,23 @@ export function ForgotPasswordForm() {
         }}
       />
 
-      {requestError && <p role="alert">{t(requestError)}</p>}
+      {requestError && (
+        <div className="forgotPassword-form__error--container">
+          <img src={errorIcon} alt="" />
+          <div>
+            <p role="alert">{t(requestError)}</p>
+          </div>
+        </div>
+      )}
 
-      {isSuccess && <p role="status">{t("forgotPassword.success")}</p>}
+      {isSuccess && (
+        <div className="forgotPassword-form__success--container">
+          <img src={successIcon} alt="" />
+          <div>
+            <p role="status">{t("forgotPassword.success")}</p>
+          </div>
+        </div>
+      )}
 
       <button type="submit" disabled={isSending}>
         {isSending

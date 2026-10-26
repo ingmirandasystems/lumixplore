@@ -1,14 +1,21 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../hooks/useAuth";
-import { getPreferences, savePreferences } from "../services/preferences";
-import type { Preferences } from "../services/preferences";
-import { getPreferencesOptions } from "../services/catalog";
-import type { PreferencesOptions } from "../services/catalog";
+import {
+  getPreferences,
+  savePreferences,
+  type Preferences,
+} from "../services/preferences";
+import {
+  getPreferencesOptions,
+  type PreferencesOptions,
+} from "../services/catalog";
 import { ApiError, getCommonErrorKey } from "../services/api";
 import { ContentTypeSelector } from "../components/preferences/ContentTypeSelector";
 import { GenreSelector } from "../components/preferences/GenreSelector";
 import { ProviderSelector } from "../components/preferences/ProviderSelector";
+import "./PreferencesPage.css";
+import { usePageTitle } from "../hooks/usePageTitle";
 
 export function PreferencesPage() {
   const { t, i18n } = useTranslation();
@@ -16,9 +23,11 @@ export function PreferencesPage() {
 
   const language = i18n.resolvedLanguage === "es" ? "es" : "en";
   const region = user?.region;
+  const userId = user?.id;
 
   const [preferences, setPreferences] = useState<Preferences | null>(null);
   const [options, setOptions] = useState<PreferencesOptions | null>(null);
+
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
 
@@ -29,8 +38,6 @@ export function PreferencesPage() {
   const [saveError, setSaveError] = useState<string | null>(null);
   const [isSaved, setIsSaved] = useState(false);
 
-  const userId = user?.id;
-
   useEffect(() => {
     if (!userId || !region) return;
 
@@ -39,6 +46,8 @@ export function PreferencesPage() {
     async function loadPreferences() {
       setIsLoading(true);
       setLoadError(null);
+      setIsSaved(false);
+      setSaveError(null);
 
       try {
         const result = await getPreferences();
@@ -114,6 +123,7 @@ export function PreferencesPage() {
       isLoading ||
       isLoadingOptions ||
       isSaving ||
+      optionsError ||
       preferences.region !== region ||
       options.region !== region
     ) {
@@ -160,81 +170,121 @@ export function PreferencesPage() {
     }
   }
 
-  if (loadError) {
-    return <p role="alert">{t(loadError)}</p>;
-  }
+  const pageError = loadError || optionsError;
 
-  if (optionsError) {
-    return <p role="alert">{t(optionsError)}</p>;
-  }
-
-  if (
-    isLoading ||
-    !preferences ||
-    !options ||
-    preferences.region !== region ||
-    options.region !== region
-  ) {
-    return <p>{t("preferences.loading")}</p>;
-  }
+  usePageTitle(t("preferences.title"));
 
   return (
-    <main>
-      <h1>{t("preferences.title")}</h1>
-      <p>{t("preferences.description")}</p>
+    <main className="main-content preferences-page">
+      <header className="preferences-page__intro">
+        <h1>{t("preferences.title")}</h1>
+        <p>{t("preferences.description")}</p>
+      </header>
 
-      {isLoadingOptions && (
-        <p role="status">{t("preferences.loadingOptions")}</p>
+      {pageError ? (
+        <div
+          className="preferences-page__message preferences-page__message--error"
+          role="alert"
+        >
+          <p>{t(pageError)}</p>
+        </div>
+      ) : isLoading ||
+        !preferences ||
+        !options ||
+        preferences.region !== region ||
+        options.region !== region ? (
+        <p className="preferences-page__loading" role="status">
+          {t("preferences.loading")}
+        </p>
+      ) : (
+        <form
+          className="preferences-page__form"
+          onSubmit={handleSave}
+          aria-busy={isSaving}
+        >
+          {isLoadingOptions && (
+            <p className="preferences-page__loading" role="status">
+              {t("preferences.loadingOptions")}
+            </p>
+          )}
+
+          <div className="preferences-page__card preferences-page__card--content">
+            <ContentTypeSelector
+              value={preferences.contentType}
+              disabled={isLoadingOptions || isSaving}
+              onChange={(contentType) => {
+                setIsSaved(false);
+                setSaveError(null);
+                setPreferences((previous) =>
+                  previous ? { ...previous, contentType } : previous,
+                );
+              }}
+            />
+          </div>
+
+          <div className="preferences-page__card preferences-page__card--genres">
+            <GenreSelector
+              contentType={preferences.contentType}
+              genres={options.genres}
+              movieGenreIds={preferences.movieGenreIds}
+              tvGenreIds={preferences.tvGenreIds}
+              disabled={isLoadingOptions || isSaving}
+              onChange={(movieGenreIds, tvGenreIds) => {
+                setIsSaved(false);
+                setSaveError(null);
+                setPreferences((previous) =>
+                  previous
+                    ? { ...previous, movieGenreIds, tvGenreIds }
+                    : previous,
+                );
+              }}
+            />
+          </div>
+
+          <div className="preferences-page__card preferences-page__card--providers">
+            <ProviderSelector
+              providers={options.providers}
+              selectedIds={preferences.providerIds}
+              disabled={isLoadingOptions || isSaving}
+              onChange={(providerIds) => {
+                setIsSaved(false);
+                setSaveError(null);
+                setPreferences((previous) =>
+                  previous ? { ...previous, providerIds } : previous,
+                );
+              }}
+            />
+          </div>
+
+          <div className="preferences-page__actions">
+            {saveError && (
+              <p
+                className="preferences-page__message preferences-page__message--error"
+                role="alert"
+              >
+                {t(saveError)}
+              </p>
+            )}
+
+            {isSaved && (
+              <p
+                className="preferences-page__message preferences-page__message--success"
+                role="status"
+              >
+                {t("preferences.saved")}
+              </p>
+            )}
+
+            <button
+              className="preferences-page__save"
+              type="submit"
+              disabled={isSaving || isLoadingOptions}
+            >
+              {isSaving ? t("preferences.saving") : t("preferences.save")}
+            </button>
+          </div>
+        </form>
       )}
-
-      <form onSubmit={handleSave}>
-        <ContentTypeSelector
-          value={preferences.contentType}
-          disabled={isLoadingOptions || isSaving}
-          onChange={(contentType) => {
-            setIsSaved(false);
-            setSaveError(null);
-            setPreferences((previous) =>
-              previous ? { ...previous, contentType } : previous,
-            );
-          }}
-        />
-
-        <GenreSelector
-          contentType={preferences.contentType}
-          genres={options.genres}
-          movieGenreIds={preferences.movieGenreIds}
-          tvGenreIds={preferences.tvGenreIds}
-          disabled={isLoadingOptions || isSaving}
-          onChange={(movieGenreIds, tvGenreIds) => {
-            setIsSaved(false);
-            setSaveError(null);
-            setPreferences((previous) =>
-              previous ? { ...previous, movieGenreIds, tvGenreIds } : previous,
-            );
-          }}
-        />
-
-        <ProviderSelector
-          providers={options.providers}
-          selectedIds={preferences.providerIds}
-          disabled={isLoadingOptions || isSaving}
-          onChange={(providerIds) => {
-            setIsSaved(false);
-            setSaveError(null);
-            setPreferences((previous) =>
-              previous ? { ...previous, providerIds } : previous,
-            );
-          }}
-        />
-
-        {saveError && <p role="alert">{t(saveError)}</p>}
-        {isSaved && <p role="status">{t("preferences.saved")}</p>}
-
-        <button type="submit" disabled={isSaving || isLoadingOptions}>
-          {isSaving ? t("preferences.saving") : t("preferences.save")}
-        </button>
-      </form>
     </main>
   );
 }

@@ -2,6 +2,10 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { resendVerification } from "../../services/auth";
 import { ApiError, getCommonErrorKey } from "../../services/api";
+import { FloatingInput } from "../ui/FloatingInput";
+import "./ResendverificationForm.css";
+import errorIcon from "../../assets/icons/error-icon.svg";
+import successIcon from "../../assets/icons/success-icon.svg";
 
 interface ResendVerificationFormProps {
   initialEmail?: string;
@@ -38,11 +42,10 @@ export function ResendVerificationForm({
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <label htmlFor="resend-email">{t("common.email")}</label>
-
-      <input
+    <form className="resendVerification-form" onSubmit={handleSubmit}>
+      <FloatingInput
         id="resend-email"
+        label={t("common.email")}
         name="email"
         type="email"
         autoComplete="email"
@@ -54,9 +57,23 @@ export function ResendVerificationForm({
         }}
       />
 
-      {sendError && <p role="alert">{t(sendError)}</p>}
+      {sendError && (
+        <div className="resendVerification-form__error--container">
+          <img src={errorIcon} alt="" />
+          <div>
+            <p role="alert">{t(sendError)}</p>
+          </div>
+        </div>
+      )}
 
-      {isSuccess && <p role="status">{t("resend.success")}</p>}
+      {isSuccess && (
+        <div className="resendVerification-form__success--container">
+          <img src={successIcon} alt="" />
+          <div>
+            <p role="status">{t("resend.success")}</p>
+          </div>
+        </div>
+      )}
 
       <button type="submit" disabled={isSending}>
         {isSending ? t("resend.submitting") : t("resend.submit")}

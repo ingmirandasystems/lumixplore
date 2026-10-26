@@ -1,0 +1,119 @@
+.settings-modal {
+  width: min(32rem, calc(100vw - 3rem));
+  max-width: none;
+  max-height: calc(100dvh - 3rem);
+
+  margin: auto;
+  padding: 2rem;
+
+  overflow-y: auto;
+  overscroll-behavior: contain;
+
+  border: 1px solid rgb(255 255 255 / 6%);
+  border-radius: 1rem;
+
+  background: #222228;
+  color: var(--text-primary);
+
+  box-shadow:
+    -7px 7px 14px -5px rgb(255 45 55 / 85%),
+    7px 7px 14px -5px rgb(255 45 55 / 85%),
+    0 10px 12px -4px rgb(255 35 45 / 95%);
+
+  scrollbar-width: thin;
+  scrollbar-color: #555560 transparent;
+}
+
+.settings-modal::backdrop {
+  background: rgb(0 0 0 / 65%);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+}
+
+.settings-modal__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.75rem;
+}
+
+.settings-modal__header h2 {
+  min-width: 0;
+  margin: 0;
+
+  color: var(--text-primary);
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.settings-modal__header h2:focus {
+  outline: none;
+}
+
+.settings-modal__close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  width: 2rem;
+  height: 2rem;
+  margin-top: -0.25rem;
+  padding: 0;
+
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+
+  color: var(--text-primary);
+  font-size: 1.75rem;
+  font-weight: 300;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.settings-modal__close:hover:not(:disabled) {
+  background: rgb(255 255 255 / 7%);
+}
+
+.settings-modal__close:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.settings-modal__close:focus-visible {
+  outline: 2px solid var(--text-primary);
+  outline-offset: 3px;
+}
+
+.settings-modal__body {
+  min-width: 0;
+}
+
+/* Tablets */
+@media (max-width: 1024px) {
+  .settings-modal {
+    padding: 1.75rem;
+  }
+}
+
+/* Celulares */
+@media (max-width: 600px) {
+  .settings-modal {
+    width: calc(100vw - 2.5rem);
+    max-height: calc(100dvh - 2.5rem);
+    padding: 1.5rem 1.25rem;
+  }
+
+  .settings-modal__header {
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .settings-modal__header h2 {
+    font-size: 1.125rem;
+  }
+}

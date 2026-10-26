@@ -10,6 +10,11 @@ import { TitleTrailer } from "../components/titles/TitleTrailer";
 import { SimilarTitles } from "../components/titles/SimilarTitles";
 import { TitleWatchAvailability } from "../components/titles/TitleWatchAvailability";
 import { WatchlistButton } from "../components/titles/WatchlistButton";
+import { PageShell } from "../layouts/PageShell";
+import { mainBackgroundColors } from "../styles/backgroundPalettes";
+import { TitleLogo } from "../components/titles/TitleLogo";
+import "./TitlePage.css";
+import { usePageTitle } from "../hooks/usePageTitle";
 
 export function TitlePage() {
   const { mediaType, tmdbId } = useParams();
@@ -77,54 +82,116 @@ export function TitlePage() {
     };
   }, [validMediaType, validId, language, region]);
 
-  if (!validMediaType || validId === null) {
-    return <p role="alert">{t("title.notFound")}</p>;
-  }
+  usePageTitle(title?.title ?? t("title.pageTitle"));
 
-  if (loading) {
-    return <p role="status">{t("title.loading")}</p>;
+  if (!validMediaType || validId === null || loading || errorKey || !title) {
+    return (
+      <PageShell colors={mainBackgroundColors}>
+        <main className="main-content">
+          {!validMediaType || validId === null ? (
+            <p role="alert">{t("title.notFound")}</p>
+          ) : loading ? (
+            <p role="status">{t("title.loading")}</p>
+          ) : errorKey ? (
+            <p role="alert">{t(errorKey)}</p>
+          ) : (
+            <p role="alert">{t("title.notFound")}</p>
+          )}
+        </main>
+      </PageShell>
+    );
   }
-
-  if (errorKey) {
-    return <p role="alert">{t(errorKey)}</p>;
-  }
-
-  if (!title) return null;
 
   return (
-    <main>
-      {title.backdropPath && (
-        <img
-          src={`https://image.tmdb.org/t/p/w1280${title.backdropPath}`}
-          alt=""
-          style={{
-            width: "100%",
-            maxHeight: 480,
-            objectFit: "cover",
-          }}
-        />
-      )}
+    <main className="title-page">
+      <div className="title-page__background" aria-hidden="true">
+        {title.backdropPath && (
+          <img
+            src={`https://image.tmdb.org/t/p/w1280${title.backdropPath}`}
+            alt=""
+            onError={(event) => {
+              event.currentTarget.style.display = "none";
+            }}
+          />
+        )}
 
-      <h1>{title.title}</h1>
+        <div className="title-page__background-gradients" />
+      </div>
 
-      {title.releaseDate && <p>{title.releaseDate.slice(0, 4)}</p>}
+      {/*title.productionCompanies.length > 0 && (
+        <div className="title-page__companies">
+          {title.productionCompanies.map((company) => (
+            <TitleLogo
+              key={`${company.id}-${company.logoPath}`}
+              path={company.logoPath}
+              name={company.name}
+              className="title-page__company-logo"
+            />
+          ))}
+        </div>
+      )*/}
+      <div className="film-info__container">
+        <div className="title-images__container">
+          {/*featuredCompany && (
+            <TitleLogo
+              key={`${featuredCompany.id}-${featuredCompany.logoPath}`}
+              path={featuredCompany.logoPath}
+              name={featuredCompany.name}
+              className="title-page__company-logo"
+            />
+          )*/}
+          <h1 className="title-page__heading">
+            <TitleLogo
+              key={`${title.id}-${title.logoPath}`}
+              path={title.logoPath}
+              name={title.title}
+              className="title-page__logo"
+            />
+          </h1>
+        </div>
 
-      {title.certification && <p>{title.certification.label}</p>}
+        <div className="title-info-description__container">
+          <div className="title-description__container">
+            {title.certification && (
+              <>
+                <span className="certification-container">
+                  {" "}
+                  <p>{title.certification.label}</p>
+                </span>
+                <div className="circle-separator"></div>
+              </>
+            )}
 
-      <p>{title.genres.map((genre) => genre.name).join(" · ")}</p>
+            {title.releaseDate && (
+              <>
+                <p>{title.releaseDate.slice(0, 4)}</p>{" "}
+                <div className="circle-separator"></div>
+              </>
+            )}
 
-      <p>{title.overview || t("title.noOverview")}</p>
+            <p>{title.genres.map((genre) => genre.name).join(" · ")}</p>
+          </div>
 
-      <WatchlistButton
-        key={`${title.mediaType}-${title.id}`}
-        mediaType={title.mediaType}
-        tmdbId={title.id}
-      />
+          <p className="title-overview">
+            {title.overview || t("title.noOverview")}
+          </p>
 
-      <TitleWatchAvailability
-        key={`${title.mediaType}-${title.id}-${title.watchAvailability.region}`}
-        availability={title.watchAvailability}
-      />
+          <div className="divider"></div>
+
+          <div className="title-buttons__container">
+            <WatchlistButton
+              key={`${title.mediaType}-${title.id}`}
+              mediaType={title.mediaType}
+              tmdbId={title.id}
+            />
+
+            <TitleWatchAvailability
+              key={`${title.mediaType}-${title.id}-${title.watchAvailability.region}`}
+              availability={title.watchAvailability}
+            />
+          </div>
+        </div>
+      </div>
 
       <TitleTabs
         key={`${title.mediaType}-${title.id}`}

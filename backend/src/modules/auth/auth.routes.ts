@@ -15,6 +15,7 @@ import {
   updateRegionSchema,
   changePasswordSchema,
   deleteAccountSchema,
+  googleCodeLoginSchema,
 } from "./auth.schemas.js";
 import {
   loginLimiter,
@@ -26,7 +27,10 @@ import {
 } from "./auth.limits.js";
 import { requireAuth, type AuthUser } from "./auth.middleware.js";
 import { sendAuthEmail } from "./auth.mail.js";
-import { verifyGoogleCredential } from "./google.service.js";
+import {
+  verifyGoogleCredential,
+  verifyGoogleAuthorizationCode,
+} from "./google.service.js";
 import { getWatchRegions } from "../../services/tmdb.service.js";
 
 export const authRouter = Router();
@@ -128,15 +132,12 @@ authRouter.post("/register", registrationLimiter, async (req, res, next) => {
       client.release();
     }
 
-    // Solo para probar la verificación durante el desarrollo local.
-    if (process.env.NODE_ENV === "development") {
-      await sendAuthEmail(
-        data.email,
-        verificationToken,
-        "email_verification",
-        data.language,
-      );
-    }
+    await sendAuthEmail(
+      data.email,
+      verificationToken,
+      "email_verification",
+      data.language,
+    );
 
     res.status(201).json({
       message: "Cuenta creada. Falta verificar el correo.",
@@ -489,7 +490,7 @@ authRouter.post(
         client.release();
       }
 
-      if (verificationToken && process.env.NODE_ENV === "development") {
+      if (verificationToken) {
         await sendAuthEmail(
           validation.data.email,
           verificationToken,
@@ -581,7 +582,7 @@ authRouter.post(
         client.release();
       }
 
-      if (resetToken && process.env.NODE_ENV === "development") {
+      if (resetToken) {
         await sendAuthEmail(
           validation.data.email,
           resetToken,
@@ -722,7 +723,15 @@ authRouter.post(
 authRouter.post("/google", loginLimiter, async (req, res, next) => {
   res.setHeader("Cache-Control", "no-store");
 
-  const validation = googleLoginSchema.safeParse(req.body);
+  if (req.get("X-Requested-With") !== "XmlHttpRequest") {
+    res.status(400).json({
+      code: "INVALID_GOOGLE_LOGIN_DATA",
+      message: "Solicitud de acceso con Google inválida.",
+    });
+    return;
+  }
+
+  const validation = googleCodeLoginSchema.safeParse(req.body);
 
   if (!validation.success) {
     res.status(400).json({
@@ -734,19 +743,23 @@ authRouter.post("/google", loginLimiter, async (req, res, next) => {
 
   const data = validation.data;
 
-  if (!process.env.GOOGLE_CLIENT_ID) {
-    next(new Error("Falta GOOGLE_CLIENT_ID."));
+  if (
+    !process.env.GOOGLE_CLIENT_ID ||
+    !process.env.GOOGLE_CLIENT_SECRET ||
+    !process.env.FRONTEND_URL
+  ) {
+    next(new Error("Falta configurar el acceso con Google."));
     return;
   }
 
-  let googleUser: Awaited<ReturnType<typeof verifyGoogleCredential>>;
+  let googleUser: Awaited<ReturnType<typeof verifyGoogleAuthorizationCode>>;
 
   try {
-    googleUser = await verifyGoogleCredential(data.credential);
+    googleUser = await verifyGoogleAuthorizationCode(data.code);
   } catch {
     res.status(401).json({
       code: "INVALID_GOOGLE_CREDENTIAL",
-      message: "No se pudo validar la credencial de Google.",
+      message: "No se pudo validar el acceso con Google.",
     });
     return;
   }

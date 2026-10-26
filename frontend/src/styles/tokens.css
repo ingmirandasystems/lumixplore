@@ -1,0 +1,173 @@
+:root {
+  --font-body: "Inter", system-ui, sans-serif;
+
+  --font-weight-light: 300;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-black: 900;
+
+  /* Text / Objects General colors*/
+  --text-primary: #ffffff;
+  --text-accent: #a1a1aa;
+  --text-secondary: #d4d4d8;
+  --text-primary-onlight: #000000;
+
+  /* Erros and success s*/
+  --error-bg: rgb(251 113 133 / 10%);
+  --error-border: rgb(251 113 133 / 30%);
+  --error-accent: #fda4af;
+
+  --warning-bg: rgb(251 191 36 / 10%);
+  --warning-border: rgb(251 191 36 / 30%);
+  --warning-accent: #fcd34d;
+
+  --success-bg: rgb(52 211 153 / 10%);
+  --success-border: rgb(52 211 153 / 30%);
+  --success-accent: #6ee7b7;
+
+  /* Background Colors */
+  --surface-primary: #15151c;
+  --background-primary: #08080c;
+  --background-blurs: #1f1f26;
+  --background-blurs--hover: #2a2a33;
+
+  --background-light-gray--transparent: #a1a1aa44;
+
+  /* Land Page Title & Buttons */
+  --gradient-pink-blue: linear-gradient(
+    270deg,
+    #45daff 0%,
+    #3b82f6 23%,
+    #8b5cf6 51%,
+    #ff34c5 100%
+  );
+  --gradient-land-title-1: linear-gradient(
+    90deg,
+    #ffd60a 12%,
+    #a8ff3e 24%,
+    #22d3ee 33%,
+    #3b82f6 43%,
+    #8b5cf6 54%,
+    #ff37c3 66%
+  );
+  --gradient-land-title-2: linear-gradient(
+    90deg,
+    #a8ff3e 63%,
+    #22d3ee 68%,
+    #3b82f6 75%,
+    #8b5cf6 85%,
+    #ff37c3 95%
+  );
+  --gradient-land-btn-stroke: linear-gradient(
+    270deg,
+    #ff375f 0%,
+    #8b5cf6 12%,
+    #3b82f6 25%,
+    #22d3ee 38%
+  );
+
+  /* Land Page Mood 0ptions */
+  --yellow-happy: #ffd60a;
+  --blue-sad: #3a7ff1;
+  --purple-mistery: #8b5cf6;
+  --orange-intense: #ff6c0c;
+  --green-fantasy: #99fa51;
+  --red-horror: #ff2d55;
+
+  /* Land Page 3 steps */
+  --gradient-bp-stroke: linear-gradient(
+    to bottom right,
+    #04a1cd 0%,
+    #ef39ca 100%
+  );
+  --lilac-step-1: #8b5cf6;
+  --land-recomendations-stroke: #04a1cd;
+  --blue-step-2: #22d3ee;
+  --red-step-3: #ff2d55;
+
+  /* Land Page Lumicard */
+  --red-land-lumicard: #ff375f;
+  --purple-land-lumicard: #8b5cf6;
+  --blue-land-lumicard: #22d3ee;
+  --green-land-lumicard: #a8ff3e;
+
+  --red-land-lumicard-op: #ff375f66;
+  --purple-land-lumicard-op: #8b5cf666;
+  --blue-land-lumicard-op: #22d3ee66;
+
+  --gradient-land-lumicard-btn: linear-gradient(
+    270deg,
+    #ff2d55 0%,
+    #8b5cf6 25%,
+    #3b82f6 50%,
+    #22d3ee 94%,
+    #3effc2 100%
+  );
+
+  /* Land Page Last Section */
+  --gradient-land-last-title: linear-gradient(
+    270deg,
+    #ffd60a 36%,
+    #a8ff3e 49%,
+    #22d3ee 63%,
+    #3b82f6 75%,
+    #8b5cf6 88%,
+    #ff375f 100%
+  );
+  --gradient-land-last-btn: linear-gradient(
+    90deg,
+    #3effc2 0%,
+    #22d3ee 6%,
+    #3b82f6 50%,
+    #8b5cf6 75%,
+    #ff2d55 100%
+  );
+
+  /* General gradients */
+  --gradient-yellow: linear-gradient(90deg, #dfd6ab 0%, #eaca28 100%);
+  --gradient-blue: linear-gradient(90deg, #abd6df 0%, #2899ea 100%);
+  --gradient-red: linear-gradient(90deg, #e15050 0%, #480000 100%);
+  --gradient-green: linear-gradient(90deg, #e0ffa6 0%, #6eaa00 100%);
+  --gradient-lilac-90: linear-gradient(90deg, #d2bef2 0%, #551ab2 100%);
+  --gradient-lilac-180: linear-gradient(180deg, #d2bef2 0%, #551ab2 100%);
+  --gradient-gray: linear-gradient(90deg, #cdcdcd 0%, #5b5b5b 100%);
+  --gradient-rainbow-90: linear-gradient(
+    90deg,
+    #ff375f 0%,
+    #8b5cf6 12%,
+    #3b82f6 25%,
+    #22d3ee 38%,
+    #a8ff3e 51%,
+    #ffd60a 64%,
+    #ff7a00 75%,
+    #ff3b30 88%,
+    #ff2d55 100%
+  );
+  --gradient-rainbow-180: linear-gradient(
+    180deg,
+    #ff375f 0%,
+    #8b5cf6 12%,
+    #3b82f6 25%,
+    #22d3ee 38%,
+    #a8ff3e 51%,
+    #ffd60a 64%,
+    #ff7a00 75%,
+    #ff3b30 88%,
+    #ff2d55 100%
+  );
+
+  --gradient-rainbow-270: linear-gradient(
+    270deg,
+    #ff375f 0%,
+    #8b5cf6 12%,
+    #3b82f6 25%,
+    #22d3ee 38%,
+    #a8ff3e 51%,
+    #ffd60a 64%,
+    #ff7a00 75%,
+    #ff3b30 88%,
+    #ff2d55 100%
+  );
+}

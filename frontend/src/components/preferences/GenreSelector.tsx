@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
 import type { Genre } from "../../services/catalog";
 import type { ContentType } from "../../services/preferences";
+import "./GenreSelector.css";
 
 interface GenreSelectorProps {
   contentType: ContentType;
@@ -76,47 +77,54 @@ export function GenreSelector({
   }
 
   return (
-    <fieldset disabled={disabled}>
+    <fieldset className="genre-selector" disabled={disabled}>
       <legend>{t("preferences.genres")}</legend>
 
-      {choices.map((genre) => {
-        const checked = genre.mediaTypes.every((mediaType) =>
-          (mediaType === "movie" ? movieGenreIds : tvGenreIds).includes(
-            genre.id,
-          ),
-        );
+      <div className="genre-selector__grid">
+        {choices.map((genre) => {
+          const checked = genre.mediaTypes.every((mediaType) =>
+            (mediaType === "movie" ? movieGenreIds : tvGenreIds).includes(
+              genre.id,
+            ),
+          );
 
-        return (
-          <label
-            key={genre.id}
-            className={`preference-card${checked ? " is-selected" : ""}`}
-          >
-            <input
-              type="checkbox"
-              checked={checked}
-              onChange={(event) => {
-                toggleGenre(
-                  genre.id,
-                  genre.mediaTypes,
-                  event.currentTarget.checked,
-                );
-              }}
-            />
-            {genre.name}
-          </label>
-        );
-      })}
+          return (
+            <label
+              key={genre.id}
+              className={`preference-card${checked ? " is-selected" : ""}`}
+            >
+              <input
+                type="checkbox"
+                checked={checked}
+                onChange={(event) => {
+                  toggleGenre(
+                    genre.id,
+                    genre.mediaTypes,
+                    event.currentTarget.checked,
+                  );
+                }}
+              />
+              {genre.name}
+            </label>
+          );
+        })}
 
-      <label className={`preference-card${allSelected ? " is-selected" : ""}`}>
-        <input
-          type="checkbox"
-          checked={allSelected}
-          onChange={() => {
-            onChange(showMovies ? [] : movieGenreIds, showTv ? [] : tvGenreIds);
-          }}
-        />
-        {t("preferences.allGenres")}
-      </label>
+        <label
+          className={`preference-card${allSelected ? " is-selected" : ""}`}
+        >
+          <input
+            type="checkbox"
+            checked={allSelected}
+            onChange={() => {
+              onChange(
+                showMovies ? [] : movieGenreIds,
+                showTv ? [] : tvGenreIds,
+              );
+            }}
+          />
+          {t("preferences.allGenres")}
+        </label>
+      </div>
     </fieldset>
   );
 }

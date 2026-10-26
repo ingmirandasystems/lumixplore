@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { CatalogTitle } from "../../services/titles";
+import "./TitleCast.css";
 
 interface TitleCastProps {
   cast: CatalogTitle["cast"];
@@ -11,17 +12,7 @@ function CastPhoto({ path }: { path: string | null }) {
 
   if (!path || failed) {
     return (
-      <div
-        className="title-cast__placeholder"
-        aria-hidden="true"
-        style={{
-          width: 120,
-          height: 180,
-          display: "grid",
-          placeItems: "center",
-          background: "#333",
-        }}
-      >
+      <div className="title-cast__placeholder" aria-hidden="true">
         ?
       </div>
     );
@@ -35,7 +26,6 @@ function CastPhoto({ path }: { path: string | null }) {
       width={120}
       height={180}
       onError={() => setFailed(true)}
-      style={{ objectFit: "cover" }}
     />
   );
 }
@@ -49,26 +39,16 @@ export function TitleCast({ cast }: TitleCastProps) {
     <section className="title-cast">
       <h2>{t("title.cast")}</h2>
 
-      <ul
-        className="title-cast__list"
-        style={{
-          display: "flex",
-          gap: 16,
-          overflowX: "auto",
-          listStyle: "none",
-          padding: 0,
-        }}
-      >
+      <ul className="title-cast__list">
         {cast.map((person, index) => (
-          <li
-            key={`${person.id}-${index}`}
-            className="title-cast__person"
-            style={{ flex: "0 0 120px" }}
-          >
+          <li key={`${person.id}-${index}`} className="title-cast__person">
             <CastPhoto key={person.profilePath} path={person.profilePath} />
 
-            <p>{person.name}</p>
-            {person.character && <p>{person.character}</p>}
+            <p className="title-cast__name">{person.name}</p>
+
+            {person.character && (
+              <p className="title-cast__character">{person.character}</p>
+            )}
           </li>
         ))}
       </ul>

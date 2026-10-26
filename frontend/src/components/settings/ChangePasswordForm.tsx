@@ -1,9 +1,21 @@
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../../hooks/useAuth";
 import { ApiError, getCommonErrorKey } from "../../services/api";
+import { FloatingInput } from "../../components/ui/FloatingInput";
+import { SettingsFormActions } from "./SettingsFormActions";
 
-export function ChangePasswordForm() {
+interface ChangePasswordFormProps {
+  onCancel: () => void;
+  onSuccess: () => void;
+  onBusyChange: (busy: boolean) => void;
+}
+
+export function ChangePasswordForm({
+  onCancel,
+  onSuccess,
+  onBusyChange,
+}: ChangePasswordFormProps) {
   const { t } = useTranslation();
   const { changePassword } = useAuth();
 
@@ -13,8 +25,11 @@ export function ChangePasswordForm() {
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
 
-  async function handleSubmit(event: React.SubmitEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
+    if (isSaving) return;
+
     setSaveError(null);
 
     if (newPassword !== confirmPassword) {
@@ -23,6 +38,7 @@ export function ChangePasswordForm() {
     }
 
     setIsSaving(true);
+    onBusyChange(true);
 
     try {
       await changePassword({ currentPassword, newPassword });
@@ -47,20 +63,24 @@ export function ChangePasswordForm() {
       }
 
       setSaveError(errorKey);
+      return;
     } finally {
       setIsSaving(false);
+      onBusyChange(false);
     }
+
+    onSuccess();
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <p>{t("settings.passwordChangeDescription")}</p>
+    <form className="settings-form" onSubmit={handleSubmit}>
+      <p className="settings-form__description">
+        {t("settings.passwordChangeDescription")}
+      </p>
 
-      <label htmlFor="settings-current-password">
-        {t("settings.currentPassword")}
-      </label>
-      <input
+      <FloatingInput
         id="settings-current-password"
+        label={t("settings.currentPassword")}
         name="currentPassword"
         type="password"
         autoComplete="current-password"
@@ -68,14 +88,12 @@ export function ChangePasswordForm() {
         maxLength={128}
         value={currentPassword}
         disabled={isSaving}
-        onChange={(event) => {
-          setCurrentPassword(event.currentTarget.value);
-        }}
+        onChange={(event) => setCurrentPassword(event.currentTarget.value)}
       />
 
-      <label htmlFor="settings-new-password">{t("settings.newPassword")}</label>
-      <input
+      <FloatingInput
         id="settings-new-password"
+        label={t("settings.newPassword")}
         name="newPassword"
         type="password"
         autoComplete="new-password"
@@ -84,16 +102,12 @@ export function ChangePasswordForm() {
         maxLength={128}
         value={newPassword}
         disabled={isSaving}
-        onChange={(event) => {
-          setNewPassword(event.currentTarget.value);
-        }}
+        onChange={(event) => setNewPassword(event.currentTarget.value)}
       />
 
-      <label htmlFor="settings-confirm-password">
-        {t("common.confirmPassword")}
-      </label>
-      <input
+      <FloatingInput
         id="settings-confirm-password"
+        label={t("common.confirmPassword")}
         name="confirmPassword"
         type="password"
         autoComplete="new-password"
@@ -102,18 +116,24 @@ export function ChangePasswordForm() {
         maxLength={128}
         value={confirmPassword}
         disabled={isSaving}
-        onChange={(event) => {
-          setConfirmPassword(event.currentTarget.value);
-        }}
+        onChange={(event) => setConfirmPassword(event.currentTarget.value)}
       />
 
-      {saveError && <p role="alert">{t(saveError)}</p>}
+      {saveError && (
+        <p className="settings-form__error" role="alert">
+          {t(saveError)}
+        </p>
+      )}
 
-      <button type="submit" disabled={isSaving}>
-        {isSaving
-          ? t("settings.changingPassword")
-          : t("settings.changePassword")}
-      </button>
+      <SettingsFormActions
+        busy={isSaving}
+        onCancel={onCancel}
+        submitLabel={
+          isSaving
+            ? t("settings.changingPassword")
+            : t("settings.ui.saveChanges")
+        }
+      />
     </form>
   );
 }

@@ -5,6 +5,10 @@ import { register } from "../../services/auth";
 import type { RegisterData } from "../../services/auth";
 import { ApiError, getCommonErrorKey } from "../../services/api";
 import { RegionSelect } from "../RegionSelect";
+import { FloatingInput } from "../ui/FloatingInput";
+import errorIcon from "../../assets/icons/error-icon.svg";
+import successIcon from "../../assets/icons/success-icon.svg";
+import "./RegisterForm.css";
 
 export function RegisterForm() {
   const { t, i18n } = useTranslation();
@@ -75,23 +79,25 @@ export function RegisterForm() {
 
   if (isSuccess) {
     return (
-      <div role="status">
-        <h2>{t("register.successTitle")}</h2>
-        <p>{t("register.successDescription")}</p>
+      <div role="status" className="register-form__success--container">
+        <img src={successIcon} alt="" />
+        <div>
+          <h2>{t("register.successTitle")}</h2>
+          <p>{t("register.successDescription")}</p>
 
-        <Link to="/resend-verification" state={{ email: formData.email }}>
-          {t("register.resendLink")}
-        </Link>
+          <Link to="/resend-verification" state={{ email: formData.email }}>
+            {t("register.resendLink")}
+          </Link>
+        </div>
       </div>
     );
   }
 
   return (
-    <form onSubmit={handleRegister}>
-      <label htmlFor="register-name">{t("common.name")}</label>
-
-      <input
+    <form className="login-form" onSubmit={handleRegister}>
+      <FloatingInput
         id="register-name"
+        label={t("common.name")}
         name="name"
         type="text"
         autoComplete="given-name"
@@ -108,10 +114,9 @@ export function RegisterForm() {
         }}
       />
 
-      <label htmlFor="register-email">{t("common.email")}</label>
-
-      <input
+      <FloatingInput
         id="register-email"
+        label={t("common.email")}
         name="email"
         type="email"
         autoComplete="email"
@@ -139,10 +144,9 @@ export function RegisterForm() {
         }}
       />
 
-      <label htmlFor="register-password">{t("common.password")}</label>
-
-      <input
+      <FloatingInput
         id="register-password"
+        label={t("common.password")}
         name="password"
         type="password"
         autoComplete="new-password"
@@ -160,12 +164,9 @@ export function RegisterForm() {
         }}
       />
 
-      <label htmlFor="register-confirm-password">
-        {t("common.confirmPassword")}
-      </label>
-
-      <input
+      <FloatingInput
         id="register-confirm-password"
+        label={t("common.confirmPassword")}
         name="confirmPassword"
         type="password"
         autoComplete="new-password"
@@ -178,7 +179,14 @@ export function RegisterForm() {
         }}
       />
 
-      {registerError && <p role="alert">{t(registerError)}</p>}
+      {registerError && (
+        <div className="register-form__error--container">
+          <img src={errorIcon} alt="" />
+          <div>
+            <p role="alert">{t(registerError)}</p>
+          </div>
+        </div>
+      )}
 
       <button type="submit" disabled={isRegistering}>
         {isRegistering ? t("register.submitting") : t("common.register")}

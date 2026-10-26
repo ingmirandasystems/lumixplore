@@ -22,6 +22,7 @@ export interface CatalogTitle {
   overview: string;
   tagline: string | null;
   posterPath: string | null;
+  logoPath: string | null;
   backdropPath: string | null;
   releaseDate: string | null;
   genres: {

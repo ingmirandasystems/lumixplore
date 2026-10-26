@@ -3,6 +3,9 @@ import { useTranslation } from "react-i18next";
 import { useAuth } from "../../hooks/useAuth";
 import type { LoginCredentials } from "../../services/auth";
 import { ApiError, getCommonErrorKey } from "../../services/api";
+import "./LoginForm.css";
+import errorIcon from "../../assets/icons/error-icon.svg";
+import { FloatingInput } from "../ui/FloatingInput";
 
 export function LoginForm() {
   const { t } = useTranslation();
@@ -47,11 +50,10 @@ export function LoginForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <label htmlFor="login-email">{t("common.email")}</label>
-
-      <input
+    <form className="login-form" onSubmit={handleSubmit}>
+      <FloatingInput
         id="login-email"
+        label={t("common.email")}
         name="email"
         type="email"
         autoComplete="username"
@@ -67,10 +69,9 @@ export function LoginForm() {
         }}
       />
 
-      <label htmlFor="login-password">{t("common.password")}</label>
-
-      <input
+      <FloatingInput
         id="login-password"
+        label={t("common.password")}
         name="password"
         type="password"
         autoComplete="current-password"
@@ -85,8 +86,14 @@ export function LoginForm() {
           }));
         }}
       />
-
-      {loginError && <p role="alert">{t(loginError)}</p>}
+      {loginError && (
+        <div className="login-form__error--container">
+          <img src={errorIcon} alt="" />
+          <div>
+            <p role="alert">{t(loginError)}</p>
+          </div>
+        </div>
+      )}
 
       <button type="submit" disabled={isLoggingIn}>
         {isLoggingIn ? t("login.submitting") : t("common.login")}

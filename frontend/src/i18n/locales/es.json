@@ -20,11 +20,45 @@
     "logoutError": "No se pudo cerrar la sesión."
   },
   "home": {
-    "title": "Bienvenido a LumiXplore",
-    "description": "Descubre películas y series para tu próximo momento de cine."
+    "heroSubtitle": "Tu próxima historia comienza aquí",
+    "heroTitle": "Encuentra algo perfecto <br/> para ver,",
+    "heroTitleGradient": " según como <br/> te sientes",
+    "heroDescription": "Descubre películas y series según tu estado de ánimo, <br/> tus géneros favoritos y las plataformas que tienes <br/> disponibles para verlos.",
+    "heroExplore": "Explorar ahora",
+    "heroCreate": "Crear mi perfil",
+    "heroAccent": "Explora libremente. Crea una cuenta para guardar y personalizar.",
+    "recommendationTitle": "Encuentra historias para cada momento",
+    "recommendationSubtitle": "Elige como te sientes o qué tipo de experiencia estás buscando.",
+    "recommendationHappy": "Feliz y ligero",
+    "recommendationSad": "Triste y emotivo",
+    "recommendationMistery": "Misterioso",
+    "recommendationIntense": "Intenso",
+    "recommendationFantasy": "Fantástico",
+    "recommendationHorror": "Terrorífico",
+    "stepsTitle": "Tu próxima historia en tres pasos",
+    "stepsSubtitle": "Descubre lo fácil que es encontrar tu próxima obsesión.",
+    "stepsLooking1": "Cuéntanos que buscas",
+    "stepsLooking2": "Elige tu estado de ánimo, genero o intensidad",
+    "stepsRecommendations1": "Recibe recomendaciones",
+    "stepsRecommendations2": "Descubre opciones adaptadas a tus preferencias",
+    "stepsWatch1": "Encuentra donde verla",
+    "stepsWatch2": "Consulta las plataformas disponibles en tu región",
+    "filmsTitle": "Siempre hay algo por descubrir",
+    "filmsSubtitle": "Explora lo mas popular y encuentra tu próxima historia favorita.",
+    "lumicardTitle1": "Haz que ",
+    "lumicardTitle2": "te conozca",
+    "lumicardDes": "Guarda tus favoritos, configura tus plataformas y recibe <br/> recomendaciones cada vez más relevantes.",
+    "lumicardFavs": "Guarda tus favoritos",
+    "lumicardSett": "Personaliza tus gustos",
+    "lumicardNews": "Recibe novedades",
+    "lumicardPlat": "Sincroniza tus plataformas",
+    "encoreTitle": "Menos tiempo buscando.",
+    "encoreSub": "Mas historias disfrutando.",
+    "pageTitle": "Descubre tu próxima historia"
   },
   "login": {
-    "title": "Inicia sesión en LumiXplore",
+    "title": "Qué bueno tenerte <br/> de vuelta!",
+    "subtitle": "Continúa descubriendo historias hechas para ti.",
     "submitting": "Iniciando sesión...",
     "error": "No se pudo iniciar sesión.",
     "invalidCredentials": "Correo o contraseña incorrectos.",
@@ -40,7 +74,9 @@
     "googleInvalidData": "Los datos del acceso con Google no son válidos. Intenta de nuevo.",
     "googleInvalidCredential": "No se pudo validar el acceso con Google. Intenta de nuevo.",
     "googleEmailVerificationRequired": "Por ahora, el acceso con Google solo admite cuentas de Gmail o Google Workspace.",
-    "googleAccountConflict": "No se pudo crear la cuenta. Si ya tienes una, usa su método de acceso. Si enviaste varias solicitudes a la vez, intenta de nuevo."
+    "googleAccountConflict": "No se pudo crear la cuenta. Si ya tienes una, usa su método de acceso. Si enviaste varias solicitudes a la vez, intenta de nuevo.",
+    "googleContinue": "Continuar con Google",
+    "pageTitle": "Iniciar sesión"
   },
   "errors": {
     "rateLimit": "Demasiadas solicitudes. Intenta de nuevo más tarde.",
@@ -60,7 +96,8 @@
     "successTitle": "Revisa tu correo",
     "successDescription": "Creamos tu cuenta. Para iniciar sesión, verifica tu correo electrónico siguiendo las instrucciones que recibirás.",
     "resendLink": "¿No recibiste el correo? Solicitar otro",
-    "invalidData": "Revisa los datos del registro."
+    "invalidData": "Revisa los datos del registro.",
+    "pageTitle": "Crear cuenta"
   },
   "verification": {
     "title": "Verifica tu correo",
@@ -74,7 +111,8 @@
     "successDescription": "Ya puedes iniciar sesión en tu cuenta.",
     "requestAnother": "Solicitar otro correo de verificación",
     "invalidToken": "El enlace de verificación no es válido.",
-    "tokenUnavailable": "El enlace no es válido, venció o ya fue utilizado. Si aún no verificaste tu correo, solicita otro."
+    "tokenUnavailable": "El enlace no es válido, venció o ya fue utilizado. Si aún no verificaste tu correo, solicita otro.",
+    "pageTitle": "Verificar correo electrónico"
   },
   "resend": {
     "title": "Reenviar verificación",
@@ -82,7 +120,8 @@
     "submit": "Reenviar verificación",
     "submitting": "Solicitando...",
     "error": "No se pudo solicitar otro correo de verificación.",
-    "success": "Si existe una cuenta pendiente de verificación con ese correo, recibirás las instrucciones para verificarla."
+    "success": "Si existe una cuenta pendiente de verificación con ese correo, recibirás las instrucciones para verificarla.",
+    "pageTitle": "Reenviar correo de verificación"
   },
   "forgotPassword": {
     "title": "Recupera tu contraseña",
@@ -90,7 +129,8 @@
     "submit": "Recuperar contraseña",
     "submitting": "Solicitando...",
     "error": "No se pudo solicitar la recuperación de contraseña.",
-    "success": "Si existe una cuenta con ese correo que permita recuperar la contraseña, recibirás las instrucciones."
+    "success": "Si existe una cuenta con ese correo que permita recuperar la contraseña, recibirás las instrucciones.",
+    "pageTitle": "Recuperar contraseña"
   },
   "resetPassword": {
     "title": "Restablece tu contraseña",
@@ -105,11 +145,13 @@
     "successTitle": "Contraseña actualizada",
     "successDescription": "Ya puedes iniciar sesión con tu nueva contraseña.",
     "invalidData": "El enlace o la nueva contraseña no cumplen los requisitos. Usa una contraseña de entre 15 y 128 caracteres.",
-    "tokenUnavailable": "El enlace no es válido, venció o ya fue utilizado. Solicita otro enlace de recuperación."
+    "tokenUnavailable": "El enlace no es válido, venció o ya fue utilizado. Solicita otro enlace de recuperación.",
+    "pageTitle": "Restablecer contraseña"
   },
   "notFound": {
     "title": "404 — Página no encontrada",
-    "description": "La página que buscas no existe."
+    "description": "La página que buscas no existe.",
+    "pageTitle": "Página no encontrada"
   },
   "language": {
     "label": "Idioma",
@@ -162,7 +204,18 @@
     "deleteIdentityError": "No se pudo confirmar tu identidad. Revisa la contraseña o selecciona la cuenta de Google vinculada.",
     "deleteGoogleConfirm": "Confirma nuevamente tu cuenta con Google.",
     "deleteGoogleButton": "Confirmar identidad con Google",
-    "deleteGoogleReady": "Identidad de Google recibida. Pulsa Eliminar cuenta para confirmar la eliminación."
+    "deleteGoogleReady": "Identidad de Google recibida. Pulsa Eliminar cuenta para confirmar la eliminación.",
+    "ui": {
+      "close": "Cerrar",
+      "cancel": "Cancelar",
+      "saveChanges": "Guardar cambios",
+      "editName": "Editar nombre",
+      "changeRegion": "Cambiar región",
+      "region": "Región",
+      "password": "Contraseña",
+      "hiddenPassword": "Contraseña oculta",
+      "passwordSaved": "Tu contraseña se actualizó correctamente."
+    }
   },
   "preferences": {
     "title": "Mis preferencias",
@@ -205,7 +258,8 @@
     "topRatedMovies": "Películas mejor valoradas",
     "topRatedSeries": "Series mejor valoradas",
     "trendingMovies": "Películas en tendencia esta semana",
-    "trendingSeries": "Series en tendencia esta semana"
+    "trendingSeries": "Series en tendencia esta semana",
+    "pageTitle": "Explorar"
   },
   "title": {
     "loading": "Cargando información del título...",
@@ -249,7 +303,8 @@
     "watchAds": "Con anuncios",
     "watchEmpty": "No hay información de disponibilidad para esta región.",
     "watchMore": "Consultar opciones en TMDB",
-    "watchAttribution": "Datos de disponibilidad proporcionados por JustWatch."
+    "watchAttribution": "Datos de disponibilidad proporcionados por JustWatch.",
+    "pageTitle": "Detalles del título"
   },
   "watchlist": {
     "checking": "Comprobando lista...",
@@ -265,7 +320,9 @@
     "empty": "Todavía no has guardado películas ni series.",
     "unavailable": "Título no disponible",
     "removeNamed": "Quitar {{name}} de mi lista",
-    "pagination": "Páginas de mi lista"
+    "pagination": "Páginas de mi lista",
+    "adding": "Añadiendo…",
+    "added": "En mi lista"
   },
   "search": {
     "label": "Buscar películas y series",
@@ -281,7 +338,9 @@
     "emptyPage": "No hay resultados en esta página.",
     "movies": "Películas",
     "series": "Series",
-    "pagination": "Páginas de resultados de búsqueda"
+    "pagination": "Páginas de resultados de búsqueda",
+    "open": "Abrir búsqueda",
+    "back": "Volver"
   },
   "navigation": {
     "main": "Navegación principal",
@@ -334,6 +393,62 @@
       "ambition": "El precio de la ambición",
       "psychologicalDrama": "Dramas psicológicos",
       "crimeConsequences": "Crimen y consecuencias"
+    },
+    "pages": {
+      "laugh": {
+        "titleTop": "Para seguir",
+        "titleBottom": "sonriendo",
+        "subtitle": "Comedias, aventuras y grandes historias para disfrutar."
+      },
+      "feel": {
+        "titleTop": "Historias para",
+        "titleBottom": "sentirlo todo",
+        "subtitle": "Historias que acompañan tu tristeza y despiertan tus emociones."
+      },
+      "adrenaline": {
+        "titleTop": "Para subir",
+        "titleBottom": "las pulsaciones",
+        "subtitle": "Acción y suspenso para llevar tu adrenalina al límite."
+      },
+      "tension": {
+        "titleTop": "Para explorar el",
+        "titleBottom": "miedo sin límites",
+        "subtitle": "Terror, suspenso y gore desencadenado."
+      },
+      "escape": {
+        "titleTop": "Para escapar",
+        "titleBottom": "de este mundo",
+        "subtitle": "Fantasía y ciencia ficción para salir de esta realidad."
+      },
+      "intense": {
+        "titleTop": "Para sumergirte en",
+        "titleBottom": "historias al límite",
+        "subtitle": "Películas y series de gran intensidad."
+      }
+    }
+  },
+  "pageTitles": {
+    "home": "LumiXplore",
+    "explore": "Explorar",
+    "login": "Iniciar sesión",
+    "register": "Crear cuenta",
+    "verifyEmail": "Verificar correo",
+    "resendVerification": "Reenviar verificación",
+    "forgotPassword": "Recuperar contraseña",
+    "resetPassword": "Restablecer contraseña",
+    "settings": "Configuración",
+    "preferences": "Preferencias",
+    "watchlist": "Mi lista",
+    "search": "Buscar",
+    "title": "Detalles del título",
+    "notFound": "Página no encontrada",
+    "moods": {
+      "laugh": "Quiero reír",
+      "feel": "Quiero sentir",
+      "tension": "Quiero tensión",
+      "adrenaline": "Quiero adrenalina",
+      "escape": "Quiero escapar",
+      "intense": "Quiero algo intenso"
     }
   }
 }

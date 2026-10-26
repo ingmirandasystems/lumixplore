@@ -1,0 +1,76 @@
+.switcher-container .language-control {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4cqw;
+  margin-right: 2.5cqw;
+}
+
+.icon-language {
+  width: 2.2cqw;
+  height: 2.2cqw;
+  flex-shrink: 0;
+}
+
+.language-control__code {
+  color: var(--text-primary);
+  font-size: 1cqw;
+  pointer-events: none;
+}
+
+.switcher-container .language-control > select {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+
+  opacity: 0;
+  cursor: pointer;
+  font: inherit;
+  font-size: 1cqw;
+}
+
+.switcher-container .language-control > select:disabled {
+  cursor: wait;
+}
+
+.language-control:has(select:focus-visible) {
+  outline: none;
+}
+
+/* Tablets */
+@media (max-width: 1024px) {
+  .icon-language {
+    width: 3cqw;
+    height: 3cqw;
+  }
+
+  .language-control__code {
+    font-size: 1.5cqw;
+    font-weight: 200;
+  }
+
+  .switcher-container .language-control > select {
+    font-size: 1.5cqw;
+  }
+}
+
+/* Celulares */
+@media (max-width: 600px) {
+  .switcher-container .language-control {
+    gap: 1cqw;
+  }
+
+  .icon-language {
+    width: 5cqw;
+    height: 5cqw;
+  }
+
+  .language-control__code {
+    font-size: 2.5cqw;
+  }
+
+  .switcher-container .language-control > select {
+    font-size: 2.5cqw;
+  }
+}

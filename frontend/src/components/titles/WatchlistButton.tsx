@@ -6,6 +6,9 @@ import {
   setWatchlistStatus,
 } from "../../services/watchlist";
 import { getCommonErrorKey } from "../../services/api";
+import "./WatchlistButton.css";
+import addIcon from "../../assets/icons/plus.svg";
+import removeIcon from "../../assets/icons/minus.svg";
 
 interface WatchlistButtonProps {
   mediaType: MediaType;
@@ -77,17 +80,22 @@ export function WatchlistButton({ mediaType, tmdbId }: WatchlistButtonProps) {
     <div className="watchlist-control">
       <button
         type="button"
+        className={inWatchlist ? "is-saved" : ""}
         onClick={handleToggle}
         disabled={!statusLoaded || saving}
         aria-pressed={inWatchlist}
       >
-        {loading
-          ? t("watchlist.checking")
-          : saving
-            ? t("watchlist.saving")
-            : inWatchlist
-              ? t("watchlist.remove")
-              : t("watchlist.add")}
+        <img src={inWatchlist ? removeIcon : addIcon} alt="" />
+
+        {loading ? (
+          <span>{t("watchlist.checking")}</span>
+        ) : saving ? (
+          <span>{t("watchlist.saving")}</span>
+        ) : inWatchlist ? (
+          <span>{t("watchlist.remove")}</span>
+        ) : (
+          <span>{t("watchlist.add")}</span>
+        )}
       </button>
 
       {errorKey && <p role="alert">{t(errorKey)}</p>}

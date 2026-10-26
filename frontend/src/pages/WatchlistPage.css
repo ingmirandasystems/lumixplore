@@ -1,0 +1,272 @@
+.watchlist-page {
+  color: var(--text-primary);
+}
+
+.watchlist-page > h1 {
+  margin: 0 0 2rem;
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.watchlist-page > p,
+.watchlist-page > div > p {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 300;
+  line-height: 1.6;
+}
+
+.watchlist-page [role="alert"] {
+  margin-bottom: 1rem;
+  color: var(--text-primary);
+  overflow-wrap: anywhere;
+}
+
+/* Error de carga y botón de reintentar */
+
+.watchlist-page > div {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.watchlist-page > div > button {
+  min-height: 2.75rem;
+  padding: 0.625rem 1.25rem;
+  border: 1px solid rgb(255 255 255 / 20%);
+  border-radius: 999px;
+
+  background: rgb(255 255 255 / 8%);
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 0.875rem;
+  cursor: pointer;
+
+  transition: background-color 180ms ease;
+}
+
+.watchlist-page > div > button:hover {
+  background: rgb(255 255 255 / 14%);
+}
+
+/* Cuadrícula */
+
+.watchlist-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr));
+  align-items: start;
+  gap: 1.75rem 1.25rem;
+
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.watchlist-grid > li {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.watchlist-grid > li > a {
+  display: block;
+  border-radius: 0.625rem;
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Portadas: sobrescribe sus dimensiones globales solo aquí */
+
+.watchlist-grid .poster-frame,
+.watchlist-grid .poster-placeholder {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 2 / 3;
+  border-radius: 0.625rem;
+  overflow: hidden;
+}
+
+.watchlist-grid .poster-frame .poster-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.watchlist-grid .poster-placeholder {
+  display: grid;
+  place-items: center;
+  padding: 0.875rem;
+
+  background: #292930;
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+/* Quitar de Mi lista */
+
+.watchlist-grid > li > button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid rgb(255 255 255 / 18%);
+  border-radius: 999px;
+
+  background: rgb(255 255 255 / 5%);
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 400;
+  line-height: 1.4;
+  text-align: center;
+  cursor: pointer;
+
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease;
+}
+
+.watchlist-grid > li > button:hover:not(:disabled) {
+  background: rgb(225 80 80 / 15%);
+  border-color: rgb(225 80 80 / 55%);
+}
+
+.watchlist-grid > li > button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* Paginación */
+
+.watchlist-page > nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 1.25rem;
+
+  margin-top: 2.5rem;
+}
+
+.watchlist-page > nav > button {
+  min-height: 2.75rem;
+  padding: 0.625rem 1.125rem;
+  border: 1px solid rgb(255 255 255 / 18%);
+  border-radius: 999px;
+
+  background: var(--text-primary);
+  color: var(--text-primary-onlight);
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1.4;
+  cursor: pointer;
+
+  transition:
+    transform 180ms ease,
+    opacity 180ms ease;
+}
+
+.watchlist-page > nav > button:hover:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.watchlist-page > nav > button:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.watchlist-page > nav > span {
+  color: var(--text-accent);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  text-align: center;
+}
+
+/* Foco de teclado */
+
+.watchlist-page button:focus-visible,
+.watchlist-grid > li > a:focus-visible {
+  outline: 2px solid var(--text-primary);
+  outline-offset: 4px;
+}
+
+/* Tablets */
+
+@media (max-width: 1024px) {
+  .watchlist-page > h1 {
+    margin-bottom: 1.75rem;
+    font-size: 1.75rem;
+  }
+
+  .watchlist-grid {
+    grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));
+    gap: 1.5rem 1rem;
+  }
+}
+
+/* Celulares */
+
+@media (max-width: 600px) {
+  .watchlist-page > h1 {
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+  }
+
+  .watchlist-page > p,
+  .watchlist-page > div > p {
+    font-size: 0.9375rem;
+  }
+
+  .watchlist-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.25rem 0.875rem;
+  }
+
+  .watchlist-grid > li {
+    gap: 0.625rem;
+  }
+
+  .watchlist-grid .poster-placeholder {
+    padding: 0.625rem;
+    font-size: 0.8125rem;
+  }
+
+  .watchlist-grid > li > button {
+    font-size: 0.75rem;
+  }
+
+  .watchlist-page > nav {
+    gap: 0.75rem;
+    margin-top: 2rem;
+  }
+
+  .watchlist-page > nav > button {
+    padding: 0.625rem 0.875rem;
+    font-size: 0.8125rem;
+  }
+
+  .watchlist-page > nav > span {
+    font-size: 0.8125rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .watchlist-page button {
+    transition: none;
+  }
+
+  .watchlist-page > nav > button:hover:not(:disabled) {
+    transform: none;
+  }
+}

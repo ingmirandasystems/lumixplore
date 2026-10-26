@@ -3,6 +3,8 @@ import { useTranslation } from "react-i18next";
 import { getWatchRegions } from "../services/catalog";
 import type { WatchRegion } from "../services/catalog";
 import { getCommonErrorKey } from "../services/api";
+import location from "../assets/icons/map-pin.svg";
+import "./RegionSelect.css";
 
 interface RegionSelectProps {
   value: string;
@@ -61,14 +63,33 @@ export function RegionSelect({
     }))
     .sort((a, b) => a.name.localeCompare(b.name, language));
 
+  const selectedRegion = options.find((region) => region.code === value);
+
+  const visibleText = isLoading
+    ? t("region.loading")
+    : (selectedRegion?.name ?? t("region.placeholder"));
+
+  const isDisabled = disabled || isLoading || loadError !== null;
+
   return (
-    <div>
-      <label>
-        {t("region.label")}{" "}
+    <div className="region-select__container">
+      <label className="region-select__label">
+        <img src={location} alt="" className="region-select__location--icon" />
+
+        <span className="region-select__text" aria-hidden="true">
+          {visibleText}
+        </span>
+
+        <span className="region-select__arrow" aria-hidden="true">
+          ▾
+        </span>
+
         <select
+          className="region-select__select"
+          aria-label={t("region.placeholder")}
           value={value}
           required
-          disabled={disabled || isLoading || loadError !== null}
+          disabled={isDisabled}
           onChange={(event) => {
             onChange(event.currentTarget.value);
           }}

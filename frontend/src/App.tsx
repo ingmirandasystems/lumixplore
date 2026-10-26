@@ -1,7 +1,8 @@
 import { Route, Routes } from "react-router";
 import { AppLayout } from "./layouts/AppLayout";
 import { RequireAuth } from "./components/auth/RequireAuth";
-import { LanguageSwitcher } from "./components/LanguageSwitcher";
+import { AppFooter } from "./components/layout/AppFooter";
+
 import { ExplorePage } from "./pages/ExplorePage";
 import { LoginPage } from "./pages/LoginPage";
 import { HomePage } from "./pages/HomePage";
@@ -17,12 +18,11 @@ import { TitlePage } from "./pages/TitlePage";
 import { WatchlistPage } from "./pages/WatchlistPage";
 import { SearchPage } from "./pages/SearchPage";
 import { MoodPage } from "./pages/MoodPage";
+import { TermsPage, PrivacyPage, CookiesPage } from "./pages/LegalPages";
 
 export default function App() {
   return (
     <>
-      <LanguageSwitcher />
-
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
@@ -34,6 +34,10 @@ export default function App() {
         />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
+
+        <Route path="/terms" element={<TermsPage />} />
+        <Route path="/privacy" element={<PrivacyPage />} />
+        <Route path="/cookies" element={<CookiesPage />} />
 
         <Route
           element={
@@ -53,6 +57,8 @@ export default function App() {
 
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
+
+      <AppFooter />
     </>
   );
 }

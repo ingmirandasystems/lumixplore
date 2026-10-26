@@ -1,0 +1,184 @@
+.profile-selector {
+  position: relative;
+  z-index: 10;
+}
+
+.profile-selector__trigger {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  cursor: pointer;
+}
+
+.profile-selector__trigger::-webkit-details-marker {
+  display: none;
+}
+
+.profile-selector__icon--container {
+  position: relative;
+  width: 2.75rem;
+  height: 2.75rem;
+  background: var(--background-primary);
+  border-radius: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: auto;
+}
+
+.profile-selector__icon--container::before {
+  position: absolute;
+  content: "";
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 100%;
+  background: var(--gradient-rainbow-90);
+  width: 2.79rem;
+  height: 2.79rem;
+  filter: blur(7px);
+  z-index: -1;
+}
+
+.profile-selector__image {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.profile-selector__container {
+  position: absolute;
+  background-color: var(--background-blurs);
+  border-radius: 1rem;
+  width: 100%;
+  min-width: 13.31rem;
+  top: 3.3rem;
+  right: 0;
+  left: auto;
+  z-index: 10;
+}
+
+.profile-selector__options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding-bottom: 0.625rem;
+}
+
+.profile-selector__options > div:first-of-type {
+  display: flex;
+  flex-direction: column;
+  padding: 0.625rem;
+  padding-bottom: 0;
+}
+
+.profile-selector__options > div .profile-selector__option {
+  display: flex;
+  padding: 0.625rem;
+  gap: 0.625rem;
+  border-radius: 0.8rem;
+  font-size: 0.875rem;
+  font-weight: 300;
+  text-decoration: none;
+  color: var(--text-primary);
+}
+
+.profile-selector__options > div .profile-selector__option img {
+  width: 1.25rem;
+}
+
+.profile-selector__option:hover {
+  background-color: var(--background-blurs--hover);
+}
+
+.profile-selector__divider {
+  height: 1px;
+  width: 100%;
+  opacity: 0.11;
+  background-color: var(--text-accent);
+}
+
+.profile-selector__logout--container {
+  padding-left: 0.625rem;
+  padding-right: 0.625rem;
+}
+
+.profile-selector__logout {
+  width: 100%;
+  background: none;
+  border: none;
+  font-size: 0.875rem;
+  font-weight: 300;
+  padding: 0.625rem;
+  border-radius: 0.8rem;
+  text-align: left;
+  cursor: pointer;
+}
+
+/* Tablets */
+@media (max-width: 1024px) {
+  .profile-selector__container {
+    top: calc(100% + 0.75rem);
+    width: 13.31rem;
+    min-width: 0;
+    max-width: calc(100vw - 4rem);
+  }
+
+  .profile-selector__icon--container {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+
+  .profile-selector__icon--container::before {
+    width: 2.54rem;
+    height: 2.54rem;
+    filter: blur(6px);
+  }
+
+  .profile-selector__image {
+    width: 1.125rem;
+    height: 1.125rem;
+  }
+}
+
+/* Celulares */
+@media (max-width: 600px) {
+  .profile-selector__container {
+    top: calc(100% + 0.625rem);
+    max-width: calc(100vw - 2.5rem);
+  }
+
+  .profile-selector__options {
+    gap: 0.5rem;
+  }
+
+  .profile-selector__options > div .profile-selector__option {
+    align-items: center;
+    padding: 0.75rem 0.625rem;
+  }
+
+  .profile-selector__options > div .profile-selector__option img {
+    flex-shrink: 0;
+  }
+
+  .profile-selector__logout {
+    padding: 0.75rem 0.625rem;
+  }
+
+  .profile-selector__icon--container {
+    width: 2.25rem;
+    height: 2.25rem;
+  }
+
+  .profile-selector__icon--container::before {
+    width: 2.29rem;
+    height: 2.29rem;
+    filter: blur(5px);
+  }
+
+  .profile-selector__image {
+    width: 1rem;
+    height: 1rem;
+  }
+}

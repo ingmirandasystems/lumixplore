@@ -4,6 +4,8 @@ import { useAuth } from "../../hooks/useAuth";
 import { loadGoogleIdentity } from "../../services/google";
 import { ApiError, getCommonErrorKey } from "../../services/api";
 import { RegionSelect } from "../RegionSelect";
+import googleIcon from "../../assets/icons/google.svg";
+import "./GoogleLoginButton.css";
 
 interface GoogleCredentialResponse {
   credential: string;
@@ -25,6 +27,8 @@ declare global {
               theme: "outline";
               size: "large";
               locale: "es" | "en";
+              shape: "pill";
+              width: string;
             },
           ) => void;
         };
@@ -33,31 +37,55 @@ declare global {
   }
 }
 
+interface GoogleCodeResponse {
+  code?: string;
+  error?: string;
+}
+
+interface GoogleCodeClient {
+  requestCode: () => void;
+}
+
+interface GoogleOAuth2 {
+  initCodeClient: (options: {
+    client_id: string;
+    scope: string;
+    ux_mode: "popup";
+    select_account: boolean;
+    callback: (response: GoogleCodeResponse) => void;
+    error_callback: (error: { type: string }) => void;
+  }) => GoogleCodeClient;
+}
+
 export function GoogleLoginButton() {
   const { t, i18n } = useTranslation();
   const language = i18n.resolvedLanguage === "es" ? "es" : "en";
-
-  const buttonRef = useRef<HTMLDivElement | null>(null);
   const { googleLogin } = useAuth();
 
+  const clientRef = useRef<GoogleCodeClient | null>(null);
+
+  const [region, setRegion] = useState("");
+  const [isReady, setIsReady] = useState(false);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
 
-  const [region, setRegion] = useState("");
-
-  const handleCredential = useCallback(
-    async (response: GoogleCredentialResponse) => {
-      if (!region) {
-        setLoginError("region.unsupported");
+  const handleCode = useCallback(
+    async (response: GoogleCodeResponse) => {
+      if (response.error || !response.code) {
+        setLoginError("login.googleError");
+        setIsLoggingIn(false);
         return;
       }
 
-      setIsLoggingIn(true);
-      setLoginError(null);
+      if (!region) {
+        setLoginError("region.unsupported");
+        setIsLoggingIn(false);
+        return;
+      }
 
       try {
         await googleLogin({
-          credential: response.credential,
+          code: response.code,
           language,
           region,
           timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
@@ -96,7 +124,9 @@ export function GoogleLoginButton() {
   useEffect(() => {
     let cancelled = false;
 
-    async function prepareButton() {
+    clientRef.current = null;
+
+    async function prepareGoogle() {
       try {
         const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
@@ -108,49 +138,90 @@ export function GoogleLoginButton() {
 
         if (cancelled) return;
 
-        const google = window.google;
-        const container = buttonRef.current;
+        setIsReady(false);
 
-        if (!google || !container) {
+        const accounts = window.google?.accounts as
+          | { oauth2?: GoogleOAuth2 }
+          | undefined;
+
+        if (!accounts?.oauth2) {
           throw new Error("Google sign-in is unavailable");
         }
 
-        google.accounts.id.initialize({
+        clientRef.current = accounts.oauth2.initCodeClient({
           client_id: clientId,
-          callback: handleCredential,
+          scope: "openid email profile",
+          ux_mode: "popup",
+          select_account: true,
+
+          callback: (response) => {
+            if (!cancelled) {
+              void handleCode(response);
+            }
+          },
+
+          error_callback: (error) => {
+            if (cancelled) return;
+
+            setIsLoggingIn(false);
+
+            // Cerrar la ventana voluntariamente no es un error de login.
+            if (error.type !== "popup_closed") {
+              setLoginError("login.googleError");
+            }
+          },
         });
 
-        container.replaceChildren();
-
-        google.accounts.id.renderButton(container, {
-          theme: "outline",
-          size: "large",
-          locale: language,
-        });
+        setIsReady(true);
       } catch {
-        if (cancelled) return;
-
-        setLoginError("login.googleLoadError");
+        if (!cancelled) {
+          setLoginError("login.googleLoadError");
+        }
       }
     }
 
-    void prepareButton();
+    void prepareGoogle();
 
     return () => {
       cancelled = true;
+      clientRef.current = null;
     };
-  }, [handleCredential, language]);
+  }, [handleCode]);
+
+  function handleGoogleClick() {
+    if (!region || !isReady || isLoggingIn || !clientRef.current) {
+      return;
+    }
+
+    setLoginError(null);
+    setIsLoggingIn(true);
+
+    try {
+      clientRef.current.requestCode();
+    } catch {
+      setIsLoggingIn(false);
+      setLoginError("login.googleError");
+    }
+  }
 
   return (
-    <div>
+    <div className="google-login">
       <RegionSelect
         value={region}
         onChange={setRegion}
         disabled={isLoggingIn}
       />
-      <div ref={buttonRef} hidden={isLoggingIn || !region} />
 
-      {isLoggingIn && <p role="status">{t("login.googleSubmitting")}</p>}
+      <button
+        type="button"
+        className="google-custom-button"
+        disabled={!region || !isReady || isLoggingIn}
+        onClick={handleGoogleClick}
+        aria-busy={isLoggingIn}
+      >
+        <img src={googleIcon} alt="" className="google-custom-button__icon" />
+        {isLoggingIn ? t("login.googleSubmitting") : t("login.googleContinue")}
+      </button>
 
       {loginError && <p role="alert">{t(loginError)}</p>}
     </div>

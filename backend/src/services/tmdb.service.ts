@@ -40,6 +40,15 @@ export interface TmdbDiscoverResponse {
   results: TmdbTitleSummary[];
 }
 
+export interface TmdbTitleLogo {
+  file_path: string;
+  iso_639_1: string | null;
+  width: number;
+  height: number;
+  vote_average: number;
+  vote_count: number;
+}
+
 interface DiscoverTitlesOptions {
   mediaType: MediaType;
   language: CatalogLanguage;
@@ -262,6 +271,10 @@ export interface TmdbTitleDetails {
   runtime?: number | null;
   episode_run_time?: number[];
 
+  images: {
+    logos: TmdbTitleLogo[];
+  };
+
   status: string;
   original_language: string;
   vote_average: number;
@@ -354,9 +367,10 @@ export async function getFullTitleDetails(
     language: language === "es" ? "es-MX" : "en-US",
     append_to_response:
       mediaType === "movie"
-        ? "credits,videos,release_dates"
-        : "credits,videos,content_ratings",
+        ? "credits,videos,release_dates,images"
+        : "credits,videos,content_ratings,images",
     include_video_language: `${language},en,null`,
+    include_image_language: [...new Set([language, "en", "null"])].join(","),
   });
 }
 

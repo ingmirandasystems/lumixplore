@@ -1,0 +1,136 @@
+.genre-selector {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+.genre-selector__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+  gap: 0.75rem;
+}
+
+.genre-selector .preference-card {
+  position: relative;
+  isolation: isolate;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.625rem;
+
+  min-width: 0;
+  min-height: 3rem;
+  padding: 0.75rem 0.625rem;
+  border: 1px solid transparent;
+  border-radius: 0.75rem;
+
+  background: #19171d;
+  color: var(--text-primary);
+  font-size: 0.8125rem;
+  font-weight: 400;
+  line-height: 1.4;
+  text-align: center;
+  cursor: pointer;
+
+  transition: box-shadow 180ms ease;
+}
+
+.genre-selector .preference-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: var(--gradient-rainbow-90);
+  opacity: 0.05;
+  pointer-events: none;
+}
+
+.genre-selector .preference-card.is-selected {
+  background:
+    linear-gradient(rgb(17 17 23 / 65%), rgb(17 17 23 / 65%)) padding-box,
+    var(--gradient-rainbow-90) border-box;
+}
+
+.genre-selector .preference-card.is-selected::before {
+  opacity: 0.2;
+}
+
+.genre-selector .preference-card:hover {
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 15%);
+}
+
+.genre-selector input {
+  appearance: none;
+  -webkit-appearance: none;
+  flex-shrink: 0;
+
+  width: 0.6875rem;
+  height: 0.6875rem;
+  margin: 0;
+  border: 1px solid rgb(255 255 255 / 80%);
+  border-radius: 50%;
+  background: transparent;
+  cursor: inherit;
+}
+
+.genre-selector input:checked {
+  background: #fff;
+  border-color: #fff;
+}
+
+.genre-selector .preference-card:has(input:focus-visible) {
+  outline: 2px solid var(--text-primary);
+  outline-offset: 4px;
+}
+
+.genre-selector input:focus-visible {
+  outline: none;
+}
+
+/* La última opción es Todos los géneros */
+.genre-selector__grid > .preference-card:last-child {
+  grid-column: 1 / -1;
+  margin-top: 0.75rem;
+}
+
+.genre-selector:disabled .preference-card {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* Tablets */
+@media (max-width: 1024px) {
+  .genre-selector__grid {
+    grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr));
+    gap: 0.625rem;
+  }
+}
+
+/* Celulares */
+@media (max-width: 600px) {
+  .genre-selector__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem;
+  }
+
+  .genre-selector .preference-card {
+    min-height: 2.75rem;
+    padding: 0.625rem 0.5rem;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    overflow-wrap: anywhere;
+  }
+
+  .genre-selector__grid > .preference-card:last-child {
+    margin-top: 0.5rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .genre-selector .preference-card {
+    transition: none;
+  }
+}

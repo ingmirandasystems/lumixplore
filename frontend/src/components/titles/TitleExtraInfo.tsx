@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
 import type { CatalogTitle } from "../../services/titles";
 import { TitleCast } from "./TitleCast";
+import "./TitleExtraInfo.css";
 
 interface TitleExtraInfoProps {
   title: CatalogTitle;
@@ -59,6 +60,7 @@ export function TitleExtraInfo({ title }: TitleExtraInfoProps) {
 
   return (
     <div className="title-extra">
+      <TitleCast cast={title.cast} />
       <section className="title-extra__details">
         <h2>{t("title.detailsHeading")}</h2>
 
@@ -119,8 +121,6 @@ export function TitleExtraInfo({ title }: TitleExtraInfoProps) {
           )}
         </dl>
       </section>
-
-      <TitleCast cast={title.cast} />
     </div>
   );
 }

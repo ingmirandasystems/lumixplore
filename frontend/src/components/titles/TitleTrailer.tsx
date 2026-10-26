@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import type { CatalogTitle } from "../../services/titles";
+import "./TitleTrailer.css";
 
 interface TitleTrailerProps {
   trailer: NonNullable<CatalogTitle["trailer"]>;

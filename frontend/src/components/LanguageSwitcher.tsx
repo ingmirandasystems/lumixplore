@@ -2,6 +2,8 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../hooks/useAuth";
 import { getCommonErrorKey } from "../services/api";
+import "./LanguageSwitcher.css";
+import global from "../assets/icons/globe.svg";
 
 export function LanguageSwitcher() {
   const { t, i18n } = useTranslation();
@@ -31,10 +33,17 @@ export function LanguageSwitcher() {
   }
 
   return (
-    <div>
-      <label>
-        {t("language.label")}{" "}
+    <div className="switcher-container">
+      <label className="language-control">
+        <img src={global} alt="" className="icon-language" />
+
+        <span className="language-control__code" aria-hidden="true">
+          {i18n.resolvedLanguage?.startsWith("en") ? "EN" : "ES"}
+          <span> ▾</span>
+        </span>
+
         <select
+          aria-label={t("settings.language")}
           value={i18n.resolvedLanguage ?? "es"}
           disabled={loading || isSaving}
           onChange={(event) => {

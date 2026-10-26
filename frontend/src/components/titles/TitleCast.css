@@ -1,0 +1,95 @@
+.title-cast {
+  min-width: 0;
+}
+
+.title-cast h2 {
+  margin: 0 0 0.875rem;
+  color: var(--text-accent);
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+.title-cast__list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(6rem, 1fr));
+  gap: 1.25rem 0.875rem;
+
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.title-cast__person {
+  min-width: 0;
+}
+
+.title-cast__person > img,
+.title-cast__placeholder {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 2 / 3;
+  margin-bottom: 0.5rem;
+  border-radius: 0.625rem;
+  object-fit: cover;
+}
+
+.title-cast__placeholder {
+  display: grid;
+  place-items: center;
+  background: #38363b;
+  color: var(--text-accent);
+  font-size: 1.5rem;
+}
+
+.title-cast__name {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 0.8125rem;
+  font-weight: 400;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.title-cast__character {
+  margin: 0.125rem 0 0;
+  color: var(--text-accent);
+  font-size: 0.75rem;
+  font-weight: 300;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+/* Tablets */
+@media (max-width: 1024px) {
+  .title-cast__list {
+    grid-template-columns: repeat(auto-fill, minmax(6.5rem, 1fr));
+    gap: 1.125rem 0.75rem;
+  }
+}
+
+/* Celulares */
+@media (max-width: 600px) {
+  .title-cast__list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem 0.625rem;
+  }
+
+  .title-cast__name,
+  .title-cast__character {
+    font-size: 0.75rem;
+  }
+
+  .title-cast__person > img,
+  .title-cast__placeholder {
+    border-radius: 0.5rem;
+  }
+}
+
+/* Celulares pequeños */
+@media (max-width: 380px) {
+  .title-cast__list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

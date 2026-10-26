@@ -1,0 +1,187 @@
+.animated-background {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+  background: #08080c;
+}
+
+.animated-background__orb {
+  position: absolute;
+
+  width: 105vmax;
+  aspect-ratio: 1;
+  border-radius: 50%;
+
+  translate: -50% -50%;
+
+  background: radial-gradient(circle, currentColor 0%, transparent 72%);
+
+  filter: blur(40px);
+  opacity: 0.35;
+}
+
+/* Rosa: esquina superior izquierda */
+.animated-background__orb--1 {
+  top: 5%;
+  left: 5%;
+}
+
+/* Verde: esquina superior derecha */
+.animated-background__orb--2 {
+  top: 5%;
+  left: 95%;
+}
+
+/* Cian: centro exacto */
+.animated-background__orb--3 {
+  top: 50%;
+  left: 50%;
+}
+
+/* Amarillo: esquina inferior izquierda */
+.animated-background__orb--4 {
+  top: 95%;
+  left: 5%;
+}
+
+/* Violeta: esquina inferior derecha */
+.animated-background__orb--5 {
+  top: 95%;
+  left: 95%;
+}
+
+.animated-background::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgb(0 0 0 / 60%);
+}
+
+.animated-background__orb {
+  animation-duration: 12s;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+
+.animated-background__orb--1 {
+  animation-name: background-orbit-1;
+}
+
+.animated-background__orb--2 {
+  animation-name: background-orbit-2;
+}
+
+.animated-background__orb--3 {
+  animation-name: background-orbit-3;
+}
+
+.animated-background__orb--4 {
+  animation-name: background-orbit-4;
+}
+
+.animated-background__orb--5 {
+  animation-name: background-orbit-5;
+}
+
+@keyframes background-orbit-1 {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  20% {
+    transform: translate(90vw, 0);
+  }
+  40% {
+    transform: translate(45vw, 45vh);
+  }
+  60% {
+    transform: translate(90vw, 90vh);
+  }
+  80% {
+    transform: translate(0, 90vh);
+  }
+}
+
+@keyframes background-orbit-2 {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  20% {
+    transform: translate(-45vw, 45vh);
+  }
+  40% {
+    transform: translate(0, 90vh);
+  }
+  60% {
+    transform: translate(-90vw, 90vh);
+  }
+  80% {
+    transform: translate(-90vw, 0);
+  }
+}
+
+@keyframes background-orbit-3 {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  20% {
+    transform: translate(45vw, 45vh);
+  }
+  40% {
+    transform: translate(-45vw, 45vh);
+  }
+  60% {
+    transform: translate(-45vw, -45vh);
+  }
+  80% {
+    transform: translate(45vw, -45vh);
+  }
+}
+
+@keyframes background-orbit-4 {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  20% {
+    transform: translate(0, -90vh);
+  }
+  40% {
+    transform: translate(90vw, -90vh);
+  }
+  60% {
+    transform: translate(45vw, -45vh);
+  }
+  80% {
+    transform: translate(90vw, 0);
+  }
+}
+
+@keyframes background-orbit-5 {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  20% {
+    transform: translate(-90vw, 0);
+  }
+  40% {
+    transform: translate(-90vw, -90vh);
+  }
+  60% {
+    transform: translate(0, -90vh);
+  }
+  80% {
+    transform: translate(-45vw, -45vh);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animated-background__orb {
+    animation: none;
+  }
+}

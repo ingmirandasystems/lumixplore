@@ -1,0 +1,240 @@
+.settings-page {
+  min-height: calc(100dvh - var(--app-header-height, 0px));
+  background: var(--background-primary);
+  color: var(--text-primary);
+}
+
+.settings-page__title {
+  margin: 0 0 2.5rem;
+  padding-inline: 1rem;
+
+  font-size: 1.75rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.settings-page__sections {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.settings-page__section {
+  min-width: 0;
+  padding: 2.5rem;
+  border-radius: 1.5rem;
+  background: #111117;
+}
+
+.settings-page__section > h2 {
+  margin: 0 0 1.75rem;
+
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.settings-page__fields {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+.settings-page__field {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.settings-page__field > h3 {
+  margin: 0;
+  padding-inline: 0.25rem;
+
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.settings-page__value {
+  position: relative;
+  isolation: isolate;
+
+  width: 100%;
+  min-width: 0;
+  min-height: 3rem;
+  margin: 0;
+  padding: 0.875rem 1rem;
+
+  border-radius: 0.75rem;
+  background: rgb(255 255 255 / 2%);
+
+  color: var(--text-accent);
+  font-size: 0.875rem;
+  font-weight: 300;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.settings-page__value::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+
+  border-radius: inherit;
+  background: var(--gradient-rainbow-90);
+  opacity: 0.045;
+  pointer-events: none;
+}
+
+.settings-page__value--password {
+  letter-spacing: 0.1rem;
+}
+
+.settings-page__edit {
+  padding: 0.25rem 0.75rem;
+
+  border: none;
+  border-radius: 0.25rem;
+  background: transparent;
+
+  color: var(--text-accent);
+  font-size: 0.8125rem;
+  font-weight: 300;
+  line-height: 1.5;
+  text-align: left;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+
+  cursor: pointer;
+  transition: color 180ms ease;
+}
+
+.settings-page__edit:hover {
+  color: var(--text-primary);
+}
+
+.settings-page__section--danger {
+  padding: 1.75rem 2.5rem;
+}
+
+.settings-page__delete {
+  display: block;
+  width: 100%;
+  padding: 0.875rem 1rem;
+
+  border: 1px solid transparent;
+  border-radius: 0.75rem;
+  background: rgb(0 0 0 / 12%);
+
+  color: #ff526c;
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1.5;
+  text-align: left;
+
+  cursor: pointer;
+
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease;
+}
+
+.settings-page__delete:hover {
+  border-color: rgb(255 82 108 / 25%);
+  background: rgb(255 82 108 / 7%);
+}
+
+.settings-page__edit:focus-visible,
+.settings-page__delete:focus-visible {
+  outline: 2px solid var(--text-primary);
+  outline-offset: 4px;
+}
+
+.settings-page__success {
+  margin: -1rem 0 1.5rem;
+  padding-inline: 1rem;
+
+  color: #a8e6c3;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+/* Tablets */
+@media (max-width: 1024px) {
+  .settings-page__title {
+    margin-bottom: 2rem;
+    font-size: 1.5rem;
+  }
+
+  .settings-page__section {
+    padding: 2rem;
+    border-radius: 1.25rem;
+  }
+
+  .settings-page__section--danger {
+    padding: 1.5rem 2rem;
+  }
+}
+
+/* Celulares */
+@media (max-width: 600px) {
+  .settings-page__title {
+    margin-bottom: 1.5rem;
+    padding-inline: 0.25rem;
+    font-size: 1.375rem;
+  }
+
+  .settings-page__sections {
+    gap: 1rem;
+  }
+
+  .settings-page__section {
+    padding: 1.25rem;
+    border-radius: 1rem;
+  }
+
+  .settings-page__section > h2 {
+    margin-bottom: 1.25rem;
+    font-size: 0.9375rem;
+  }
+
+  .settings-page__fields {
+    gap: 1.5rem;
+  }
+
+  .settings-page__field > h3 {
+    font-size: 0.8125rem;
+  }
+
+  .settings-page__value {
+    min-height: 2.75rem;
+    padding: 0.75rem;
+    font-size: 0.8125rem;
+  }
+
+  .settings-page__edit {
+    padding-inline: 0.5rem;
+    font-size: 0.75rem;
+  }
+
+  .settings-page__delete {
+    padding: 0.75rem;
+    font-size: 0.8125rem;
+  }
+
+  .settings-page__success {
+    padding-inline: 0.25rem;
+    font-size: 0.8125rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .settings-page__edit,
+  .settings-page__delete {
+    transition: none;
+  }
+}

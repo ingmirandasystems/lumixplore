@@ -1,0 +1,122 @@
+.floating-input {
+  --field-radius: 0.75rem;
+  --field-padding: 1rem;
+  --label-gap: 0.35rem;
+  --notch-depth: 0.75rem;
+
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  border-radius: var(--field-radius);
+
+  background: rgb(255 255 255 / 5%);
+}
+
+.floating-input__control {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  min-height: 3.25rem;
+
+  padding: 1rem var(--field-padding);
+
+  border: 0;
+  border-radius: inherit;
+  outline: none;
+
+  background: transparent;
+  color: var(--text-primary);
+
+  font: inherit;
+  font-size: 1rem;
+  line-height: 1.3;
+}
+
+.floating-input__label {
+  position: absolute;
+  z-index: 1;
+  top: 50%;
+  left: var(--field-padding);
+  transform: translateY(-50%);
+
+  color: var(--text-accent);
+  font-size: 1rem;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: text;
+
+  transition:
+    top 180ms ease,
+    font-size 180ms ease,
+    color 180ms ease;
+}
+
+/* Capa que dibuja únicamente el borde. */
+
+.floating-input__border {
+  position: absolute;
+  inset: 0;
+  padding: 2px;
+  border-radius: inherit;
+  pointer-events: none;
+
+  background: transparent;
+
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+}
+
+/* La etiqueta sube cuando hay foco o contenido. */
+
+.floating-input:focus-within .floating-input__label,
+.floating-input:has(.floating-input__control:not(:placeholder-shown))
+  .floating-input__label {
+  top: 0;
+  font-size: 0.75rem;
+  color: var(--text-primary);
+}
+
+/* Borde degradado y abertura para la etiqueta. */
+
+.floating-input:focus-within .floating-input__border,
+.floating-input:has(.floating-input__control:not(:placeholder-shown))
+  .floating-input__border {
+  background: var(--gradient-rainbow-90);
+
+  clip-path: polygon(
+    0 0,
+    calc(var(--field-padding) - var(--label-gap)) 0,
+    calc(var(--field-padding) - var(--label-gap)) var(--notch-depth),
+    calc(var(--field-padding) + var(--label-width) + var(--label-gap))
+      var(--notch-depth),
+    calc(var(--field-padding) + var(--label-width) + var(--label-gap)) 0,
+    100% 0,
+    100% 100%,
+    0 100%
+  );
+}
+
+/* Apariencia del autocompletado del navegador. */
+
+.floating-input__control:is(:autofill, :-webkit-autofill) {
+  -webkit-text-fill-color: var(--text-primary);
+  caret-color: var(--text-primary);
+
+  -webkit-box-shadow: inset 0 0 0 1000px #15151c;
+  box-shadow: inset 0 0 0 1000px #15151c;
+}
+
+/* Movimiento reducido. */
+
+@media (prefers-reduced-motion: reduce) {
+  .floating-input__label {
+    transition: none;
+  }
+}

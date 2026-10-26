@@ -31,7 +31,7 @@ export interface ResetPasswordData {
 }
 
 export interface GoogleLoginData {
-  credential: string;
+  code: string;
   language?: "es" | "en";
   region: string;
   timezone?: string;
@@ -188,6 +188,7 @@ export async function googleLogin(data: GoogleLoginData): Promise<void> {
     credentials: "same-origin",
     headers: {
       "Content-Type": "application/json",
+      "X-Requested-With": "XmlHttpRequest",
     },
     body: JSON.stringify(data),
   });

@@ -6,10 +6,15 @@ import { getExplore } from "../services/explore";
 import type { ExploreResponse } from "../services/explore";
 import { DailyRecommendationHero } from "../components/explore/DailyRecommendationHero";
 import { Link } from "react-router";
+import { PageShell } from "../layouts/PageShell";
+import { mainBackgroundColors } from "../styles/backgroundPalettes";
+import { ScrollableRow } from "../components/explore/ScrollableRow";
+import { PosterImage } from "../components/explore/PosterImage";
+import { usePageTitle } from "../hooks/usePageTitle";
 
 export function ExplorePage() {
   const { t, i18n } = useTranslation();
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
 
   const language = i18n.resolvedLanguage === "es" ? "es" : "en";
   const userId = user?.id;
@@ -18,9 +23,6 @@ export function ExplorePage() {
   const [data, setData] = useState<ExploreResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
-
-  const [isLoggingOut, setIsLoggingOut] = useState(false);
-  const [logoutError, setLogoutError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!userId || !region) return;
@@ -59,119 +61,85 @@ export function ExplorePage() {
     };
   }, [userId, region, language]);
 
-  async function handleLogout() {
-    setIsLoggingOut(true);
-    setLogoutError(null);
-
-    try {
-      await logout();
-    } catch (error: unknown) {
-      setLogoutError(getCommonErrorKey(error, "session.logoutError"));
-    } finally {
-      setIsLoggingOut(false);
-    }
-  }
+  usePageTitle(t("explore.pageTitle"));
 
   if (!user) {
     return <p>{t("session.noSession")}</p>;
   }
 
   return (
-    <main>
-      <p>{t("session.currentUser", { name: user.name })}</p>
+    <PageShell colors={mainBackgroundColors}>
+      <main className="main-content">
+        <DailyRecommendationHero />
 
-      {logoutError && <p role="alert">{t(logoutError)}</p>}
+        {isLoading ? (
+          <p className="loading" role="status">
+            {t("explore.loading")}
+          </p>
+        ) : loadError ? (
+          <div className="error-server__container">
+            <p role="alert">{t(loadError)}</p>
+          </div>
+        ) : (
+          data?.sections.map((section) => {
+            const headingKeys = {
+              trending: {
+                movie: "explore.trendingMovies",
+                tv: "explore.trendingSeries",
+              },
+              popular: {
+                movie: "explore.popularMovies",
+                tv: "explore.popularSeries",
+              },
+              topRated: {
+                movie: "explore.topRatedMovies",
+                tv: "explore.topRatedSeries",
+              },
+            };
 
-      <button type="button" onClick={handleLogout} disabled={isLoggingOut}>
-        {isLoggingOut ? t("session.loggingOut") : t("session.logout")}
-      </button>
+            const headingKey = headingKeys[section.kind][section.mediaType];
 
-      <DailyRecommendationHero />
+            return (
+              <section key={section.id} className="film-row">
+                <h2 className="row-title">{t(headingKey)}</h2>
 
-      {isLoading ? (
-        <p role="status">{t("explore.loading")}</p>
-      ) : loadError ? (
-        <p role="alert">{t(loadError)}</p>
-      ) : (
-        data?.sections.map((section) => {
-          const headingKeys = {
-            trending: {
-              movie: "explore.trendingMovies",
-              tv: "explore.trendingSeries",
-            },
-            popular: {
-              movie: "explore.popularMovies",
-              tv: "explore.popularSeries",
-            },
-            topRated: {
-              movie: "explore.topRatedMovies",
-              tv: "explore.topRatedSeries",
-            },
-          };
-
-          const headingKey = headingKeys[section.kind][section.mediaType];
-
-          return (
-            <section key={section.id}>
-              <h2>{t(headingKey)}</h2>
-
-              {section.items.length === 0 ? (
-                <p>{t("explore.empty")}</p>
-              ) : (
-                <ul
-                  className="explore-row"
-                  style={{
-                    display: "flex",
-                    gap: 16,
-                    overflowX: "auto",
-                    listStyle: "none",
-                    padding: 0,
-                  }}
-                >
-                  {section.items.map((item) => (
-                    <li
-                      key={`${item.mediaType}-${item.id}`}
-                      style={{ flex: "0 0 160px" }}
-                    >
-                      <Link
-                        to={`/title/${item.mediaType}/${item.id}`}
-                        aria-label={item.title}
-                      >
-                        {item.posterPath ? (
-                          <img
-                            src={`https://image.tmdb.org/t/p/w500${item.posterPath}`}
-                            alt=""
-                            width={160}
-                            height={240}
-                            loading="lazy"
-                            style={{
-                              objectFit: "cover",
-                              borderRadius: 8,
-                            }}
-                          />
-                        ) : (
-                          <div
-                            style={{
-                              width: 160,
-                              height: 240,
-                              display: "grid",
-                              placeItems: "center",
-                              border: "1px solid currentColor",
-                              borderRadius: 8,
-                            }}
-                          >
-                            {item.title}
-                          </div>
-                        )}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </section>
-          );
-        })
-      )}
-    </main>
+                {section.items.length === 0 ? (
+                  <p className="row-empty">{t("explore.empty")}</p>
+                ) : (
+                  <ScrollableRow>
+                    {section.items.map((item) => (
+                      <li key={`${item.mediaType}-${item.id}`}>
+                        <Link
+                          className="poster-link"
+                          to={`/title/${item.mediaType}/${item.id}`}
+                          aria-label={item.title}
+                        >
+                          {item.posterPath ? (
+                            <PosterImage
+                              key={item.posterPath}
+                              src={`https://image.tmdb.org/t/p/w500${item.posterPath}`}
+                              title={item.title}
+                            />
+                          ) : (
+                            <div
+                              className="poster-placeholder"
+                              style={{
+                                border: "1px solid currentColor",
+                              }}
+                            >
+                              {item.title}
+                            </div>
+                          )}
+                        </Link>
+                      </li>
+                    ))}
+                  </ScrollableRow>
+                )}
+              </section>
+            );
+          })
+        )}
+      </main>
+    </PageShell>
   );
 }

@@ -72,6 +72,21 @@ export async function getCatalogTitle(
         ?.rating.trim() || null;
   }
 
+  const logoLanguages: (string | null)[] = [...new Set([language, "en", null])];
+
+  const logos = [...(details.images?.logos ?? [])]
+    .filter((logo) => Boolean(logo.file_path))
+    .sort(
+      (a, b) =>
+        logoLanguages.indexOf(a.iso_639_1) -
+          logoLanguages.indexOf(b.iso_639_1) ||
+        b.vote_average - a.vote_average ||
+        b.vote_count - a.vote_count ||
+        b.width - a.width,
+    );
+
+  const logoPath = logos[0]?.file_path ?? null;
+
   return {
     id: details.id,
     mediaType,
@@ -85,6 +100,7 @@ export async function getCatalogTitle(
     overview: details.overview,
     tagline: details.tagline || null,
     posterPath: details.poster_path,
+    logoPath,
     backdropPath: details.backdrop_path,
     releaseDate: details.release_date || details.first_air_date || null,
     genres: details.genres,

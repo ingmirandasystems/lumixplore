@@ -7,6 +7,9 @@ import {
   type SimilarTitlesResponse,
 } from "../../services/titles";
 import { getCommonErrorKey } from "../../services/api";
+import { PosterImage } from "../explore/PosterImage";
+import caretRightIcon from "../../assets/icons/caret-right.svg";
+import "./SimilarTitles.css";
 
 interface SimilarTitlesProps {
   mediaType: MediaType;
@@ -71,16 +74,7 @@ export function SimilarTitles({ mediaType, tmdbId }: SimilarTitlesProps) {
 
   return (
     <section className="similar-titles">
-      <ul
-        className="similar-titles__list"
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))",
-          gap: 16,
-          listStyle: "none",
-          padding: 0,
-        }}
-      >
+      <ul className="similar-titles__list">
         {data.items.map((item) => (
           <li key={`${item.mediaType}-${item.id}`}>
             <Link
@@ -88,27 +82,13 @@ export function SimilarTitles({ mediaType, tmdbId }: SimilarTitlesProps) {
               aria-label={item.title}
             >
               {item.posterPath ? (
-                <img
+                <PosterImage
+                  key={item.posterPath}
                   src={`https://image.tmdb.org/t/p/w342${item.posterPath}`}
-                  alt=""
-                  loading="lazy"
-                  style={{
-                    width: "100%",
-                    aspectRatio: "2 / 3",
-                    objectFit: "cover",
-                  }}
+                  title={item.title}
                 />
               ) : (
-                <div
-                  style={{
-                    aspectRatio: "2 / 3",
-                    display: "grid",
-                    placeItems: "center",
-                    background: "#333",
-                  }}
-                >
-                  {item.title}
-                </div>
+                <div className="similar-titles__placeholder">{item.title}</div>
               )}
             </Link>
           </li>
@@ -116,16 +96,18 @@ export function SimilarTitles({ mediaType, tmdbId }: SimilarTitlesProps) {
       </ul>
 
       {data.totalPages > 1 && (
-        <nav aria-label={t("title.similarPagination")}>
+        <nav className="pagination" aria-label={t("title.similarPagination")}>
           <button
             type="button"
+            className="pagination__button pagination__button--previous"
             disabled={page <= 1}
             onClick={() => setPage((previous) => previous - 1)}
+            aria-label={t("title.previousPage")}
           >
-            {t("title.previousPage")}
+            <img src={caretRightIcon} alt="" />
           </button>
 
-          <span aria-live="polite">
+          <span className="pagination__label" aria-live="polite">
             {t("title.pageOf", {
               page: data.page,
               total: data.totalPages,
@@ -134,10 +116,12 @@ export function SimilarTitles({ mediaType, tmdbId }: SimilarTitlesProps) {
 
           <button
             type="button"
+            className="pagination__button"
             disabled={page >= data.totalPages}
             onClick={() => setPage((previous) => previous + 1)}
+            aria-label={t("title.nextPage")}
           >
-            {t("title.nextPage")}
+            <img src={caretRightIcon} alt="" />
           </button>
         </nav>
       )}

@@ -1,0 +1,64 @@
+.region-select__container {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.region-select__label {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+
+  min-height: 2.75rem;
+  max-width: 100%;
+  gap: 0.5rem;
+
+  font-weight: 300;
+}
+
+.region-select__location--icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  flex-shrink: 0;
+}
+
+.region-select__text,
+.region-select__arrow {
+  color: var(--text-primary);
+  font-size: 1rem;
+  line-height: 1.4;
+  pointer-events: none;
+}
+
+.region-select__text {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.region-select__arrow {
+  flex-shrink: 0;
+}
+
+.region-select__select {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+
+  cursor: pointer;
+  font: inherit;
+  font-size: 1rem;
+}
+
+.region-select__select:disabled {
+  cursor: not-allowed;
+}
+
+.region-select__label:has(select:disabled) {
+  opacity: 0.5;
+}
+
+.region-select__label:has(select:focus-visible) {
+  outline: none;
+  border-radius: 0.25rem;
+}

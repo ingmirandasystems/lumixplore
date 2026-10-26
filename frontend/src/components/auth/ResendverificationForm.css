@@ -1,0 +1,133 @@
+.resendVerification-form {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.resendVerification-form > button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+  min-height: 3rem;
+  padding: 0.875rem 1.5rem;
+
+  border: none;
+  border-radius: 999px;
+  background-color: var(--text-primary);
+  color: var(--text-primary-onlight);
+
+  font: inherit;
+  font-size: 1rem;
+  font-weight: 300;
+  line-height: 1.4;
+  text-align: center;
+  cursor: pointer;
+}
+
+.resendVerification-form > button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.resendVerification-form > button:focus-visible {
+  outline: 2px solid var(--text-primary);
+  outline-offset: 4px;
+}
+
+/* Error */
+.resendVerification-form__error--container {
+  display: flex;
+  align-items: flex-start;
+  background-color: var(--error-bg);
+  border: 1px solid var(--error-border);
+  border-radius: 0.75rem;
+  padding: 1rem 1.25rem;
+  gap: 0.75rem;
+}
+
+.resendVerification-form__error--container img {
+  width: 2rem;
+  height: 2rem;
+  flex-shrink: 0;
+  margin-top: 0.125rem;
+}
+
+.resendVerification-form__error--container > div {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.resendVerification-form__error--container p {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 0.9375rem;
+  font-weight: 300;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+/* Success */
+.resendVerification-form__success--container {
+  display: flex;
+  align-items: flex-start;
+  background-color: var(--success-bg);
+  border: 1px solid var(--success-border);
+  border-radius: 0.75rem;
+  padding: 1rem 1.25rem;
+  gap: 0.75rem;
+}
+
+.resendVerification-form__success--container img {
+  width: 2rem;
+  height: 2rem;
+  flex-shrink: 0;
+  margin-top: 0.125rem;
+}
+
+.resendVerification-form__success--container > div {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.resendVerification-form__success--container p {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 0.9375rem;
+  font-weight: 300;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+/* Tablets */
+@media (max-width: 1024px) {
+  .resendVerification-form {
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+}
+
+/* Celulares */
+@media (max-width: 600px) {
+  .resendVerification-form > button {
+    padding: 0.875rem 1rem;
+  }
+
+  .resendVerification-form__error--container,
+  .resendVerification-form__success--container {
+    padding: 0.875rem 1rem;
+    gap: 0.625rem;
+  }
+
+  .resendVerification-form__error--container img,
+  .resendVerification-form__success--container img {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+}

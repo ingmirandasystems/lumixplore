@@ -1,15 +1,21 @@
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../../hooks/useAuth";
 import { ApiError, getCommonErrorKey } from "../../services/api";
 import { GoogleAccountConfirmation } from "./GoogleAccountConfirmation";
+import { FloatingInput } from "../../components/ui/FloatingInput";
+import { SettingsFormActions } from "./SettingsFormActions";
 
 interface DeleteAccountFormProps {
   hasLocalPassword: boolean;
+  onCancel: () => void;
+  onBusyChange: (busy: boolean) => void;
 }
 
 export function DeleteAccountForm({
   hasLocalPassword,
+  onCancel,
+  onBusyChange,
 }: DeleteAccountFormProps) {
   const { t } = useTranslation();
   const { deleteAccount } = useAuth();
@@ -20,8 +26,11 @@ export function DeleteAccountForm({
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
 
-  async function handleSubmit(event: React.SubmitEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
+    if (isDeleting) return;
+
     setDeleteError(null);
 
     if (!confirmed) {
@@ -40,6 +49,7 @@ export function DeleteAccountForm({
     }
 
     setIsDeleting(true);
+    onBusyChange(true);
 
     try {
       if (hasLocalPassword) {
@@ -81,73 +91,80 @@ export function DeleteAccountForm({
       setDeleteError(errorKey);
     } finally {
       setIsDeleting(false);
+      onBusyChange(false);
     }
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <p>{t("settings.deleteDescription")}</p>
+    <form className="settings-form" onSubmit={handleSubmit}>
+      <p className="settings-form__description">
+        {t("settings.deleteDescription")}
+      </p>
 
       {hasLocalPassword ? (
-        <>
-          <label htmlFor="delete-current-password">
-            {t("settings.currentPassword")}
-          </label>
-
-          <input
-            id="delete-current-password"
-            name="currentPassword"
-            type="password"
-            autoComplete="current-password"
-            required
-            maxLength={128}
-            value={currentPassword}
-            disabled={isDeleting}
-            onChange={(event) => {
-              setCurrentPassword(event.currentTarget.value);
-            }}
-          />
-        </>
+        <FloatingInput
+          id="delete-current-password"
+          label={t("settings.currentPassword")}
+          name="currentPassword"
+          type="password"
+          autoComplete="current-password"
+          required
+          maxLength={128}
+          value={currentPassword}
+          disabled={isDeleting}
+          onChange={(event) => setCurrentPassword(event.currentTarget.value)}
+        />
       ) : (
         <>
-          <p>{t("settings.deleteGoogleDescription")}</p>
-          <p>{t("settings.deleteGoogleConfirm")}</p>
+          <p className="settings-form__description">
+            {t("settings.deleteGoogleDescription")}
+          </p>
+
           <GoogleAccountConfirmation
             onCredential={setGoogleCredential}
             disabled={isDeleting}
           />
 
           {googleCredential && (
-            <p role="status">{t("settings.deleteGoogleReady")}</p>
+            <p className="settings-form__success" role="status">
+              {t("settings.deleteGoogleReady")}
+            </p>
           )}
         </>
       )}
 
-      <label>
+      <label className="settings-form__confirmation">
         <input
           type="checkbox"
           required
           checked={confirmed}
           disabled={isDeleting}
-          onChange={(event) => {
-            setConfirmed(event.currentTarget.checked);
-          }}
+          onChange={(event) => setConfirmed(event.currentTarget.checked)}
         />
-        {t("settings.deleteConfirmation")}
+
+        <span>{t("settings.deleteConfirmation")}</span>
       </label>
 
-      {deleteError && <p role="alert">{t(deleteError)}</p>}
+      {deleteError && (
+        <p className="settings-form__error" role="alert">
+          {t(deleteError)}
+        </p>
+      )}
 
-      <button
-        type="submit"
+      <SettingsFormActions
+        danger
+        busy={isDeleting}
         disabled={
-          isDeleting || !confirmed || (!hasLocalPassword && !googleCredential)
+          !confirmed ||
+          (hasLocalPassword ? !currentPassword : !googleCredential)
         }
-      >
-        {isDeleting
-          ? t("settings.deletingAccount")
-          : t("settings.deleteAccount")}
-      </button>
+        onCancel={onCancel}
+        submitLabel={
+          isDeleting
+            ? t("settings.deletingAccount")
+            : t("settings.deleteAccount")
+        }
+      />
     </form>
   );
 }

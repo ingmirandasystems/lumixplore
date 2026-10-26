@@ -42,3 +42,27 @@ export async function verifyGoogleCredential(credential: string) {
     issuedAt: payload.iat ?? null,
   };
 }
+
+export async function verifyGoogleAuthorizationCode(code: string) {
+  const clientId = process.env.GOOGLE_CLIENT_ID;
+  const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
+  const frontendUrl = process.env.FRONTEND_URL;
+
+  if (!clientId || !clientSecret || !frontendUrl) {
+    throw new Error("Falta configurar el acceso con Google.");
+  }
+
+  const client = new OAuth2Client({
+    clientId,
+    clientSecret,
+    redirectUri: new URL(frontendUrl).origin,
+  });
+
+  const { tokens } = await client.getToken(code);
+
+  if (!tokens.id_token) {
+    throw new Error("Google no devolvió una credencial de identidad.");
+  }
+
+  return verifyGoogleCredential(tokens.id_token);
+}

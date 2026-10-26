@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { loadGoogleIdentity } from "../../services/google";
+import "./GoogleAccountConfirmation.css";
 
 interface GoogleAccountConfirmationProps {
   onCredential: (credential: string) => void;
@@ -53,6 +54,8 @@ export function GoogleAccountConfirmation({
           theme: "outline",
           size: "large",
           locale: language,
+          shape: "pill",
+          width: "280",
         });
 
         setLoadError(false);

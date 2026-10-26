@@ -1,0 +1,175 @@
+/* Layout general */
+
+.register-page {
+  width: 100%;
+  min-width: 0;
+  min-height: 100vh;
+  min-height: 100dvh;
+
+  display: flex;
+  flex-direction: column;
+
+  container-type: inline-size;
+}
+
+/* Header */
+
+.register-page__header {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: space-between;
+
+  width: 100%;
+  padding: 1.25rem 3rem;
+  gap: 1rem;
+}
+
+.register-page__header .public-header__logo {
+  display: block;
+  width: 11rem;
+  max-width: 100%;
+  height: auto;
+}
+
+/* Área central */
+
+.register-form__section {
+  flex: 1;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+  min-width: 0;
+  padding: 0rem 1.5rem;
+}
+
+/* Tarjeta del formulario */
+
+.register-form__container {
+  display: flex;
+  flex-direction: column;
+
+  width: 100%;
+  max-width: 30rem;
+  min-width: 0;
+
+  padding: 2.5rem;
+  gap: 1rem;
+  border-radius: 1.5rem;
+
+  background-color: rgb(0 0 0 / 35%);
+}
+
+/* Título y descripción */
+
+.register-form__section--title {
+  margin: 0;
+  font-size: 2.8rem;
+  font-weight: 700;
+  line-height: 1.1;
+  overflow-wrap: break-word;
+
+  background-image: var(--gradient-rainbow-270);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+/* Enlace de registro */
+
+.register-form__login {
+  color: var(--text-accent);
+  font-size: 0.9375rem;
+  font-weight: 300;
+  line-height: 1.5;
+}
+
+.register-form__login a {
+  color: var(--text-primary);
+  font-size: inherit;
+  font-weight: 400;
+  text-decoration: none;
+}
+
+.register-form__login a:hover {
+  text-decoration: underline;
+}
+
+/* Tablets */
+
+@media (max-width: 1024px) {
+  .register-page__header {
+    padding: 1.25rem 2rem;
+  }
+
+  .register-page__header .public-header__logo {
+    width: 10rem;
+  }
+
+  .register-form__section {
+    padding: 1.5rem;
+  }
+
+  .register-form__container {
+    max-width: 34rem;
+    padding: 2rem;
+    border-radius: 1.25rem;
+  }
+
+  .register-form__section--title {
+    font-size: 2.6rem;
+    line-height: 1.15;
+  }
+
+  .register-form__section--subtitle {
+    font-size: 0.9rem;
+    letter-spacing: 0.04em;
+  }
+}
+
+/* Celulares */
+
+@media (max-width: 600px) {
+  .register-page__header {
+    padding: 1rem 1.25rem;
+  }
+
+  .register-page__header .public-header__logo {
+    width: 9rem;
+  }
+
+  .register-form__section {
+    padding: 1.25rem 1rem 2rem;
+  }
+
+  .register-form__container {
+    padding: 1.75rem 1.25rem;
+    gap: 1rem;
+    border-radius: 1rem;
+  }
+
+  .register-form__section--title {
+    font-size: 2.5rem;
+    line-height: 1.15;
+  }
+
+  .register-form__section--subtitle {
+    font-size: 0.9rem;
+    letter-spacing: 0.02em;
+  }
+
+  .register-form__container > div:not(.google-login):not(.login-divider) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .login-divider {
+    gap: 0.625rem;
+    font-size: 0.875rem;
+  }
+}

@@ -1,0 +1,74 @@
+.google-login {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  gap: 1rem;
+}
+
+.google-custom-button {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+  min-width: 0;
+  min-height: 3rem;
+  padding: 0.875rem 3rem;
+
+  background: transparent;
+  border: 0;
+  border-radius: 999px;
+
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 1rem;
+  font-weight: 300;
+  line-height: 1.4;
+  text-align: center;
+  cursor: pointer;
+}
+
+.google-custom-button::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  padding: 1px;
+  border-radius: inherit;
+  background: var(--gradient-rainbow-90);
+  pointer-events: none;
+
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+}
+
+.google-custom-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.google-custom-button:focus-visible {
+  outline: 2px solid var(--text-primary);
+  outline-offset: 4px;
+}
+
+.google-custom-button__icon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+
+  width: 1.5rem;
+  height: 1.5rem;
+}

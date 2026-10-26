@@ -1,25 +1,36 @@
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../../hooks/useAuth";
 import { ApiError, getCommonErrorKey } from "../../services/api";
+import { FloatingInput } from "../../components/ui/FloatingInput";
+import { SettingsFormActions } from "./SettingsFormActions";
 
 interface NameSettingsFormProps {
   initialName: string;
+  onCancel: () => void;
+  onSuccess: () => void;
+  onBusyChange: (busy: boolean) => void;
 }
 
-export function NameSettingsForm({ initialName }: NameSettingsFormProps) {
+export function NameSettingsForm({
+  initialName,
+  onCancel,
+  onSuccess,
+  onBusyChange,
+}: NameSettingsFormProps) {
   const { t } = useTranslation();
   const { updateName } = useAuth();
 
   const [name, setName] = useState(initialName);
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
-  const [isSuccess, setIsSuccess] = useState(false);
 
-  async function handleSubmit(event: React.SubmitEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
+    if (isSaving) return;
+
     setSaveError(null);
-    setIsSuccess(false);
 
     if (!name.trim()) {
       setSaveError("settings.invalidName");
@@ -27,10 +38,10 @@ export function NameSettingsForm({ initialName }: NameSettingsFormProps) {
     }
 
     setIsSaving(true);
+    onBusyChange(true);
 
     try {
       await updateName(name.trim());
-      setIsSuccess(true);
     } catch (error: unknown) {
       let errorKey = getCommonErrorKey(error, "settings.nameError");
 
@@ -43,35 +54,42 @@ export function NameSettingsForm({ initialName }: NameSettingsFormProps) {
       }
 
       setSaveError(errorKey);
+      return;
     } finally {
       setIsSaving(false);
+      onBusyChange(false);
     }
+
+    onSuccess();
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <label htmlFor="settings-name">{t("common.name")}</label>
-
-      <input
+    <form className="settings-form" onSubmit={handleSubmit}>
+      <FloatingInput
         id="settings-name"
+        label={t("common.name")}
         name="name"
-        autoComplete="given-name"
+        autoComplete="name"
         required
         maxLength={100}
         value={name}
         disabled={isSaving}
-        onChange={(event) => {
-          setName(event.currentTarget.value);
-          setIsSuccess(false);
-        }}
+        onChange={(event) => setName(event.currentTarget.value)}
       />
 
-      {saveError && <p role="alert">{t(saveError)}</p>}
-      {isSuccess && <p role="status">{t("settings.nameSaved")}</p>}
+      {saveError && (
+        <p className="settings-form__error" role="alert">
+          {t(saveError)}
+        </p>
+      )}
 
-      <button type="submit" disabled={isSaving}>
-        {isSaving ? t("settings.saving") : t("settings.saveName")}
-      </button>
+      <SettingsFormActions
+        busy={isSaving}
+        onCancel={onCancel}
+        submitLabel={
+          isSaving ? t("settings.saving") : t("settings.ui.saveChanges")
+        }
+      />
     </form>
   );
 }

@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import type { ContentType } from "../../services/preferences";
+import "./ContentTypeSelector.css";
 
 interface ContentTypeSelectorProps {
   value: ContentType;
@@ -21,24 +22,26 @@ export function ContentTypeSelector({
   ] as const;
 
   return (
-    <fieldset disabled={disabled}>
+    <fieldset className="content-type-selector" disabled={disabled}>
       <legend>{t("preferences.contentType")}</legend>
 
-      {choices.map((choice) => (
-        <label
-          key={choice.value}
-          className={`preference-card${value === choice.value ? " is-selected" : ""}`}
-        >
-          <input
-            type="radio"
-            name="contentType"
-            value={choice.value}
-            checked={value === choice.value}
-            onChange={() => onChange(choice.value)}
-          />
-          {t(choice.label)}
-        </label>
-      ))}
+      <div className="content-type-selector__grid">
+        {choices.map((choice) => (
+          <label
+            key={choice.value}
+            className={`preference-card${value === choice.value ? " is-selected" : ""}`}
+          >
+            <input
+              type="radio"
+              name="contentType"
+              value={choice.value}
+              checked={value === choice.value}
+              onChange={() => onChange(choice.value)}
+            />
+            {t(choice.label)}
+          </label>
+        ))}
+      </div>
     </fieldset>
   );
 }

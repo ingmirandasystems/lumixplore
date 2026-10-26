@@ -20,11 +20,45 @@
     "logoutError": "Could not sign out."
   },
   "home": {
-    "title": "Welcome to LumiXplore",
-    "description": "Discover movies and series for your next movie night."
+    "heroSubtitle": "Your next story starts here",
+    "heroTitle": "Find the perfect thing <br/> to watch,",
+    "heroTitleGradient": " based on how <br/> you feel",
+    "heroDescription": "Discover movies and TV shows based on your mood, <br/> your favorite genres, and the streaming services <br/> you have access to.",
+    "heroExplore": "Explore now",
+    "heroCreate": "Create my profile",
+    "heroAccent": "Explore freely. Create an account to save your favorites and personalize <br/> your experience.",
+    "recommendationTitle": "Find stories for every moment",
+    "recommendationSubtitle": "Choose how you feel or the kind of experience you're looking for.",
+    "recommendationHappy": "Happy and lighthearted",
+    "recommendationSad": "Sad and emotional",
+    "recommendationMistery": "Mysterious",
+    "recommendationIntense": "Intense",
+    "recommendationFantasy": "Fantastical",
+    "recommendationHorror": "Terrifying",
+    "stepsTitle": "Your next story in three steps",
+    "stepsSubtitle": "Discover how easy it is to find your next obsession.",
+    "stepsLooking1": "Tell us what you're looking for",
+    "stepsLooking2": "Choose your mood, genre, or intensity",
+    "stepsRecommendations1": "Get recommendations",
+    "stepsRecommendations2": "Discover options tailored to your preferences",
+    "stepsWatch1": "Find where to watch",
+    "stepsWatch2": "Check the streaming services available in your region",
+    "filmsTitle": "There’s always something to discover",
+    "filmsSubtitle": "Explore what’s popular and find your next favorite story.",
+    "lumicardTitle1": "Make ",
+    "lumicardTitle2": "know you",
+    "lumicardDes": "Save your favorites, set your streaming services, and get <br/> increasingly relevant recommendations.",
+    "lumicardFavs": "Save your favorites",
+    "lumicardSett": "Personalize your preferences",
+    "lumicardNews": "Get the latest updates",
+    "lumicardPlat": "Sync your streaming services",
+    "encoreTitle": "Less time searching.",
+    "encoreSub": "More stories enjoying.",
+    "pageTitle": "Discover your next story"
   },
   "login": {
-    "title": "Sign in to LumiXplore",
+    "title": "Great to have you back!",
+    "subtitle": "Keep discovering stories made for you.",
     "submitting": "Signing in...",
     "error": "Could not sign in.",
     "invalidCredentials": "Incorrect email or password.",
@@ -40,7 +74,9 @@
     "googleInvalidData": "The Google sign-in details are invalid. Try again.",
     "googleInvalidCredential": "Could not validate Google sign-in. Try again.",
     "googleEmailVerificationRequired": "Google sign-in currently supports only Gmail or Google Workspace accounts.",
-    "googleAccountConflict": "Could not create the account. If you already have one, use its sign-in method. If you submitted multiple requests at once, try again."
+    "googleAccountConflict": "Could not create the account. If you already have one, use its sign-in method. If you submitted multiple requests at once, try again.",
+    "googleContinue": "Continue with Google",
+    "pageTitle": "Sign in"
   },
   "errors": {
     "rateLimit": "Too many requests. Try again later.",
@@ -60,7 +96,8 @@
     "successTitle": "Check your email",
     "successDescription": "Your account has been created. To sign in, verify your email address by following the instructions you receive.",
     "resendLink": "Didn't receive the email? Request another",
-    "invalidData": "Check your registration details."
+    "invalidData": "Check your registration details.",
+    "pageTitle": "Create account"
   },
   "verification": {
     "title": "Verify your email",
@@ -74,7 +111,8 @@
     "successDescription": "You can now sign in to your account.",
     "requestAnother": "Request another verification email",
     "invalidToken": "The verification link is invalid.",
-    "tokenUnavailable": "The link is invalid, has expired, or has already been used. If you haven't verified your email yet, request another."
+    "tokenUnavailable": "The link is invalid, has expired, or has already been used. If you haven't verified your email yet, request another.",
+    "pageTitle": "Verify email"
   },
   "resend": {
     "title": "Resend verification",
@@ -82,7 +120,8 @@
     "submit": "Resend verification",
     "submitting": "Requesting...",
     "error": "Could not request another verification email.",
-    "success": "If an account with that email address is awaiting verification, you will receive instructions to verify it."
+    "success": "If an account with that email address is awaiting verification, you will receive instructions to verify it.",
+    "pageTitle": "Resend verification email"
   },
   "forgotPassword": {
     "title": "Recover your password",
@@ -90,7 +129,8 @@
     "submit": "Recover password",
     "submitting": "Requesting...",
     "error": "Could not request password recovery.",
-    "success": "If an account with that email address supports password recovery, you will receive instructions."
+    "success": "If an account with that email address supports password recovery, you will receive instructions.",
+    "pageTitle": "Reset password"
   },
   "resetPassword": {
     "title": "Reset your password",
@@ -105,11 +145,13 @@
     "successTitle": "Password updated",
     "successDescription": "You can now sign in with your new password.",
     "invalidData": "The link or new password does not meet the requirements. Use a password between 15 and 128 characters.",
-    "tokenUnavailable": "The link is invalid, has expired, or has already been used. Request another password recovery link."
+    "tokenUnavailable": "The link is invalid, has expired, or has already been used. Request another password recovery link.",
+    "pageTitle": "Reset password"
   },
   "notFound": {
     "title": "404 — Page not found",
-    "description": "The page you are looking for does not exist."
+    "description": "The page you are looking for does not exist.",
+    "pageTitle": "Page not found"
   },
   "language": {
     "label": "Language",
@@ -162,7 +204,18 @@
     "deleteIdentityError": "Could not confirm your identity. Check your password or select the linked Google account.",
     "deleteGoogleConfirm": "Confirm your Google account again.",
     "deleteGoogleButton": "Confirm identity with Google",
-    "deleteGoogleReady": "Google identity received. Press Delete account to confirm deletion."
+    "deleteGoogleReady": "Google identity received. Press Delete account to confirm deletion.",
+    "ui": {
+      "close": "Close",
+      "cancel": "Cancel",
+      "saveChanges": "Save changes",
+      "editName": "Edit name",
+      "changeRegion": "Change region",
+      "region": "Region",
+      "password": "Password",
+      "hiddenPassword": "Hidden password",
+      "passwordSaved": "Your password was updated successfully."
+    }
   },
   "preferences": {
     "title": "My preferences",
@@ -205,7 +258,8 @@
     "topRatedMovies": "Top-rated movies",
     "topRatedSeries": "Top-rated TV shows",
     "trendingMovies": "Trending movies this week",
-    "trendingSeries": "Trending TV shows this week"
+    "trendingSeries": "Trending TV shows this week",
+    "pageTitle": "Explore"
   },
   "title": {
     "loading": "Loading title information...",
@@ -249,7 +303,8 @@
     "watchAds": "With ads",
     "watchEmpty": "No availability information is available for this region.",
     "watchMore": "View options on TMDB",
-    "watchAttribution": "Availability data provided by JustWatch."
+    "watchAttribution": "Availability data provided by JustWatch.",
+    "pageTitle": "Title details"
   },
   "watchlist": {
     "checking": "Checking watchlist...",
@@ -265,7 +320,9 @@
     "empty": "You haven't saved any movies or TV shows yet.",
     "unavailable": "Title unavailable",
     "removeNamed": "Remove {{name}} from my list",
-    "pagination": "My list pages"
+    "pagination": "My list pages",
+    "adding": "Adding…",
+    "added": "In my list"
   },
   "search": {
     "label": "Search movies and TV shows",
@@ -281,7 +338,9 @@
     "emptyPage": "There are no results on this page.",
     "movies": "Movies",
     "series": "TV shows",
-    "pagination": "Search results pages"
+    "pagination": "Search results pages",
+    "open": "Open search",
+    "back": "Go back"
   },
   "navigation": {
     "main": "Main navigation",
@@ -289,7 +348,7 @@
     "settings": "Settings"
   },
   "moods": {
-    "selector": "What are you in the mood for?",
+    "selector": "What’s your mood?",
     "loading": "Loading your experience...",
     "loadError": "Could not load this experience.",
     "notImplemented": "This experience is not available yet.",
@@ -334,6 +393,62 @@
       "ambition": "The price of ambition",
       "psychologicalDrama": "Psychological dramas",
       "crimeConsequences": "Crime and consequences"
+    },
+    "pages": {
+      "laugh": {
+        "titleTop": "Keep on",
+        "titleBottom": "smiling",
+        "subtitle": "Comedies, adventures, and great stories to enjoy."
+      },
+      "feel": {
+        "titleTop": "Stories to make you",
+        "titleBottom": "feel it all",
+        "subtitle": "Stories that embrace your sadness and stir your emotions."
+      },
+      "adrenaline": {
+        "titleTop": "Get your",
+        "titleBottom": "heart racing",
+        "subtitle": "Action and suspense to push your adrenaline to the limit."
+      },
+      "tension": {
+        "titleTop": "Explore",
+        "titleBottom": "fear without limits",
+        "subtitle": "Horror, suspense, and gore unleashed."
+      },
+      "escape": {
+        "titleTop": "Escape",
+        "titleBottom": "this world",
+        "subtitle": "Fantasy and sci-fi to take you beyond this reality."
+      },
+      "intense": {
+        "titleTop": "Immerse in stories",
+        "titleBottom": "that push the limits",
+        "subtitle": "Movies and series packed with intensity."
+      }
+    }
+  },
+  "pageTitles": {
+    "home": "LumiXplore",
+    "explore": "Explore",
+    "login": "Sign in",
+    "register": "Create an account",
+    "verifyEmail": "Verify email",
+    "resendVerification": "Resend verification",
+    "forgotPassword": "Recover password",
+    "resetPassword": "Reset password",
+    "settings": "Settings",
+    "preferences": "Preferences",
+    "watchlist": "My watchlist",
+    "search": "Search",
+    "title": "Title details",
+    "notFound": "Page not found",
+    "moods": {
+      "laugh": "I want to laugh",
+      "feel": "I want to feel",
+      "tension": "I want suspense",
+      "adrenaline": "I want adrenaline",
+      "escape": "I want to escape",
+      "intense": "I want something intense"
     }
   }
 }

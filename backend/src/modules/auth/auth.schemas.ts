@@ -66,6 +66,13 @@ export const googleLoginSchema = z.object({
   timezone: registerSchema.shape.timezone,
 });
 
+export const googleCodeLoginSchema = z.object({
+  code: z.string().trim().min(1).max(10000),
+  language: registerSchema.shape.language,
+  region: registerSchema.shape.region,
+  timezone: registerSchema.shape.timezone,
+});
+
 export const updateLanguageSchema = z.object({
   language: z.enum(["es", "en"]),
 });

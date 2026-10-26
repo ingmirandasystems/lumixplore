@@ -79,6 +79,6 @@ app.use("/api/moods", moodsRouter);
 app.use(notFoundHandler);
 app.use(errorHandler);
 
-app.listen(port, "127.0.0.1", () => {
-  console.log(`Servidor disponible en http://localhost:${port}`);
+app.listen(port, "0.0.0.0", () => {
+  console.log(`LumiXplore escuchando en el puerto ${port}`);
 });
