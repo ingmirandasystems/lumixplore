@@ -498,13 +498,14 @@
   width: 100%;
 }
 
-.films-container .home-films__img {
+.home-films__picture,
+.home-films__image {
   display: block;
   width: 100%;
 }
 
-.films-container .home-films__img--mobile {
-  display: none;
+.home-films__image {
+  height: auto;
 }
 
 /* Land Page Lumicard */
@@ -925,13 +926,14 @@
     font-size: 2.1cqw;
   }
 
-  .films-container .home-films__img {
-    display: none;
-  }
-
-  .films-container .home-films__img--mobile {
+  .home-films__picture,
+  .home-films__image {
     display: block;
     width: 100%;
+  }
+
+  .home-films__image {
+    height: auto;
   }
 
   .home-lumicard {

@@ -9,7 +9,11 @@ import logo from "../assets/icons/lumixplore--logo.svg";
 import "./HomePage.css";
 import { Trans } from "react-i18next";
 import arrowRight from "../assets/icons/arrow-right.svg";
-import landPageHeroImage from "../assets/icons/land-page__img.png";
+import landPageHeroImage from "../assets/icons/land-page__img.webp";
+import films from "../assets/icons/land-page__films.webp";
+import lumicard from "../assets/icons/land-lumicard__bg.webp";
+import filsMobile from "../assets/icons/land-films__mobile.webp";
+
 import happy from "../assets/icons/feliz-ligero.svg";
 import sad from "../assets/icons/triste-emotivo.svg";
 import mistery from "../assets/icons/misterioso.svg";
@@ -19,13 +23,12 @@ import horror from "../assets/icons/terrorifico.svg";
 import looking from "../assets/icons/01-cuentanos-que-buscas.svg";
 import recommendations from "../assets/icons/02-recibe-recomendaciones.svg";
 import watch from "../assets/icons/03-encuentra-donde-verla.svg";
-import films from "../assets/icons/land-page__films.png";
-import lumicard from "../assets/icons/land-lumicard__bg.png";
+
 import favs from "../assets/icons/01-guarda-tu-lista.svg";
 import sett from "../assets/icons/02-personaliza-preferencias.svg";
 import news from "../assets/icons/03-region-y-plataformas.svg";
 import platforms from "../assets/icons/04-historial.svg";
-import filsMobile from "../assets/icons/land-films__mobile.png";
+
 import { usePageTitle } from "../hooks/usePageTitle";
 
 export function HomePage() {
@@ -94,7 +97,12 @@ export function HomePage() {
               <Trans i18nKey="home.heroAccent" components={{ br: <br /> }} />
             </span>
           </div>
-          <img src={landPageHeroImage} alt="" className="heroImage" />
+          <img
+            src={landPageHeroImage}
+            alt=""
+            className="heroImage"
+            fetchPriority="high"
+          />
         </section>
         <section className="home-recomendations">
           <h3 className="recommendation--title">
@@ -193,8 +201,17 @@ export function HomePage() {
           <h3 className="films--title">{t("home.filmsTitle")}</h3>
           <h4 className="films--subtitle">{t("home.filmsSubtitle")}</h4>
           <div className="films-container">
-            <img src={films} alt="" className="home-films__img" />
-            <img src={filsMobile} alt="" className="home-films__img--mobile" />
+            <picture className="home-films__picture">
+              <source media="(max-width: 1024px)" srcSet={filsMobile} />
+
+              <img
+                src={films}
+                alt=""
+                className="home-films__image"
+                loading="lazy"
+                decoding="async"
+              />
+            </picture>
           </div>
         </section>
 
@@ -239,7 +256,13 @@ export function HomePage() {
                 </Link>
               </div>
             </div>
-            <img src={lumicard} alt="" className="lumicard--bg" />
+            <img
+              src={lumicard}
+              alt=""
+              className="lumicard--bg"
+              loading="lazy"
+              decoding="async"
+            />
           </div>
         </section>
 
