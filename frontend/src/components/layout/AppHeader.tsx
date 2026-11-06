@@ -16,7 +16,10 @@ export function AppHeader() {
 
   function closeSearch() {
     setIsSearchOpen(false);
-    searchTriggerRef.current?.focus();
+
+    requestAnimationFrame(() => {
+      searchTriggerRef.current?.focus({ preventScroll: true });
+    });
   }
 
   const headerRef = useRef<HTMLElement | null>(null);

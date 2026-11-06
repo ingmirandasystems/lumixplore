@@ -43,7 +43,9 @@
   border: none;
   border-radius: 6.25rem;
   color: var(--text-secondary);
-  font-size: 0.875rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  min-width: 0;
   font-weight: 300;
   background-color: transparent;
 }

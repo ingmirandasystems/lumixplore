@@ -80,7 +80,7 @@ export function SearchPage() {
 
   return (
     <PageShell colors={mainBackgroundColors}>
-      <main className="main-content">
+      <main className="main-content search-page">
         {!validQuery || !validPage ? (
           <div className="search-page__error--container">
             <img src={errorIcon} alt="" />

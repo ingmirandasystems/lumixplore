@@ -19,7 +19,7 @@ export function SearchForm({ autoFocus = false, onSearch }: SearchFormProps) {
 
   useEffect(() => {
     if (autoFocus) {
-      inputRef.current?.focus();
+      inputRef.current?.focus({ preventScroll: true });
     }
   }, [autoFocus]);
 
@@ -32,6 +32,7 @@ export function SearchForm({ autoFocus = false, onSearch }: SearchFormProps) {
 
     const parameters = new URLSearchParams({ q: search });
 
+    inputRef.current?.blur();
     navigate(`/search?${parameters}`);
     onSearch?.();
   }

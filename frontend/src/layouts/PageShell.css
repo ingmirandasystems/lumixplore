@@ -1,3 +1,10 @@
+.page-shell {
+  position: relative;
+  isolation: isolate;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
 .page-shell__content {
   position: relative;
   min-height: 100vh;
